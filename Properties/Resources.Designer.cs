@@ -63,9 +63,15 @@ namespace Mart_Management_System.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+<<<<<<< HEAD
         internal static System.Drawing.Bitmap _937e9d6e_3296_4b5c_bdd5_be5d8b4dada0 {
             get {
                 object obj = ResourceManager.GetObject("937e9d6e-3296-4b5c-bdd5-be5d8b4dada0", resourceCulture);
+=======
+        internal static System.Drawing.Bitmap _10be6f0a_f9d8_4f85_b9a7_21f370169a32 {
+            get {
+                object obj = ResourceManager.GetObject("10be6f0a-f9d8-4f85-b9a7-21f370169a32", resourceCulture);
+>>>>>>> aed474c02a11dd74e298d2967c844c8136498406
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
