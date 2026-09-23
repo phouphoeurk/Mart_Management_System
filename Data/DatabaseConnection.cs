@@ -1,23 +1,38 @@
 ﻿using System;
 using Microsoft.Data.SqlClient;
+using DotNetEnv;
 
 namespace MartManagementSystem.Data
 {
     public class DatabaseConnection
     {
-        // កែប្រែ Server=ITACHI\SQLEXPRESS
-        private static readonly string connectionString = @"Server=ITACHI\SQLEXPRESS;Database=MartManagementDB;Trusted_Connection=True;TrustServerCertificate=True;";
-
         public static SqlConnection GetConnection()
         {
             try
             {
-                SqlConnection connection = new SqlConnection(connectionString);
-                return connection;
+                // Load variables from .env
+                Env.Load();
+
+                // Get DB_CONNECTION from .env
+                string? connectionString =
+                    Environment.GetEnvironmentVariable("DB_CONNECTION");
+
+                // Validate connection string
+                if (string.IsNullOrWhiteSpace(connectionString))
+                {
+                    throw new Exception(
+                        "DB_CONNECTION was not found in the .env file."
+                    );
+                }
+
+                return new SqlConnection(connectionString);
             }
             catch (Exception ex)
             {
-                throw new Exception("Cannot connect to Database. Error: " + ex.Message);
+                throw new Exception(
+                    "Cannot create database connection. Error: " + ex.Message,
+                    ex
+                );
             }
         }
     }
