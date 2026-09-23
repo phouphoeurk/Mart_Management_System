@@ -49,7 +49,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.ForeColor = SystemColors.ButtonFace;
+            label2.ForeColor = Color.White;
             label2.Location = new Point(185, 337);
             label2.Name = "label2";
             label2.Size = new Size(143, 41);
@@ -72,7 +72,8 @@
             // 
             // btnLogin
             // 
-            btnLogin.BackColor = Color.FromArgb(128, 128, 255);
+            btnLogin.BackColor = Color.Green;
+            btnLogin.ForeColor = Color.Transparent;
             btnLogin.Location = new Point(399, 537);
             btnLogin.Name = "btnLogin";
             btnLogin.Size = new Size(188, 58);
@@ -93,7 +94,7 @@
             // 
             AutoScaleDimensions = new SizeF(17F, 41F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.FromArgb(192, 192, 255);
+            BackColor = Color.FromArgb(128, 255, 128);
             ClientSize = new Size(782, 719);
             Controls.Add(btnCancel);
             Controls.Add(btnLogin);
