@@ -16,6 +16,8 @@ namespace Mart_Management_System
             //Application.Run(new Testconnection());
             
             Application.Run(new Forms.LoginForm());
+            // ប្រើ Testconnection ដើម្បីសាកល្បង Database
+            Application.Run(new Testconnection());
         }
     }
 }

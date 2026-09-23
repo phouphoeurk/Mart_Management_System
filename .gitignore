@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-
 .env
 .env.*
 !.env.example
-
-=======
-<<<<<<< HEAD
->>>>>>> b470c09b7d17e7f470b4b5d1a10f8211f65860a4
 bin/
 obj/
 .vs/
 *.user
 *.suo
 *.log
-=======
-﻿bin/
-obj/
->>>>>>> aed474c02a11dd74e298d2967c844c8136498406

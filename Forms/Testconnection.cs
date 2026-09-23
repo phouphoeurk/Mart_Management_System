@@ -1,4 +1,4 @@
-﻿using MartManagementSystem.Data;
+using MartManagementSystem.Data;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
@@ -22,7 +22,8 @@ namespace Mart_Management_System.Forms
             this.Load += Testconnection_Load;
         }
 
-        private void Testconnection_Load(object sender, EventArgs e)
+        // ថែមសញ្ញា ? នៅត្រង់ object? sender
+        private void Testconnection_Load(object? sender, EventArgs e)
         {
             try
             {
