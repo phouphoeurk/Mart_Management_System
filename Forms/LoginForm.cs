@@ -16,5 +16,10 @@ namespace Mart_Management_System.Forms
         {
             InitializeComponent();
         }
+
+        private void LoginForm_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }
