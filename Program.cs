@@ -1,4 +1,6 @@
 
+using Mart_Management_System.Forms;
+
 namespace Mart_Management_System
 {
     internal static class Program
@@ -10,7 +12,9 @@ namespace Mart_Management_System
         static void Main()
         {
             ApplicationConfiguration.Initialize();
-            Application.Run(new Forms.Form1());
+            Application.Run(new Forms.LoginForm());
+            // ប្រើ Testconnection ដើម្បីសាកល្បង Database
+            Application.Run(new Testconnection());
         }
     }
 }
