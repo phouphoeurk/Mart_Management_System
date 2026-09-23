@@ -10,7 +10,7 @@ namespace Mart_Management_System
         static void Main()
         {
             ApplicationConfiguration.Initialize();
-            Application.Run(new Forms.Form1());
+            Application.Run(new Forms.LoginForm());
         }
     }
 }
