@@ -118,12 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-<<<<<<< HEAD
   <data name="937e9d6e-3296-4b5c-bdd5-be5d8b4dada0" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\937e9d6e-3296-4b5c-bdd5-be5d8b4dada0.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-=======
-  <data name="10be6f0a-f9d8-4f85-b9a7-21f370169a32" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\10be6f0a-f9d8-4f85-b9a7-21f370169a32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
->>>>>>> aed474c02a11dd74e298d2967c844c8136498406
+    <value>..\Resources\937e9d6e-3296-4b5c-bdd5-be5d8b4dada01.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>
