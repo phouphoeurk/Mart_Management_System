@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "y8zyQ+NXoYM=",
+  "dgSpecHash": "oaievXnEvFo=",
   "success": true,
   "projectFilePath": "C:\\Users\\itachi uchiha\\Desktop\\OOAD_Mart_Management_System\\Mart_Management_System\\Mart_Management_System.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\itachi uchiha\\.nuget\\packages\\bcrypt.net-next\\4.2.0\\bcrypt.net-next.4.2.0.nupkg.sha512",
     "C:\\Users\\itachi uchiha\\.nuget\\packages\\dotnetenv\\3.2.0\\dotnetenv.3.2.0.nupkg.sha512",
     "C:\\Users\\itachi uchiha\\.nuget\\packages\\microsoft.bcl.cryptography\\8.0.0\\microsoft.bcl.cryptography.8.0.0.nupkg.sha512",
     "C:\\Users\\itachi uchiha\\.nuget\\packages\\microsoft.data.sqlclient\\7.1.0\\microsoft.data.sqlclient.7.1.0.nupkg.sha512",

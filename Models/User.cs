@@ -1,23 +1,20 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
-//using System.Threading.Tasks;
+using Mart_Management_System.Enums;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-//namespace Mart_Management_System.Models
-//{
-//    public class User 
-//    {
-//        public int Id { get; set; }
-//        public string FullName { get; set; } = string.Empty;
-//        public string Username { get; set; } = string.Empty;
-//        public string PasswordHash { get; set; } = string.Empty;
-//        public string Role {  get; set; }
-//        public string Phone { get; set; }
-//        public bool Statuse { get; set; }
-//        public DateTime Created { get; set; }
-//        public int Updated { get; set; }
+namespace Mart_Management_System.Models
+{
+    public class User
+    {
+        public int id { get; set; }
+        public string username { get; set; }
+        public string password { get; set; }
 
-//    }
-
-//}
+        public UserRole role { get; set; }
+        public bool isActive { get; set; }
+        public DateTime createdAt { get; set; }
+    }
+}

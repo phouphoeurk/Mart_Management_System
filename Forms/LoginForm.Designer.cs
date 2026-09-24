@@ -28,31 +28,32 @@
         /// </summary>
         private void InitializeComponent()
         {
-            button1 = new Button();
+            btnLogin = new Button();
             label1 = new Label();
-            textBox1 = new TextBox();
+            txtUsername = new TextBox();
             label2 = new Label();
-            checkBox1 = new CheckBox();
-            label4 = new Label();
-            linkLabel1 = new LinkLabel();
-            textBox2 = new TextBox();
+            cbShowPW = new CheckBox();
+            txtPassword = new TextBox();
             label3 = new Label();
             pictureBox1 = new PictureBox();
+            registerLink = new LinkLabel();
+            label4 = new Label();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
-            // button1
+            // btnLogin
             // 
-            button1.BackColor = Color.FromArgb(7, 132, 59);
-            button1.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
-            button1.ForeColor = Color.White;
-            button1.Location = new Point(1078, 809);
-            button1.Margin = new Padding(5);
-            button1.Name = "button1";
-            button1.Size = new Size(338, 99);
-            button1.TabIndex = 0;
-            button1.Text = "Login";
-            button1.UseVisualStyleBackColor = false;
+            btnLogin.BackColor = Color.FromArgb(7, 132, 59);
+            btnLogin.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
+            btnLogin.ForeColor = Color.White;
+            btnLogin.Location = new Point(1078, 809);
+            btnLogin.Margin = new Padding(5);
+            btnLogin.Name = "btnLogin";
+            btnLogin.Size = new Size(338, 99);
+            btnLogin.TabIndex = 0;
+            btnLogin.Text = "Login";
+            btnLogin.UseVisualStyleBackColor = false;
+            btnLogin.Click += btnLogin_Click;
             // 
             // label1
             // 
@@ -65,12 +66,12 @@
             label1.TabIndex = 2;
             label1.Text = "Welcome Back";
             // 
-            // textBox1
+            // txtUsername
             // 
-            textBox1.Location = new Point(1078, 365);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(727, 70);
-            textBox1.TabIndex = 4;
+            txtUsername.Location = new Point(1078, 365);
+            txtUsername.Name = "txtUsername";
+            txtUsername.Size = new Size(727, 70);
+            txtUsername.TabIndex = 4;
             // 
             // label2
             // 
@@ -83,46 +84,24 @@
             label2.TabIndex = 3;
             label2.Text = "Username";
             // 
-            // checkBox1
+            // cbShowPW
             // 
-            checkBox1.AutoSize = true;
-            checkBox1.ForeColor = Color.Gray;
-            checkBox1.Location = new Point(1419, 713);
-            checkBox1.Name = "checkBox1";
-            checkBox1.Size = new Size(386, 66);
-            checkBox1.TabIndex = 7;
-            checkBox1.Text = "Show Password";
-            checkBox1.UseVisualStyleBackColor = true;
-            checkBox1.CheckedChanged += checkBox1_CheckedChanged;
+            cbShowPW.AutoSize = true;
+            cbShowPW.ForeColor = Color.Gray;
+            cbShowPW.Location = new Point(1419, 713);
+            cbShowPW.Name = "cbShowPW";
+            cbShowPW.Size = new Size(386, 66);
+            cbShowPW.TabIndex = 7;
+            cbShowPW.Text = "Show Password";
+            cbShowPW.UseVisualStyleBackColor = true;
+            cbShowPW.CheckedChanged += checkBox1_CheckedChanged;
             // 
-            // label4
+            // txtPassword
             // 
-            label4.AutoSize = true;
-            label4.ForeColor = Color.FromArgb(64, 64, 64);
-            label4.Location = new Point(1182, 1079);
-            label4.Name = "label4";
-            label4.Size = new Size(541, 62);
-            label4.TabIndex = 8;
-            label4.Text = "Don't have any account?";
-            // 
-            // linkLabel1
-            // 
-            linkLabel1.AutoSize = true;
-            linkLabel1.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
-            linkLabel1.LinkColor = Color.FromArgb(7, 132, 59);
-            linkLabel1.Location = new Point(1302, 1165);
-            linkLabel1.Name = "linkLabel1";
-            linkLabel1.Size = new Size(317, 62);
-            linkLabel1.TabIndex = 9;
-            linkLabel1.TabStop = true;
-            linkLabel1.Text = "Register here";
-            // 
-            // textBox2
-            // 
-            textBox2.Location = new Point(1078, 600);
-            textBox2.Name = "textBox2";
-            textBox2.Size = new Size(727, 70);
-            textBox2.TabIndex = 12;
+            txtPassword.Location = new Point(1078, 600);
+            txtPassword.Name = "txtPassword";
+            txtPassword.Size = new Size(727, 70);
+            txtPassword.TabIndex = 12;
             // 
             // label3
             // 
@@ -145,25 +124,49 @@
             pictureBox1.TabIndex = 13;
             pictureBox1.TabStop = false;
             // 
+            // registerLink
+            // 
+            registerLink.AutoSize = true;
+            registerLink.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
+            registerLink.LinkColor = Color.FromArgb(7, 132, 59);
+            registerLink.Location = new Point(1302, 1165);
+            registerLink.Name = "registerLink";
+            registerLink.Size = new Size(317, 62);
+            registerLink.TabIndex = 9;
+            registerLink.TabStop = true;
+            registerLink.Text = "Register here";
+            registerLink.LinkClicked += registerLink_LinkClicked;
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.ForeColor = Color.FromArgb(64, 64, 64);
+            label4.Location = new Point(1182, 1079);
+            label4.Name = "label4";
+            label4.Size = new Size(541, 62);
+            label4.TabIndex = 8;
+            label4.Text = "Don't have any account?";
+            // 
             // LoginForm
             // 
             AutoScaleDimensions = new SizeF(26F, 62F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1867, 1275);
             Controls.Add(pictureBox1);
-            Controls.Add(textBox2);
+            Controls.Add(txtPassword);
             Controls.Add(label3);
-            Controls.Add(linkLabel1);
+            Controls.Add(registerLink);
             Controls.Add(label4);
-            Controls.Add(checkBox1);
-            Controls.Add(textBox1);
+            Controls.Add(cbShowPW);
+            Controls.Add(txtUsername);
             Controls.Add(label2);
             Controls.Add(label1);
-            Controls.Add(button1);
+            Controls.Add(btnLogin);
             Font = new Font("Segoe UI", 14F);
             Margin = new Padding(5);
             Name = "LoginForm";
             Text = "LoginForm";
+            Load += LoginForm_Load;
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ResumeLayout(false);
             PerformLayout();
@@ -171,15 +174,15 @@
 
         #endregion
 
-        private Button button1;
+        private Button btnLogin;
         private Label label1;
-        private TextBox textBox1;
+        private TextBox txtUsername;
         private Label label2;
-        private CheckBox checkBox1;
-        private Label label4;
-        private LinkLabel linkLabel1;
-        private TextBox textBox2;
+        private CheckBox cbShowPW;
+        private TextBox txtPassword;
         private Label label3;
         private PictureBox pictureBox1;
+        private LinkLabel registerLink;
+        private Label label4;
     }
 }

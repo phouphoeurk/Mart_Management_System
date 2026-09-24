@@ -11,7 +11,7 @@ namespace Mart_Management_System.Data
             try
             {
                 // Load variables from .env
-                Env.Load();
+                Env.Load() ;
 
                 // Get DB_CONNECTION from .env
                 string? connectionString =

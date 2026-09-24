@@ -1,4 +1,5 @@
 
+using DotNetEnv;
 using Mart_Management_System.Forms;
 
 namespace Mart_Management_System
@@ -11,12 +12,12 @@ namespace Mart_Management_System
         [STAThread]
         static void Main()
         {
+            Env.Load();//Load data from env to use connection string
             ApplicationConfiguration.Initialize();
             // ប្រើ Testconnection ដើម្បីសាកល្បង Database
             //Application.Run(new Testconnection());
             // ប្តូរឱ្យដំណើរការ LoginForm មុនគេនៅពេល Run កម្មវិធី
             Application.Run(new Forms.LoginForm());
-            Application.Run(new MainForm());
         }
     }
 }
