@@ -33,11 +33,11 @@
             txtUsername = new TextBox();
             label2 = new Label();
             cbShowPW = new CheckBox();
-            label4 = new Label();
-            registerLink = new LinkLabel();
             txtPassword = new TextBox();
             label3 = new Label();
             pictureBox1 = new PictureBox();
+            registerLink = new LinkLabel();
+            label4 = new Label();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
@@ -96,28 +96,6 @@
             cbShowPW.UseVisualStyleBackColor = true;
             cbShowPW.CheckedChanged += checkBox1_CheckedChanged;
             // 
-            // label4
-            // 
-            label4.AutoSize = true;
-            label4.ForeColor = Color.FromArgb(64, 64, 64);
-            label4.Location = new Point(1182, 1079);
-            label4.Name = "label4";
-            label4.Size = new Size(541, 62);
-            label4.TabIndex = 8;
-            label4.Text = "Don't have any account?";
-            // 
-            // registerLink
-            // 
-            registerLink.AutoSize = true;
-            registerLink.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
-            registerLink.LinkColor = Color.FromArgb(7, 132, 59);
-            registerLink.Location = new Point(1302, 1165);
-            registerLink.Name = "registerLink";
-            registerLink.Size = new Size(317, 62);
-            registerLink.TabIndex = 9;
-            registerLink.TabStop = true;
-            registerLink.Text = "Register here";
-            // 
             // txtPassword
             // 
             txtPassword.Location = new Point(1078, 600);
@@ -145,6 +123,29 @@
             pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
             pictureBox1.TabIndex = 13;
             pictureBox1.TabStop = false;
+            // 
+            // registerLink
+            // 
+            registerLink.AutoSize = true;
+            registerLink.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
+            registerLink.LinkColor = Color.FromArgb(7, 132, 59);
+            registerLink.Location = new Point(1302, 1165);
+            registerLink.Name = "registerLink";
+            registerLink.Size = new Size(317, 62);
+            registerLink.TabIndex = 9;
+            registerLink.TabStop = true;
+            registerLink.Text = "Register here";
+            registerLink.LinkClicked += registerLink_LinkClicked;
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.ForeColor = Color.FromArgb(64, 64, 64);
+            label4.Location = new Point(1182, 1079);
+            label4.Name = "label4";
+            label4.Size = new Size(541, 62);
+            label4.TabIndex = 8;
+            label4.Text = "Don't have any account?";
             // 
             // LoginForm
             // 
@@ -178,10 +179,10 @@
         private TextBox txtUsername;
         private Label label2;
         private CheckBox cbShowPW;
-        private Label label4;
-        private LinkLabel registerLink;
         private TextBox txtPassword;
         private Label label3;
         private PictureBox pictureBox1;
+        private LinkLabel registerLink;
+        private Label label4;
     }
 }

@@ -21,7 +21,6 @@ namespace Mart_Management_System.Forms
         {
             InitializeComponent();
             userRepo = new UserRepository();
-            userRepo.ConnectDB();
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -36,9 +35,33 @@ namespace Mart_Management_System.Forms
 
         private void btnLogin_Click(object sender, EventArgs e)
         {
-            this.Hide();
             string username = txtUsername.Text.Trim();
             string password = txtPassword.Text.Trim();
+            if (string.IsNullOrEmpty(username))
+            {
+                MessageBox.Show(
+                    "Please enter a username.",
+                    "Register Failed",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
+
+                txtUsername.Focus();
+                return;
+            }
+
+            if (string.IsNullOrEmpty(password))
+            {
+                MessageBox.Show(
+                    "Please enter a password.",
+                    "Register Failed",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
+
+                txtPassword.Focus();
+                return;
+            }
             User? user = userRepo.findByName(username);
             if (user != null)
             {
@@ -74,6 +97,19 @@ namespace Mart_Management_System.Forms
                           MessageBoxIcon.Information
                  );
 
+            }
+            this.DialogResult = DialogResult.OK;
+            this.Close();
+        }
+
+        private void registerLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            using (RegisterForm form = new RegisterForm())
+            {
+                if (form.ShowDialog() == DialogResult.OK)
+                {
+                    //Show Page
+                }
             }
         }
     }
