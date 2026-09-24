@@ -14,10 +14,9 @@ namespace Mart_Management_System
             ApplicationConfiguration.Initialize();
             // ប្រើ Testconnection ដើម្បីសាកល្បង Database
             //Application.Run(new Testconnection());
-            
+            // ប្តូរឱ្យដំណើរការ LoginForm មុនគេនៅពេល Run កម្មវិធី
             Application.Run(new Forms.LoginForm());
-            // ប្រើ Testconnection ដើម្បីសាកល្បង Database
-            Application.Run(new Testconnection());
+            Application.Run(new MainForm());
         }
     }
 }
