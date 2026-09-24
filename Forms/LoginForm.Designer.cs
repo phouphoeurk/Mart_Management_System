@@ -1,4 +1,4 @@
-﻿namespace Mart_Management_System.Forms
+namespace Mart_Management_System.Forms
 {
     partial class LoginForm
     {
@@ -94,7 +94,7 @@
             cbShowPW.TabIndex = 7;
             cbShowPW.Text = "Show Password";
             cbShowPW.UseVisualStyleBackColor = true;
-            cbShowPW.CheckedChanged += checkBox1_CheckedChanged;
+            cbShowPW.CheckedChanged += cbShowPW_CheckedChanged;
             // 
             // txtPassword
             // 

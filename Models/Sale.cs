@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic; // សម្រាប់ប្រកាស List
 
 namespace Mart_Management_System.Models
@@ -11,7 +11,7 @@ namespace Mart_Management_System.Models
         public decimal Subtotal { get; set; }
         public decimal Discount { get; set; }
         public decimal TotalAmount { get; set; }
-        public string PaymentMethod { get; set; }
+        public string PaymentMethod { get; set; } = string.Empty;
         public decimal AmountReceived { get; set; }
         public decimal ChangeAmount { get; set; }
 

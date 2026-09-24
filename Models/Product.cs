@@ -1,12 +1,12 @@
-﻿using System;
+using System;
 
 namespace Mart_Management_System.Models
 {
     public class Product
     {
         public int ProductId { get; set; }
-        public string ProductName { get; set; }
-        public string Barcode { get; set; }
+        public string ProductName { get; set; } = string.Empty;
+        public string Barcode { get; set; } = string.Empty;
         public int CategoryId { get; set; }
         public int? SupplierId { get; set; } // ដាក់សញ្ញា ? ព្រោះអាច null បាន
         public decimal CostPrice { get; set; }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -34,7 +34,7 @@ namespace Mart_Management_System.Forms
             User? user = new User();
             user.username = username;
             user.password = hashedPassword;
-            user.role = UserRole.cashier;
+            user.role = UserRole.Cashier;
             user.isActive = true;
             user.createdAt = DateTime.Now;
             if (string.IsNullOrEmpty(username))
