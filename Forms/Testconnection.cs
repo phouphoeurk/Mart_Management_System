@@ -19,7 +19,7 @@ namespace Mart_Management_System.Forms
             InitializeComponent();
 
             // ភ្ជាប់ Event នេះដើម្បីឱ្យកូដ Testconnection_Load ដំណើរការពេល Form បើក
-            this.Load += Testconnection_Load;
+            //this.Load += Testconnection_Load;
         }
 
         // ថែមសញ្ញា ? នៅត្រង់ object? sender
@@ -33,7 +33,7 @@ namespace Mart_Management_System.Forms
                     conn.Open(); // សាកល្បងបើក Connection ទៅកាន់ SQL Server
 
                     // បើជោគជ័យ វានឹងលោត Message នេះ
-                    MessageBox.Show("ការតភ្ជាប់ Database ទទួលបានជោគជ័យ! (Connection Successful!)",
+                    MessageBox.Show("Database connection success!",
                                     "Database Setup",
                                     MessageBoxButtons.OK,
                                     MessageBoxIcon.Information);
@@ -42,11 +42,16 @@ namespace Mart_Management_System.Forms
             catch (Exception ex)
             {
                 // បើមាន Error (ឧទាហរណ៍ ភ្លេចបើក SQL Server ឬខុស Password) វានឹងលោត Message នេះ
-                MessageBox.Show("ការតភ្ជាប់បរាជ័យ (Connection Failed): \n\n" + ex.Message,
+                MessageBox.Show("Database connection failed\n" + ex.Message,
                                 "Error",
                                 MessageBoxButtons.OK,
                                 MessageBoxIcon.Error);
             }
+        }
+
+        private void Testconnection_Load_1(object sender, EventArgs e)
+        {
+
         }
     }
 }
