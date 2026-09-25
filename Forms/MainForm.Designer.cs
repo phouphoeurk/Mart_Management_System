@@ -21,6 +21,9 @@
             lblAdmin = new Label();
             lblLogo = new Label();
             panelSidebar = new Panel();
+            butLogout = new Button();
+            butSettings = new Button();
+            btnUsers = new Button();
             btnReports = new Button();
             btnSalesHistory = new Button();
             btnSuppliers = new Button();
@@ -29,7 +32,6 @@
             btnProducts = new Button();
             btnDashboard = new Button();
             mainContentPanel = new Panel();
-            btnUsers = new Button();
             panelHeader.SuspendLayout();
             panelSidebar.SuspendLayout();
             SuspendLayout();
@@ -72,6 +74,8 @@
             // panelSidebar
             // 
             panelSidebar.BackColor = Color.FromArgb(255, 255, 255);
+            panelSidebar.Controls.Add(butLogout);
+            panelSidebar.Controls.Add(butSettings);
             panelSidebar.Controls.Add(btnUsers);
             panelSidebar.Controls.Add(btnReports);
             panelSidebar.Controls.Add(btnSalesHistory);
@@ -86,6 +90,50 @@
             panelSidebar.Size = new Size(220, 708);
             panelSidebar.TabIndex = 1;
             // 
+            // butLogout
+            // 
+            butLogout.FlatAppearance.BorderSize = 0;
+            butLogout.FlatStyle = FlatStyle.Flat;
+            butLogout.Font = new Font("Segoe UI", 12F);
+            butLogout.Location = new Point(0, 655);
+            butLogout.Name = "butLogout";
+            butLogout.Size = new Size(220, 50);
+            butLogout.TabIndex = 9;
+            butLogout.Text = " 🚪 Logout";
+            butLogout.TextAlign = ContentAlignment.MiddleLeft;
+            butLogout.UseVisualStyleBackColor = true;
+            butLogout.Click += butLogout_Click;
+            // 
+            // butSettings
+            // 
+            butSettings.Dock = DockStyle.Top;
+            butSettings.FlatAppearance.BorderSize = 0;
+            butSettings.FlatStyle = FlatStyle.Flat;
+            butSettings.Font = new Font("Segoe UI", 12F);
+            butSettings.Location = new Point(0, 400);
+            butSettings.Name = "butSettings";
+            butSettings.Size = new Size(220, 50);
+            butSettings.TabIndex = 8;
+            butSettings.Text = " ⚙️ Settings";
+            butSettings.TextAlign = ContentAlignment.MiddleLeft;
+            butSettings.UseVisualStyleBackColor = true;
+            butSettings.Click += butSettings_Click;
+            // 
+            // btnUsers
+            // 
+            btnUsers.Dock = DockStyle.Top;
+            btnUsers.FlatAppearance.BorderSize = 0;
+            btnUsers.FlatStyle = FlatStyle.Flat;
+            btnUsers.Font = new Font("Segoe UI", 12F);
+            btnUsers.Location = new Point(0, 350);
+            btnUsers.Name = "btnUsers";
+            btnUsers.Size = new Size(220, 50);
+            btnUsers.TabIndex = 7;
+            btnUsers.Text = "  👥 Users";
+            btnUsers.TextAlign = ContentAlignment.MiddleLeft;
+            btnUsers.UseVisualStyleBackColor = true;
+            btnUsers.Click += btnUsers_Click;
+            // 
             // btnReports
             // 
             btnReports.Dock = DockStyle.Top;
@@ -96,7 +144,7 @@
             btnReports.Name = "btnReports";
             btnReports.Size = new Size(220, 50);
             btnReports.TabIndex = 6;
-            btnReports.Text = "📈 Reports";
+            btnReports.Text = " 📈 Reports";
             btnReports.TextAlign = ContentAlignment.MiddleLeft;
             btnReports.UseVisualStyleBackColor = true;
             btnReports.Click += btnReports_Click;
@@ -111,7 +159,7 @@
             btnSalesHistory.Name = "btnSalesHistory";
             btnSalesHistory.Size = new Size(220, 50);
             btnSalesHistory.TabIndex = 5;
-            btnSalesHistory.Text = "📜 Sales History";
+            btnSalesHistory.Text = " 📜 Sales History";
             btnSalesHistory.TextAlign = ContentAlignment.MiddleLeft;
             btnSalesHistory.UseVisualStyleBackColor = true;
             btnSalesHistory.Click += btnSalesHistory_Click;
@@ -126,7 +174,7 @@
             btnSuppliers.Name = "btnSuppliers";
             btnSuppliers.Size = new Size(220, 50);
             btnSuppliers.TabIndex = 4;
-            btnSuppliers.Text = "🏢 Suppliers";
+            btnSuppliers.Text = "  🏢 Suppliers";
             btnSuppliers.TextAlign = ContentAlignment.MiddleLeft;
             btnSuppliers.UseVisualStyleBackColor = true;
             btnSuppliers.Click += btnSuppliers_Click;
@@ -200,21 +248,6 @@
             mainContentPanel.Size = new Size(1146, 708);
             mainContentPanel.TabIndex = 2;
             // 
-            // btnUsers
-            // 
-            btnUsers.Dock = DockStyle.Top;
-            btnUsers.FlatAppearance.BorderSize = 0;
-            btnUsers.FlatStyle = FlatStyle.Flat;
-            btnUsers.Font = new Font("Segoe UI", 12F);
-            btnUsers.Location = new Point(0, 350);
-            btnUsers.Name = "btnUsers";
-            btnUsers.Size = new Size(220, 50);
-            btnUsers.TabIndex = 7;
-            btnUsers.Text = "👥 Users";
-            btnUsers.TextAlign = ContentAlignment.MiddleLeft;
-            btnUsers.UseVisualStyleBackColor = true;
-            btnUsers.Click += btnUsers_Click;
-            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -248,5 +281,7 @@
         private Button btnSalesHistory;
         private Button btnReports;
         private Button btnUsers;
+        private Button butSettings;
+        private Button butLogout;
     }
 }

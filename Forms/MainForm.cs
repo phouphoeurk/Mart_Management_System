@@ -97,5 +97,15 @@ namespace Mart_Management_System.Forms
             // ហៅ UserManagementForm មកបង្ហាញ
             OpenChildForm(new UserManagementForm(), (Button)sender);
         }
+
+        private void butLogout_Click(object sender, EventArgs e)
+        {
+            OpenChildForm(new LoginForm(), (Button)sender);
+        }
+
+        private void butSettings_Click(object sender, EventArgs e)
+        {
+            OpenChildForm(new Settings(), (Button)sender);
+        }
     }
 }
