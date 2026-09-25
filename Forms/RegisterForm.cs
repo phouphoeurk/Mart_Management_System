@@ -18,12 +18,13 @@ namespace Mart_Management_System.Forms
     public partial class RegisterForm : Form
     {
         private UserRepository userRepo;
+
         public RegisterForm()
         {
             InitializeComponent();
             userRepo = new UserRepository();
-
         }
+
         private void btnRegister_Click(object sender, EventArgs e)
         {
             string username = txtUsername.Text.Trim();
@@ -37,8 +38,15 @@ namespace Mart_Management_System.Forms
             user.role = UserRole.Cashier;
             user.isActive = true;
             user.createdAt = DateTime.Now;
+
+            lblUsernameError.Text = string.Empty;
+            lblPasswordError.Text = string.Empty;
+            lblConfirmPasswordError.Text = string.Empty;
+
             if (string.IsNullOrEmpty(username))
             {
+                lblUsernameError.Text = "Please enter a username.";
+
                 MessageBox.Show(
                     "Please enter a username.",
                     "Register Failed",
@@ -52,6 +60,8 @@ namespace Mart_Management_System.Forms
 
             if (string.IsNullOrEmpty(password))
             {
+                lblPasswordError.Text = "Please enter a password.";
+
                 MessageBox.Show(
                     "Please enter a password.",
                     "Register Failed",
@@ -65,6 +75,8 @@ namespace Mart_Management_System.Forms
 
             if (string.IsNullOrEmpty(confirm))
             {
+                lblConfirmPasswordError.Text = "Please confirm your password.";
+
                 MessageBox.Show(
                     "Please confirm your password.",
                     "Register Failed",
@@ -75,14 +87,17 @@ namespace Mart_Management_System.Forms
                 txtConfirmPassword.Focus();
                 return;
             }
+
             if (password != confirm)
             {
+                lblConfirmPasswordError.Text = "Passwords do not match.";
+
                 MessageBox.Show(
                     "Password does not match",
                     "Warning",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning
-                    );
+                );
                 return;
             }
 
@@ -93,9 +108,8 @@ namespace Mart_Management_System.Forms
                     "Registeration",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information
-                    );
+                );
                 //go next page
-
             }
             else
             {
@@ -104,32 +118,60 @@ namespace Mart_Management_System.Forms
                     "Error",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error
-                    );
+                );
             }
+
             this.DialogResult = DialogResult.OK;
             this.Close();
         }
 
-
-
         private void AddEditForm_Load(object sender, EventArgs e)
         {
-
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
+        }
+
+        
+
+        private void lnkGoToLogin_Click(
+            object sender,
+            LinkLabelLinkClickedEventArgs e
+        )
+        {
+            this.Close();
+
+            using (LoginForm loginForm = new LoginForm())
+            {
+                loginForm.ShowDialog();
+            }
+        }
+
+        private void panel1_Paint_1(object sender, PaintEventArgs e)
+        {
 
         }
 
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
         {
-            if (checkBox1.Checked)
-            {
+
+        }
+
+        private void panel1_Paint_2(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void checkBox1_CheckedChanged_1(object sender, EventArgs e)
+        {
+            if (checkBox1.Checked) {
                 txtPassword.UseSystemPasswordChar = false;
+                txtConfirmPassword.UseSystemPasswordChar = false;
             }
             else
             {
+                txtConfirmPassword.UseSystemPasswordChar = true;
                 txtPassword.UseSystemPasswordChar = true;
             }
         }
