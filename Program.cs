@@ -18,8 +18,7 @@ namespace Mart_Management_System
             //Application.Run(new Testconnection());
 
             // ប្តូរឱ្យដំណើរការ LoginForm មុនគេនៅពេល Run កម្មវិធី
-            //Application.Run(new Forms.LoginForm());
-            Application.Run(new Forms.MainForm());
+            Application.Run(new Forms.LoginForm());
         }
     }
 }

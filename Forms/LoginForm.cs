@@ -87,6 +87,7 @@ namespace Mart_Management_System.Forms
                     //        MessageBoxIcon.Information
                     //        );
                     Console.WriteLine("Login success");
+                    this.Hide();
                     MainForm mainForm = new MainForm();
                     mainForm.ShowDialog();
                 }

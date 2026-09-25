@@ -29,7 +29,7 @@ namespace Mart_Management_System.Forms
             string username = txtUsername.Text.Trim();
             string password = txtPassword.Text.Trim();
             string confirm = txtConfirmPassword.Text.Trim();
-            
+
             string hashedPassword = BCrypt.HashPassword(password);
             User? user = new User();
             user.username = username;
@@ -110,11 +110,28 @@ namespace Mart_Management_System.Forms
             this.Close();
         }
 
-        
+
 
         private void AddEditForm_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox1.Checked)
+            {
+                txtPassword.UseSystemPasswordChar = false;
+            }
+            else
+            {
+                txtPassword.UseSystemPasswordChar = true;
+            }
         }
     }
 }

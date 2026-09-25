@@ -38,6 +38,7 @@ namespace Mart_Management_System.Forms
             label3 = new Label();
             btnRegister = new Button();
             panel1 = new Panel();
+            checkBox1 = new CheckBox();
             panel1.SuspendLayout();
             SuspendLayout();
             // 
@@ -57,7 +58,7 @@ namespace Mart_Management_System.Forms
             // 
             label1.AutoSize = true;
             label1.ForeColor = Color.White;
-            label1.Location = new Point(119, 258);
+            label1.Location = new Point(119, 276);
             label1.Name = "label1";
             label1.Size = new Size(459, 62);
             label1.TabIndex = 1;
@@ -72,16 +73,17 @@ namespace Mart_Management_System.Forms
             // 
             // txtPassword
             // 
-            txtPassword.Location = new Point(119, 584);
+            txtPassword.Location = new Point(119, 553);
             txtPassword.Name = "txtPassword";
             txtPassword.Size = new Size(733, 70);
             txtPassword.TabIndex = 4;
+            txtPassword.UseSystemPasswordChar = true;
             // 
             // label2
             // 
             label2.AutoSize = true;
             label2.ForeColor = Color.White;
-            label2.Location = new Point(119, 484);
+            label2.Location = new Point(125, 479);
             label2.Name = "label2";
             label2.Size = new Size(453, 62);
             label2.TabIndex = 3;
@@ -89,16 +91,17 @@ namespace Mart_Management_System.Forms
             // 
             // txtConfirmPassword
             // 
-            txtConfirmPassword.Location = new Point(119, 801);
+            txtConfirmPassword.Location = new Point(119, 720);
             txtConfirmPassword.Name = "txtConfirmPassword";
             txtConfirmPassword.Size = new Size(733, 70);
             txtConfirmPassword.TabIndex = 6;
+            txtConfirmPassword.UseSystemPasswordChar = true;
             // 
             // label3
             // 
             label3.AutoSize = true;
             label3.ForeColor = Color.White;
-            label3.Location = new Point(119, 701);
+            label3.Location = new Point(119, 655);
             label3.Name = "label3";
             label3.Size = new Size(404, 62);
             label3.TabIndex = 5;
@@ -120,6 +123,7 @@ namespace Mart_Management_System.Forms
             // panel1
             // 
             panel1.BackColor = Color.FromArgb(7, 132, 59);
+            panel1.Controls.Add(checkBox1);
             panel1.Controls.Add(txtConfirmPassword);
             panel1.Controls.Add(btnRegister);
             panel1.Controls.Add(lbRegister);
@@ -132,6 +136,19 @@ namespace Mart_Management_System.Forms
             panel1.Name = "panel1";
             panel1.Size = new Size(958, 1170);
             panel1.TabIndex = 8;
+            panel1.Paint += panel1_Paint;
+            // 
+            // checkBox1
+            // 
+            checkBox1.AutoSize = true;
+            checkBox1.ForeColor = Color.White;
+            checkBox1.Location = new Point(466, 813);
+            checkBox1.Name = "checkBox1";
+            checkBox1.Size = new Size(386, 66);
+            checkBox1.TabIndex = 8;
+            checkBox1.Text = "Show Password";
+            checkBox1.UseVisualStyleBackColor = true;
+            checkBox1.CheckedChanged += checkBox1_CheckedChanged;
             // 
             // RegisterForm
             // 
@@ -162,5 +179,6 @@ namespace Mart_Management_System.Forms
         private Label label3;
         private Button btnRegister;
         private Panel panel1;
+        private CheckBox checkBox1;
     }
 }
