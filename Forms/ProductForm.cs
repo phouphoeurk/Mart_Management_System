@@ -16,5 +16,10 @@ namespace Mart_Management_System.Forms
         {
             InitializeComponent();
         }
+
+        private void searchPanel_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 }
