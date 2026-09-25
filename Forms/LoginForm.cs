@@ -80,14 +80,15 @@ namespace Mart_Management_System.Forms
                 bool isAutenticated = BCrypt.Verify(password, user.password);
                 if (isAutenticated)
                 {
-                    //DashbaordForm dashboard = new DashbaordForm();
-                    MessageBox.Show(
-                            "Login success",
-                            "success",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Information
-                            );
-                    //dashboard.ShowDialog();
+                    //MessageBox.Show(
+                    //        "Login success",
+                    //        "success",
+                    //        MessageBoxButtons.OK,
+                    //        MessageBoxIcon.Information
+                    //        );
+                    Console.WriteLine("Login success");
+                    MainForm mainForm = new MainForm();
+                    mainForm.ShowDialog();
                 }
                 else
                 {
@@ -120,7 +121,9 @@ namespace Mart_Management_System.Forms
             {
                 if (form.ShowDialog() == DialogResult.OK)
                 {
-                    //Show Page
+                    MainForm mainForm = new MainForm();
+                    mainForm.ShowDialog();
+
                 }
             }
         }
