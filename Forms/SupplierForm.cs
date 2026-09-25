@@ -16,5 +16,10 @@ namespace Mart_Management_System.Forms
         {
             InitializeComponent();
         }
+
+        private void dgvSuppliers_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
     }
 }

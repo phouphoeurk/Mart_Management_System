@@ -28,18 +28,28 @@ namespace Mart_Management_System.Forms
         /// </summary>
         private void InitializeComponent()
         {
+            pictureBox1 = new PictureBox();
             btnLogin = new Button();
             label1 = new Label();
-            txtUsername = new TextBox();
             label2 = new Label();
+            txtUsername = new TextBox();
             cbShowPW = new CheckBox();
-            txtPassword = new TextBox();
-            label3 = new Label();
-            pictureBox1 = new PictureBox();
-            registerLink = new LinkLabel();
             label4 = new Label();
+            registerLink = new LinkLabel();
+            label3 = new Label();
+            txtPassword = new TextBox();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
+            // 
+            // pictureBox1
+            // 
+            pictureBox1.Image = Properties.Resources._937e9d6e_3296_4b5c_bdd5_be5d8b4dada0;
+            pictureBox1.Location = new Point(1, -2);
+            pictureBox1.Name = "pictureBox1";
+            pictureBox1.Size = new Size(985, 1265);
+            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
+            pictureBox1.TabIndex = 13;
+            pictureBox1.TabStop = false;
             // 
             // btnLogin
             // 
@@ -66,23 +76,27 @@ namespace Mart_Management_System.Forms
             label1.TabIndex = 2;
             label1.Text = "Welcome Back";
             // 
-            // txtUsername
-            // 
-            txtUsername.Location = new Point(1078, 365);
-            txtUsername.Name = "txtUsername";
-            txtUsername.Size = new Size(727, 70);
-            txtUsername.TabIndex = 4;
-            // 
             // label2
             // 
             label2.AutoSize = true;
-            label2.Font = new Font("Segoe UI", 16F);
+            label2.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
             label2.ForeColor = Color.FromArgb(64, 64, 64);
-            label2.Location = new Point(1078, 287);
+            label2.Location = new Point(1063, 279);
             label2.Name = "label2";
-            label2.Size = new Size(270, 72);
+            label2.Size = new Size(283, 72);
             label2.TabIndex = 3;
             label2.Text = "Username";
+            // 
+            // txtUsername
+            // 
+            txtUsername.BackColor = Color.Silver;
+            txtUsername.Font = new Font("Segoe UI", 12F);
+            txtUsername.ForeColor = Color.Black;
+            txtUsername.Location = new Point(1078, 365);
+            txtUsername.Name = "txtUsername";
+            txtUsername.PlaceholderText = " Enter your username";
+            txtUsername.Size = new Size(727, 61);
+            txtUsername.TabIndex = 4;
             // 
             // cbShowPW
             // 
@@ -96,33 +110,15 @@ namespace Mart_Management_System.Forms
             cbShowPW.UseVisualStyleBackColor = true;
             cbShowPW.CheckedChanged += cbShowPW_CheckedChanged;
             // 
-            // txtPassword
+            // label4
             // 
-            txtPassword.Location = new Point(1078, 600);
-            txtPassword.Name = "txtPassword";
-            txtPassword.Size = new Size(727, 70);
-            txtPassword.TabIndex = 12;
-            // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.Font = new Font("Segoe UI", 16F);
-            label3.ForeColor = Color.FromArgb(64, 64, 64);
-            label3.Location = new Point(1078, 522);
-            label3.Name = "label3";
-            label3.Size = new Size(253, 72);
-            label3.TabIndex = 11;
-            label3.Text = "Password";
-            // 
-            // pictureBox1
-            // 
-            pictureBox1.Image = Properties.Resources._937e9d6e_3296_4b5c_bdd5_be5d8b4dada0;
-            pictureBox1.Location = new Point(1, -2);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(985, 1265);
-            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
-            pictureBox1.TabIndex = 13;
-            pictureBox1.TabStop = false;
+            label4.AutoSize = true;
+            label4.ForeColor = Color.FromArgb(64, 64, 64);
+            label4.Location = new Point(1182, 1079);
+            label4.Name = "label4";
+            label4.Size = new Size(541, 62);
+            label4.TabIndex = 8;
+            label4.Text = "Don't have any account?";
             // 
             // registerLink
             // 
@@ -137,15 +133,28 @@ namespace Mart_Management_System.Forms
             registerLink.Text = "Register here";
             registerLink.LinkClicked += registerLink_LinkClicked;
             // 
-            // label4
+            // label3
             // 
-            label4.AutoSize = true;
-            label4.ForeColor = Color.FromArgb(64, 64, 64);
-            label4.Location = new Point(1182, 1079);
-            label4.Name = "label4";
-            label4.Size = new Size(541, 62);
-            label4.TabIndex = 8;
-            label4.Text = "Don't have any account?";
+            label3.AutoSize = true;
+            label3.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
+            label3.ForeColor = Color.FromArgb(64, 64, 64);
+            label3.Location = new Point(1063, 514);
+            label3.Name = "label3";
+            label3.Size = new Size(269, 72);
+            label3.TabIndex = 11;
+            label3.Text = "Password";
+            // 
+            // txtPassword
+            // 
+            txtPassword.BackColor = Color.Silver;
+            txtPassword.Font = new Font("Segoe UI", 12F);
+            txtPassword.ForeColor = Color.Black;
+            txtPassword.Location = new Point(1078, 600);
+            txtPassword.Name = "txtPassword";
+            txtPassword.PlaceholderText = " Enter your password";
+            txtPassword.Size = new Size(727, 61);
+            txtPassword.TabIndex = 12;
+            txtPassword.UseSystemPasswordChar = true;
             // 
             // LoginForm
             // 
@@ -173,16 +182,15 @@ namespace Mart_Management_System.Forms
         }
 
         #endregion
-
+        private PictureBox pictureBox1;
         private Button btnLogin;
         private Label label1;
-        private TextBox txtUsername;
         private Label label2;
+        private TextBox txtUsername;
         private CheckBox cbShowPW;
-        private TextBox txtPassword;
-        private Label label3;
-        private PictureBox pictureBox1;
-        private LinkLabel registerLink;
         private Label label4;
+        private LinkLabel registerLink;
+        private Label label3;
+        private TextBox txtPassword;
     }
 }
