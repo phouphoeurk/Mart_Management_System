@@ -1,4 +1,4 @@
-﻿using Mart_Management_System.Models;
+using Mart_Management_System.Models;
 using Mart_Management_System.Repositories;
 using System;
 using System.Collections.Generic;
@@ -20,12 +20,21 @@ namespace Mart_Management_System.Forms
         public LoginForm()
         {
             InitializeComponent();
+            // លាក់លេខសម្ងាត់ជាមុន (Hide password by default)
+            txtPassword.UseSystemPasswordChar = true;
             userRepo = new UserRepository();
         }
 
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        private void cbShowPW_CheckedChanged(object sender, EventArgs e)
         {
-
+            if (cbShowPW.Checked)
+            {
+                txtPassword.UseSystemPasswordChar = false; 
+            }
+            else
+            {
+                txtPassword.UseSystemPasswordChar = true;  
+            }
         }
 
         private void LoginForm_Load(object sender, EventArgs e)

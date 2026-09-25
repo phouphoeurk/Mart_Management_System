@@ -1,4 +1,4 @@
-using MartManagementSystem.Data;
+using Mart_Management_System.Data;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;

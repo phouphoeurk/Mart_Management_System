@@ -1,7 +1,7 @@
-﻿using DotNetEnv;
+using DotNetEnv;
 using Mart_Management_System.Enums;
 using Mart_Management_System.Models;
-using MartManagementSystem.Data;
+using Mart_Management_System.Data;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
@@ -31,7 +31,7 @@ namespace Mart_Management_System.Repositories
                     MessageBoxIcon.Information
                     );
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
                 MessageBox.Show(
@@ -176,7 +176,7 @@ namespace Mart_Management_System.Repositories
                 return user;
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 MessageBox.Show($"Loading user id: {id} failed");
             }
@@ -202,7 +202,7 @@ namespace Mart_Management_System.Repositories
                 rows = cmd.ExecuteNonQuery();
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }

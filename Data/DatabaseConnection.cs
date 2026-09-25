@@ -2,7 +2,7 @@
 using Microsoft.Data.SqlClient;
 using DotNetEnv;
 
-namespace MartManagementSystem.Data
+namespace Mart_Management_System.Data
 {
     public class DatabaseConnection
     {
