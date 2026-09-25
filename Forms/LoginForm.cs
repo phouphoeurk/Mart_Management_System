@@ -13,6 +13,8 @@ using System.Windows.Forms;
 namespace Mart_Management_System.Forms
 {
     using BCrypt.Net;
+    using System.Runtime.InteropServices;
+    using System.Runtime.InteropServices;
 
     public partial class LoginForm : Form
     {
@@ -20,7 +22,8 @@ namespace Mart_Management_System.Forms
         public LoginForm()
         {
             InitializeComponent();
-            // លាក់លេខសម្ងាត់ជាមុន (Hide password by default)
+            SetTextBoxPadding(txtUsername, 10, 10);
+            SetTextBoxPadding(txtPassword, 10, 10);
             txtPassword.UseSystemPasswordChar = true;
             userRepo = new UserRepository();
         }
@@ -121,5 +124,28 @@ namespace Mart_Management_System.Forms
                 }
             }
         }
+
+        [DllImport("user32.dll")]
+        private static extern int SendMessage(
+                IntPtr hWnd,
+                int Msg,
+                int wParam,
+                int lParam
+            );
+
+        private const int EM_SETMARGINS = 0xD3;
+        private const int EC_LEFTMARGIN = 0x0001;
+        private const int EC_RIGHTMARGIN = 0x0002;
+
+        private void SetTextBoxPadding(TextBox textBox, int left, int right)
+        {
+            SendMessage(
+                textBox.Handle,
+                EM_SETMARGINS,
+                EC_LEFTMARGIN | EC_RIGHTMARGIN,
+                (right << 16) | left
+            );
+        }
+        
     }
 }
