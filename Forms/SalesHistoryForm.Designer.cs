@@ -29,6 +29,8 @@
             this.txtSearch = new System.Windows.Forms.TextBox();
             this.cbCashier = new System.Windows.Forms.ComboBox();
             this.cbPaymentMethod = new System.Windows.Forms.ComboBox();
+            this.lblStatus = new System.Windows.Forms.Label();
+            this.cbStatus = new System.Windows.Forms.ComboBox();
             this.btnSearch = new System.Windows.Forms.Button();
             this.dgvSalesHistory = new System.Windows.Forms.DataGridView();
             this.colSaleID = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -72,6 +74,8 @@
             this.filterPanel.Controls.Add(this.txtSearch);
             this.filterPanel.Controls.Add(this.cbCashier);
             this.filterPanel.Controls.Add(this.cbPaymentMethod);
+            this.filterPanel.Controls.Add(this.lblStatus);
+            this.filterPanel.Controls.Add(this.cbStatus);
             this.filterPanel.Controls.Add(this.btnSearch);
             this.filterPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.filterPanel.Location = new System.Drawing.Point(20, 70);
@@ -116,15 +120,33 @@
             this.cbPaymentMethod.Size = new System.Drawing.Size(150, 25);
             this.cbPaymentMethod.Text = "All Payments";
 
+            this.lblStatus.AutoSize = true;
+            this.lblStatus.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.lblStatus.Location = new System.Drawing.Point(795, 15);
+            this.lblStatus.Name = "lblStatus";
+            this.lblStatus.Size = new System.Drawing.Size(45, 20);
+            this.lblStatus.TabIndex = 6;
+            this.lblStatus.Text = "Status:";
+
+            this.cbStatus.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbStatus.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.cbStatus.Items.AddRange(new object[] { "All Statuses", "Completed", "Cancelled", "Refunded" });
+            this.cbStatus.Location = new System.Drawing.Point(840, 12);
+            this.cbStatus.Name = "cbStatus";
+            this.cbStatus.Size = new System.Drawing.Size(105, 25);
+            this.cbStatus.TabIndex = 7;
+            this.cbStatus.Text = "All Statuses";
+
             this.btnSearch.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(174)))), ((int)(((byte)(99)))));
             this.btnSearch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSearch.FlatAppearance.BorderSize = 0;
             this.btnSearch.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.btnSearch.ForeColor = System.Drawing.Color.White;
-            this.btnSearch.Location = new System.Drawing.Point(800, 10);
+            this.btnSearch.Location = new System.Drawing.Point(950, 10);
             this.btnSearch.Size = new System.Drawing.Size(100, 30);
             this.btnSearch.Text = "Filter";
             this.btnSearch.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnSearch.Click += btnSearch_Click;
 
             // 
             // dgvSalesHistory
@@ -168,6 +190,7 @@
             this.dgvSalesHistory.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvSalesHistory.Size = new System.Drawing.Size(1060, 550);
             this.dgvSalesHistory.TabIndex = 2;
+            this.dgvSalesHistory.CellContentClick += dgvSalesHistory_CellContentClick;
             // 
             // Columns
             // 
@@ -220,6 +243,7 @@
             this.Name = "SalesHistoryForm";
             this.Padding = new System.Windows.Forms.Padding(20);
             this.Text = "SalesHistoryForm";
+            this.Load += SalesHistoryForm_Load;
             this.topPanel.ResumeLayout(false);
             this.topPanel.PerformLayout();
             this.filterPanel.ResumeLayout(false);
@@ -241,6 +265,8 @@
         private System.Windows.Forms.TextBox txtSearch;
         private System.Windows.Forms.ComboBox cbCashier;
         private System.Windows.Forms.ComboBox cbPaymentMethod;
+        private System.Windows.Forms.Label lblStatus;
+        private System.Windows.Forms.ComboBox cbStatus;
         private System.Windows.Forms.Button btnSearch;
         private System.Windows.Forms.DataGridView dgvSalesHistory;
         private System.Windows.Forms.DataGridViewTextBoxColumn colSaleID;
