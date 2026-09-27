@@ -118,7 +118,7 @@ namespace Mart_Management_System.Forms
             btnRegister.TabIndex = 7;
             btnRegister.Text = "Register Now";
             btnRegister.UseVisualStyleBackColor = false;
-            btnRegister.Click += btnRegister_Click;
+
             // 
             // panel1
             // 
@@ -136,7 +136,7 @@ namespace Mart_Management_System.Forms
             panel1.Name = "panel1";
             panel1.Size = new Size(958, 1170);
             panel1.TabIndex = 8;
-            panel1.Paint += panel1_Paint;
+
             // 
             // checkBox1
             // 
@@ -148,7 +148,7 @@ namespace Mart_Management_System.Forms
             checkBox1.TabIndex = 8;
             checkBox1.Text = "Show Password";
             checkBox1.UseVisualStyleBackColor = true;
-            checkBox1.CheckedChanged += checkBox1_CheckedChanged;
+
             // 
             // RegisterForm
             // 
@@ -160,7 +160,7 @@ namespace Mart_Management_System.Forms
             Margin = new Padding(5);
             Name = "RegisterForm";
             Text = "AddEditForm";
-            Load += AddEditForm_Load;
+
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
             ResumeLayout(false);

@@ -27,6 +27,8 @@
             btnReports = new Button();
             btnSalesHistory = new Button();
             btnSuppliers = new Button();
+            btnStockAlerts = new Button();
+            btnPurchases = new Button();
             btnSales = new Button();
             btnCategories = new Button();
             btnProducts = new Button();
@@ -80,6 +82,8 @@
             panelSidebar.Controls.Add(btnReports);
             panelSidebar.Controls.Add(btnSalesHistory);
             panelSidebar.Controls.Add(btnSuppliers);
+            panelSidebar.Controls.Add(btnStockAlerts);
+            panelSidebar.Controls.Add(btnPurchases);
             panelSidebar.Controls.Add(btnSales);
             panelSidebar.Controls.Add(btnCategories);
             panelSidebar.Controls.Add(btnProducts);
@@ -148,7 +152,7 @@
             btnReports.TextAlign = ContentAlignment.MiddleLeft;
             btnReports.UseVisualStyleBackColor = true;
             btnReports.Click += btnReports_Click;
-            // 
+            //
             // btnSalesHistory
             // 
             btnSalesHistory.Dock = DockStyle.Top;
@@ -178,7 +182,37 @@
             btnSuppliers.TextAlign = ContentAlignment.MiddleLeft;
             btnSuppliers.UseVisualStyleBackColor = true;
             btnSuppliers.Click += btnSuppliers_Click;
-            // 
+            //
+            // btnStockAlerts
+            //
+            btnStockAlerts.Dock = DockStyle.Top;
+            btnStockAlerts.FlatAppearance.BorderSize = 0;
+            btnStockAlerts.FlatStyle = FlatStyle.Flat;
+            btnStockAlerts.Font = new Font("Segoe UI", 12F);
+            btnStockAlerts.Location = new Point(0, 200);
+            btnStockAlerts.Name = "btnStockAlerts";
+            btnStockAlerts.Size = new Size(220, 50);
+            btnStockAlerts.TabIndex = 5;
+            btnStockAlerts.Text = "  ⚠️ Stock Alerts";
+            btnStockAlerts.TextAlign = ContentAlignment.MiddleLeft;
+            btnStockAlerts.UseVisualStyleBackColor = true;
+            btnStockAlerts.Click += btnStockAlerts_Click;
+            //
+            // btnPurchases
+            //
+            btnPurchases.Dock = DockStyle.Top;
+            btnPurchases.FlatAppearance.BorderSize = 0;
+            btnPurchases.FlatStyle = FlatStyle.Flat;
+            btnPurchases.Font = new Font("Segoe UI", 12F);
+            btnPurchases.Location = new Point(0, 200);
+            btnPurchases.Name = "btnPurchases";
+            btnPurchases.Size = new Size(220, 50);
+            btnPurchases.TabIndex = 4;
+            btnPurchases.Text = "  🧾 Purchases";
+            btnPurchases.TextAlign = ContentAlignment.MiddleLeft;
+            btnPurchases.UseVisualStyleBackColor = true;
+            btnPurchases.Click += btnPurchases_Click;
+            //
             // btnSales
             // 
             btnSales.Dock = DockStyle.Top;
@@ -257,6 +291,7 @@
             Controls.Add(panelSidebar);
             Controls.Add(panelHeader);
             Name = "MainForm";
+            MinimumSize = new Size(1100, 700);
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Mart Management System";
             panelHeader.ResumeLayout(false);
@@ -278,6 +313,8 @@
         private System.Windows.Forms.Button btnProducts;
         private System.Windows.Forms.Panel mainContentPanel;
         private Button btnSuppliers;
+        private Button btnStockAlerts;
+        private Button btnPurchases;
         private Button btnSalesHistory;
         private Button btnReports;
         private Button btnUsers;

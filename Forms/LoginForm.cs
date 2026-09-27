@@ -1,141 +1,121 @@
+using System.Runtime.InteropServices;
+using BCrypt.Net;
 using Mart_Management_System.Models;
-using Mart_Management_System.Repositories;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+using Mart_Management_System.Services;
 
 namespace Mart_Management_System.Forms
 {
-    using BCrypt.Net;
-    using System.Runtime.InteropServices;
-    using System.Runtime.InteropServices;
-
     public partial class LoginForm : Form
     {
-        private UserRepository userRepo;
+        private readonly AuthenticationService _authenticationService;
+
         public LoginForm()
         {
             InitializeComponent();
+            Mart_Management_System.UI.UiTheme.Apply(this);
+
             SetTextBoxPadding(txtUsername, 10, 10);
             SetTextBoxPadding(txtPassword, 10, 10);
             txtPassword.UseSystemPasswordChar = true;
-            userRepo = new UserRepository();
+
+            // User accounts are created by an administrator.
+            registerLink.Visible = false;
+            label4.Visible = false;
+
+            _authenticationService = new AuthenticationService(
+                new Mart_Management_System.Repositories.UserRepository()
+            );
         }
 
         private void cbShowPW_CheckedChanged(object sender, EventArgs e)
         {
-            if (cbShowPW.Checked)
-            {
-                txtPassword.UseSystemPasswordChar = false; 
-            }
-            else
-            {
-                txtPassword.UseSystemPasswordChar = true;  
-            }
+            txtPassword.UseSystemPasswordChar = !cbShowPW.Checked;
         }
 
         private void LoginForm_Load(object sender, EventArgs e)
         {
-
+            txtUsername.Focus();
         }
 
         private void btnLogin_Click(object sender, EventArgs e)
         {
             string username = txtUsername.Text.Trim();
-            string password = txtPassword.Text.Trim();
-            if (string.IsNullOrEmpty(username))
-            {
-                MessageBox.Show(
-                    "Please enter a username.",
-                    "Register Failed",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning
-                );
+            string password = txtPassword.Text;
 
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                ShowValidationMessage("Please enter your username.");
                 txtUsername.Focus();
                 return;
             }
 
-            if (string.IsNullOrEmpty(password))
+            if (string.IsNullOrWhiteSpace(password))
             {
-                MessageBox.Show(
-                    "Please enter a password.",
-                    "Register Failed",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning
-                );
-
+                ShowValidationMessage("Please enter your password.");
                 txtPassword.Focus();
                 return;
             }
-            User? user = userRepo.findByName(username);
-            if (user != null)
+
+            try
             {
-                bool isAutenticated = BCrypt.Verify(password, user.password);
-                if (isAutenticated)
+                User? user = _authenticationService.Authenticate(
+                    username,
+                    password,
+                    out string errorMessage
+                );
+
+                if (user is null)
                 {
-                    //MessageBox.Show(
-                    //        "Login success",
-                    //        "success",
-                    //        MessageBoxButtons.OK,
-                    //        MessageBoxIcon.Information
-                    //        );
-                    Console.WriteLine("Login success");
-                    this.Hide();
-                    MainForm mainForm = new MainForm();
-                    mainForm.ShowDialog();
-                }
-                else
-                {
-                    MessageBox.Show(
-                        "Invalid username or password",
-                        "Login Failed",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error
+                    bool isInactive =
+                        errorMessage.StartsWith(
+                            "This account is inactive",
+                            StringComparison.Ordinal
                         );
+
+                    MessageBox.Show(
+                        errorMessage,
+                        isInactive ? "Account Disabled" : "Login Failed",
+                        MessageBoxButtons.OK,
+                        isInactive ? MessageBoxIcon.Warning : MessageBoxIcon.Error
+                    );
+                    txtPassword.Clear();
+                    txtPassword.Focus();
+                    return;
                 }
 
+                Hide();
+                using MainForm mainForm = new(user);
+                mainForm.ShowDialog(this);
+                Close();
             }
-            else
+            catch (Exception)
             {
                 MessageBox.Show(
-                          "You do not have any account.\nPlease sign up first",
-                          "Error",
-                          MessageBoxButtons.OK,
-                          MessageBoxIcon.Information
-                 );
-
+                    "Unable to sign in right now. Please try again or contact an administrator.",
+                    "Sign-In Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
             }
-            this.DialogResult = DialogResult.OK;
-            this.Close();
         }
 
-        private void registerLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private void ShowValidationMessage(string message)
         {
-            using (RegisterForm form = new RegisterForm())
-            {
-                if (form.ShowDialog() == DialogResult.OK)
-                {
-                    MainForm mainForm = new MainForm();
-                    mainForm.ShowDialog();
-
-                }
-            }
+            MessageBox.Show(
+                message,
+                "Login Validation",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning
+            );
         }
 
         [DllImport("user32.dll")]
         private static extern int SendMessage(
-                IntPtr hWnd,
-                int Msg,
-                int wParam,
-                int lParam
-            );
+            IntPtr hWnd,
+            int message,
+            int wParam,
+            int lParam
+        );
 
         private const int EM_SETMARGINS = 0xD3;
         private const int EC_LEFTMARGIN = 0x0001;
@@ -150,6 +130,5 @@ namespace Mart_Management_System.Forms
                 (right << 16) | left
             );
         }
-        
     }
 }
