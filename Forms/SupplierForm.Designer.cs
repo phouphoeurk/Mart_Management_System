@@ -65,6 +65,7 @@
             btnAddSupplier.TabIndex = 1;
             btnAddSupplier.Text = "+ Add Supplier";
             btnAddSupplier.UseVisualStyleBackColor = false;
+            btnAddSupplier.Click += btnAddSupplier_Click;
             // 
             // lblTitle
             // 
@@ -97,6 +98,7 @@
             txtSearch.PlaceholderText = "  Search suppliers by name or phone...";
             txtSearch.Size = new Size(771, 61);
             txtSearch.TabIndex = 0;
+            txtSearch.TextChanged += txtSearch_TextChanged;
             // 
             // dgvSuppliers
             // 
@@ -198,11 +200,11 @@
             // colDelete
             // 
             colDelete.FillWeight = 60F;
-            colDelete.HeaderText = "";
+            colDelete.HeaderText = "Action";
             colDelete.MinimumWidth = 12;
             colDelete.Name = "colDelete";
             colDelete.ReadOnly = true;
-            colDelete.Text = "Delete";
+            colDelete.Text = "Deactivate";
             colDelete.UseColumnTextForButtonValue = true;
             // 
             // SupplierForm
@@ -218,6 +220,7 @@
             Name = "SupplierForm";
             Padding = new Padding(49, 55, 49, 55);
             Text = "SupplierForm";
+            Load += SupplierForm_Load;
             topPanel.ResumeLayout(false);
             topPanel.PerformLayout();
             searchPanel.ResumeLayout(false);

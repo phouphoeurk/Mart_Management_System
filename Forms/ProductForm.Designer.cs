@@ -65,6 +65,7 @@
             this.btnAddProduct.TabIndex = 1;
             this.btnAddProduct.Text = "+ Add Product";
             this.btnAddProduct.UseVisualStyleBackColor = false;
+            this.btnAddProduct.Click += btnAddProduct_Click;
             // 
             // lblTitle
             // 
@@ -101,6 +102,7 @@
             this.cbCategoryFilter.Size = new System.Drawing.Size(200, 28);
             this.cbCategoryFilter.TabIndex = 1;
             this.cbCategoryFilter.Text = "Filter by Category...";
+            this.cbCategoryFilter.SelectedIndexChanged += cbCategoryFilter_SelectedIndexChanged;
             // 
             // txtSearch
             // 
@@ -110,6 +112,7 @@
             this.txtSearch.PlaceholderText = "  Search products by name or barcode...";
             this.txtSearch.Size = new System.Drawing.Size(260, 29);
             this.txtSearch.TabIndex = 0;
+            this.txtSearch.TextChanged += txtSearch_TextChanged;
             // 
             // dgvProducts
             // 
@@ -154,6 +157,7 @@
             this.dgvProducts.RowHeadersVisible = false;
             this.dgvProducts.RowTemplate.Height = 35;
             this.dgvProducts.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvProducts.CellContentClick += dgvProducts_CellContentClick;
             this.dgvProducts.Size = new System.Drawing.Size(1060, 560);
             this.dgvProducts.TabIndex = 2;
             // 
@@ -213,10 +217,10 @@
             // colDelete
             // 
             this.colDelete.FillWeight = 60F;
-            this.colDelete.HeaderText = "";
+            this.colDelete.HeaderText = "Action";
             this.colDelete.Name = "colDelete";
             this.colDelete.ReadOnly = true;
-            this.colDelete.Text = "Delete";
+            this.colDelete.Text = "Deactivate";
             this.colDelete.UseColumnTextForButtonValue = true;
             // 
             // ProductForm
@@ -231,6 +235,7 @@
             this.Name = "ProductForm";
             this.Padding = new System.Windows.Forms.Padding(20);
             this.Text = "ProductForm";
+            this.Load += ProductForm_Load;
             this.topPanel.ResumeLayout(false);
             this.topPanel.PerformLayout();
             this.searchPanel.ResumeLayout(false);

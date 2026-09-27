@@ -63,6 +63,7 @@
             this.btnAddUser.TabIndex = 1;
             this.btnAddUser.Text = "+ Add User";
             this.btnAddUser.UseVisualStyleBackColor = false;
+            this.btnAddUser.Click += btnAddUser_Click;
             // 
             // lblTitle
             // 
@@ -98,6 +99,7 @@
             this.cbRoleFilter.Name = "cbRoleFilter";
             this.cbRoleFilter.Size = new System.Drawing.Size(150, 28);
             this.cbRoleFilter.TabIndex = 1;
+            this.cbRoleFilter.SelectedIndexChanged += cbRoleFilter_SelectedIndexChanged;
             // 
             // txtSearch
             // 
@@ -107,6 +109,7 @@
             this.txtSearch.PlaceholderText = "  Search by Name or Username...";
             this.txtSearch.Size = new System.Drawing.Size(300, 29);
             this.txtSearch.TabIndex = 0;
+            this.txtSearch.TextChanged += txtSearch_TextChanged;
             // 
             // dgvUsers
             // 
@@ -147,6 +150,7 @@
             this.dgvUsers.RowHeadersVisible = false;
             this.dgvUsers.RowTemplate.Height = 35;
             this.dgvUsers.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvUsers.CellContentClick += dgvUsers_CellContentClick;
             this.dgvUsers.Size = new System.Drawing.Size(1060, 560);
             this.dgvUsers.TabIndex = 2;
             // 
@@ -215,6 +219,7 @@
             this.Name = "UserManagementForm";
             this.Padding = new System.Windows.Forms.Padding(20);
             this.Text = "UserManagementForm";
+            this.Load += UserManagementForm_Load;
             this.topPanel.ResumeLayout(false);
             this.topPanel.PerformLayout();
             this.searchPanel.ResumeLayout(false);
