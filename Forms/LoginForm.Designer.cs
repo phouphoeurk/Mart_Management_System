@@ -101,12 +101,14 @@ namespace Mart_Management_System.Forms
             loginContent.Controls.Add(txtPassword, 0, 5);
             loginContent.Controls.Add(cbShowPW, 0, 6);
             loginContent.Controls.Add(btnLogin, 0, 7);
+            loginContent.Controls.Add(label4, 0, 8);
+            loginContent.Controls.Add(registerLink, 0, 9);
             loginContent.Dock = DockStyle.Fill;
             loginContent.Location = new Point(0, 0);
             loginContent.Margin = new Padding(0);
             loginContent.Name = "loginContent";
             loginContent.Padding = new Padding(42, 24, 42, 24);
-            loginContent.RowCount = 9;
+            loginContent.RowCount = 11;
             loginContent.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             loginContent.RowStyles.Add(new RowStyle(SizeType.Absolute, 60F));
             loginContent.RowStyles.Add(new RowStyle(SizeType.Absolute, 32F));
@@ -115,6 +117,8 @@ namespace Mart_Management_System.Forms
             loginContent.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
             loginContent.RowStyles.Add(new RowStyle(SizeType.Absolute, 34F));
             loginContent.RowStyles.Add(new RowStyle(SizeType.Absolute, 56F));
+            loginContent.RowStyles.Add(new RowStyle(SizeType.Absolute, 22F));
+            loginContent.RowStyles.Add(new RowStyle(SizeType.Absolute, 28F));
             loginContent.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             loginContent.Size = new Size(576, 760);
             loginContent.TabIndex = 0;
@@ -193,25 +197,28 @@ namespace Mart_Management_System.Forms
             btnLogin.UseVisualStyleBackColor = false;
             btnLogin.Click += btnLogin_Click;
 
-            // Kept hidden intentionally: public self-registration was removed
-            // in Phase 2. Administrators create users from User Management.
-            label4.AutoSize = true;
+            label4.AutoSize = false;
+            label4.Dock = DockStyle.Fill;
+            label4.Font = new Font("Segoe UI", 9.5F);
             label4.ForeColor = Color.FromArgb(64, 64, 64);
             label4.Name = "label4";
-            label4.Size = new Size(300, 25);
+            label4.Size = new Size(492, 22);
             label4.TabIndex = 7;
-            label4.Text = "Account creation is administrator-only.";
-            label4.Visible = false;
+            label4.Text = "New accounts need admin approval before signing in.";
+            label4.TextAlign = ContentAlignment.MiddleCenter;
 
-            registerLink.AutoSize = true;
-            registerLink.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            registerLink.AutoSize = false;
+            registerLink.Dock = DockStyle.Fill;
+            registerLink.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            registerLink.ForeColor = Color.FromArgb(7, 132, 59);
             registerLink.LinkColor = Color.FromArgb(7, 132, 59);
             registerLink.Name = "registerLink";
-            registerLink.Size = new Size(150, 25);
+            registerLink.Size = new Size(492, 28);
             registerLink.TabIndex = 8;
-            registerLink.TabStop = false;
+            registerLink.TabStop = true;
             registerLink.Text = "Register here";
-            registerLink.Visible = false;
+            registerLink.TextAlign = ContentAlignment.MiddleCenter;
+            registerLink.LinkClicked += registerLink_LinkClicked;
 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;

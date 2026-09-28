@@ -18,10 +18,6 @@ namespace Mart_Management_System.Forms
             SetTextBoxPadding(txtPassword, 10, 10);
             txtPassword.UseSystemPasswordChar = true;
 
-            // User accounts are created by an administrator.
-            registerLink.Visible = false;
-            label4.Visible = false;
-
             _authenticationService = new AuthenticationService(
                 new Mart_Management_System.Repositories.UserRepository()
             );
@@ -61,22 +57,25 @@ namespace Mart_Management_System.Forms
                 User? user = _authenticationService.Authenticate(
                     username,
                     password,
-                    out string errorMessage
+                    out string errorMessage,
+                    out Mart_Management_System.Enums.AuthenticationFailure failure
                 );
 
                 if (user is null)
                 {
-                    bool isInactive =
-                        errorMessage.StartsWith(
-                            "This account is inactive",
-                            StringComparison.Ordinal
-                        );
+                    bool isPendingApproval =
+                        failure
+                        == Mart_Management_System.Enums.AuthenticationFailure.PendingApproval;
 
                     MessageBox.Show(
                         errorMessage,
-                        isInactive ? "Account Disabled" : "Login Failed",
+                        isPendingApproval
+                            ? "Awaiting Admin Approval"
+                            : "Login Failed",
                         MessageBoxButtons.OK,
-                        isInactive ? MessageBoxIcon.Warning : MessageBoxIcon.Error
+                        isPendingApproval
+                            ? MessageBoxIcon.Information
+                            : MessageBoxIcon.Error
                     );
                     txtPassword.Clear();
                     txtPassword.Focus();
@@ -97,6 +96,16 @@ namespace Mart_Management_System.Forms
                     MessageBoxIcon.Error
                 );
             }
+        }
+
+        private void registerLink_LinkClicked(
+            object sender,
+            LinkLabelLinkClickedEventArgs e
+        )
+        {
+            using RegisterForm registerForm = new();
+            registerForm.ShowDialog(this);
+            txtUsername.Focus();
         }
 
         private void ShowValidationMessage(string message)
