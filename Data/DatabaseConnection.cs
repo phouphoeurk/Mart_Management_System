@@ -1,39 +1,44 @@
-﻿using System;
-using Microsoft.Data.SqlClient;
-using DotNetEnv;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 
 namespace Mart_Management_System.Data
 {
-    public class DatabaseConnection
+    public static class DatabaseConnection
     {
+        private static readonly Lazy<IConfiguration> AppConfiguration =
+            new(CreateConfiguration);
+
         public static SqlConnection GetConnection()
         {
-            try
+            return new SqlConnection(GetConnectionString());
+        }
+
+        public static string GetConnectionString()
+        {
+            string? connectionString =
+                AppConfiguration.Value.GetConnectionString("MartDb");
+
+            if (string.IsNullOrWhiteSpace(connectionString))
             {
-                // Load variables from .env
-                Env.Load() ;
-
-                // Get DB_CONNECTION from .env
-                string? connectionString =
-                    Environment.GetEnvironmentVariable("DB_CONNECTION");
-
-                // Validate connection string
-                if (string.IsNullOrWhiteSpace(connectionString))
-                {
-                    throw new Exception(
-                        "DB_CONNECTION was not found in the .env file."
-                    );
-                }
-
-                return new SqlConnection(connectionString);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(
-                    "Cannot create database connection. Error: " + ex.Message,
-                    ex
+                throw new InvalidOperationException(
+                    "The MartDb connection string is missing from appsettings.json."
                 );
             }
+
+            return connectionString;
+        }
+
+        private static IConfiguration CreateConfiguration()
+        {
+            return new ConfigurationBuilder()
+                .SetBasePath(AppContext.BaseDirectory)
+                .AddJsonFile("appsettings.json", optional: false)
+                .AddJsonFile(
+                    "appsettings.Development.json",
+                    optional: true,
+                    reloadOnChange: false
+                )
+                .Build();
         }
     }
 }

@@ -1,59 +1,67 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+using System.Runtime.InteropServices;
+using Mart_Management_System.Enums;
+using Mart_Management_System.Models;
+using Mart_Management_System.Repositories;
+using Microsoft.Data.SqlClient;
 
 namespace Mart_Management_System.Forms
 {
-    using BCrypt.Net;
-    using Mart_Management_System.Enums;
-    using Mart_Management_System.Models;
-    using Mart_Management_System.Repositories;
-
     public partial class RegisterForm : Form
     {
-        private UserRepository userRepo;
+        private readonly UserRepository _userRepository;
 
         public RegisterForm()
         {
             InitializeComponent();
-            userRepo = new UserRepository();
+            Mart_Management_System.UI.UiTheme.Apply(this);
+
+            SetTextBoxPadding(txtFullName, 10, 10);
+            SetTextBoxPadding(txtUsername, 10, 10);
+            SetTextBoxPadding(txtPassword, 10, 10);
+            SetTextBoxPadding(txtConfirmPassword, 10, 10);
+
+            ClearErrors();
+            _userRepository = new UserRepository();
+        }
+
+        private void RegisterForm_Load(object sender, EventArgs e)
+        {
+            txtFullName.Focus();
         }
 
         private void btnRegister_Click(object sender, EventArgs e)
         {
+            ClearErrors();
+
+            string fullName = txtFullName.Text.Trim();
             string username = txtUsername.Text.Trim();
-            string password = txtPassword.Text.Trim();
-            string confirm = txtConfirmPassword.Text.Trim();
+            string password = txtPassword.Text;
+            string confirmPassword = txtConfirmPassword.Text;
 
-            string hashedPassword = BCrypt.HashPassword(password);
-            User? user = new User();
-            user.username = username;
-            user.password = hashedPassword;
-            user.role = UserRole.Cashier;
-            user.isActive = true;
-            user.createdAt = DateTime.Now;
+            if (string.IsNullOrWhiteSpace(fullName))
+            {
+                lblFullNameError.Text = "Please enter your full name.";
+                txtFullName.Focus();
+                return;
+            }
 
-            lblUsernameError.Text = string.Empty;
-            lblPasswordError.Text = string.Empty;
-            lblConfirmPasswordError.Text = string.Empty;
+            if (fullName.Length > 150)
+            {
+                lblFullNameError.Text = "Full name cannot exceed 150 characters.";
+                txtFullName.Focus();
+                return;
+            }
 
-            if (string.IsNullOrEmpty(username))
+            if (string.IsNullOrWhiteSpace(username))
             {
                 lblUsernameError.Text = "Please enter a username.";
+                txtUsername.Focus();
+                return;
+            }
 
-                MessageBox.Show(
-                    "Please enter a username.",
-                    "Register Failed",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning
-                );
-
+            if (username.Length > 50)
+            {
+                lblUsernameError.Text = "Username cannot exceed 50 characters.";
                 txtUsername.Focus();
                 return;
             }
@@ -61,119 +69,124 @@ namespace Mart_Management_System.Forms
             if (string.IsNullOrEmpty(password))
             {
                 lblPasswordError.Text = "Please enter a password.";
-
-                MessageBox.Show(
-                    "Please enter a password.",
-                    "Register Failed",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning
-                );
-
                 txtPassword.Focus();
                 return;
             }
 
-            if (string.IsNullOrEmpty(confirm))
+            if (password.Length < 8)
+            {
+                lblPasswordError.Text = "Password must be at least 8 characters.";
+                txtPassword.Focus();
+                return;
+            }
+
+            if (string.IsNullOrEmpty(confirmPassword))
             {
                 lblConfirmPasswordError.Text = "Please confirm your password.";
-
-                MessageBox.Show(
-                    "Please confirm your password.",
-                    "Register Failed",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning
-                );
-
                 txtConfirmPassword.Focus();
                 return;
             }
 
-            if (password != confirm)
+            if (!string.Equals(password, confirmPassword, StringComparison.Ordinal))
             {
                 lblConfirmPasswordError.Text = "Passwords do not match.";
-
-                MessageBox.Show(
-                    "Password does not match",
-                    "Warning",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning
-                );
+                txtConfirmPassword.Focus();
                 return;
             }
 
-            if (userRepo.save(user))
+            User user = new()
             {
-                MessageBox.Show(
-                    "Register success",
-                    "Registeration",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information
-                );
-                //go next page
-            }
-            else
+                FullName = fullName,
+                Username = username,
+                PasswordHash = global::BCrypt.Net.BCrypt.HashPassword(password),
+                Role = UserRole.Cashier,
+                // Self-registered accounts stay inactive until an administrator
+                // approves them from User Management, so the public form can
+                // never create a usable account on its own.
+                IsActive = false
+            };
+
+            try
             {
-                MessageBox.Show(
-                    "Register failed",
-                    "Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                );
+                if (!_userRepository.Create(user))
+                {
+                    lblUsernameError.Text = "The account could not be created.";
+                    return;
+                }
+            }
+            catch (SqlException ex) when (ex.Number is 2601 or 2627)
+            {
+                lblUsernameError.Text = "That username is already taken.";
+                txtUsername.Focus();
+                return;
+            }
+            catch (ArgumentException)
+            {
+                lblUsernameError.Text = "The account could not be created.";
+                return;
+            }
+            catch (Exception)
+            {
+                lblUsernameError.Text = "Unable to create the account. Please try again.";
+                return;
             }
 
-            this.DialogResult = DialogResult.OK;
-            this.Close();
+            MessageBox.Show(
+                "Your account has been created and is waiting for admin approval. "
+                    + "You will be able to sign in once an administrator activates it.",
+                "Registration Received",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information
+            );
+
+            DialogResult = DialogResult.OK;
+            Close();
         }
 
-        private void AddEditForm_Load(object sender, EventArgs e)
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
+            bool showPassword = checkBox1.Checked;
+            txtPassword.UseSystemPasswordChar = !showPassword;
+            txtConfirmPassword.UseSystemPasswordChar = !showPassword;
         }
 
-        private void panel1_Paint(object sender, PaintEventArgs e)
-        {
-        }
-
-        
-
-        private void lnkGoToLogin_Click(
+        private void lnkGoToLogin_LinkClicked(
             object sender,
             LinkLabelLinkClickedEventArgs e
         )
         {
-            this.Close();
-
-            using (LoginForm loginForm = new LoginForm())
-            {
-                loginForm.ShowDialog();
-            }
+            DialogResult = DialogResult.Cancel;
+            Close();
         }
 
-        private void panel1_Paint_1(object sender, PaintEventArgs e)
+        private void ClearErrors()
         {
-
+            lblFullNameError.Text = string.Empty;
+            lblUsernameError.Text = string.Empty;
+            lblPasswordError.Text = string.Empty;
+            lblConfirmPasswordError.Text = string.Empty;
         }
 
-        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
+        [DllImport("user32.dll")]
+        private static extern int SendMessage(
+            IntPtr hWnd,
+            int message,
+            int wParam,
+            int lParam
+        );
+
+        private const int EM_SETMARGINS = 0xD3;
+        private const int EC_LEFTMARGIN = 0x0001;
+        private const int EC_RIGHTMARGIN = 0x0002;
+
+        private void SetTextBoxPadding(TextBox textBox, int left, int right)
         {
-
-        }
-
-        private void panel1_Paint_2(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void checkBox1_CheckedChanged_1(object sender, EventArgs e)
-        {
-            if (checkBox1.Checked) {
-                txtPassword.UseSystemPasswordChar = false;
-                txtConfirmPassword.UseSystemPasswordChar = false;
-            }
-            else
-            {
-                txtConfirmPassword.UseSystemPasswordChar = true;
-                txtPassword.UseSystemPasswordChar = true;
-            }
+            SendMessage(
+                textBox.Handle,
+                EM_SETMARGINS,
+                EC_LEFTMARGIN | EC_RIGHTMARGIN,
+                (right << 16) | left
+            );
         }
     }
 }

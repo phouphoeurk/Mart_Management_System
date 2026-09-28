@@ -146,6 +146,8 @@
             this.dgvCart.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvCart.Size = new System.Drawing.Size(620, 430);
             this.dgvCart.TabIndex = 1;
+            this.dgvCart.CellContentClick += dgvCart_CellContentClick;
+            this.dgvCart.CellEndEdit += dgvCart_CellEndEdit;
             // 
             // Columns for Cart
             // 
@@ -163,6 +165,7 @@
             this.colCartQty.FillWeight = 70F;
             this.colCartQty.HeaderText = "Qty";
             this.colCartQty.Name = "colCartQty";
+            this.colCartQty.ReadOnly = false;
             this.colCartSubtotal.HeaderText = "Subtotal";
             this.colCartSubtotal.Name = "colCartSubtotal";
             this.colCartSubtotal.ReadOnly = true;
@@ -215,6 +218,7 @@
             this.txtDiscount.Location = new System.Drawing.Point(120, 57);
             this.txtDiscount.Size = new System.Drawing.Size(100, 27);
             this.txtDiscount.Text = "0.00";
+            this.txtDiscount.TextChanged += txtDiscount_TextChanged;
 
             this.lblTotal.AutoSize = true;
             this.lblTotal.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
@@ -236,6 +240,7 @@
             this.cbPaymentMethod.Location = new System.Drawing.Point(390, 17);
             this.cbPaymentMethod.Size = new System.Drawing.Size(200, 28);
             this.cbPaymentMethod.Text = "Cash";
+            this.cbPaymentMethod.SelectedIndexChanged += cbPaymentMethod_SelectedIndexChanged;
 
             this.lblCash.AutoSize = true;
             this.lblCash.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
@@ -244,6 +249,7 @@
             this.txtCashReceived.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.txtCashReceived.Location = new System.Drawing.Point(390, 57);
             this.txtCashReceived.Size = new System.Drawing.Size(200, 27);
+            this.txtCashReceived.TextChanged += txtCashReceived_TextChanged;
 
             this.lblChange.AutoSize = true;
             this.lblChange.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
@@ -263,6 +269,7 @@
             this.btnCheckout.Location = new System.Drawing.Point(390, 140);
             this.btnCheckout.Size = new System.Drawing.Size(200, 45);
             this.btnCheckout.Text = "PAY / CHECKOUT";
+            this.btnCheckout.Click += btnCheckout_Click;
 
             this.btnClear.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
             this.btnClear.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -271,6 +278,7 @@
             this.btnClear.Location = new System.Drawing.Point(20, 145);
             this.btnClear.Size = new System.Drawing.Size(120, 40);
             this.btnClear.Text = "Clear Cart";
+            this.btnClear.Click += btnClear_Click;
 
             // 
             // leftPanel
@@ -300,6 +308,7 @@
             this.txtSearchBarcode.PlaceholderText = "  Scan Barcode or Search Product...";
             this.txtSearchBarcode.Size = new System.Drawing.Size(450, 29);
             this.txtSearchBarcode.TabIndex = 0;
+            this.txtSearchBarcode.TextChanged += txtSearchBarcode_TextChanged;
             // 
             // dgvProducts
             // 
@@ -338,6 +347,7 @@
             this.dgvProducts.RowHeadersVisible = false;
             this.dgvProducts.RowTemplate.Height = 35;
             this.dgvProducts.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvProducts.CellContentClick += dgvProducts_CellContentClick;
             this.dgvProducts.Size = new System.Drawing.Size(450, 580);
             this.dgvProducts.TabIndex = 1;
             // 
@@ -375,6 +385,7 @@
             this.Name = "SalesForm";
             this.Padding = new System.Windows.Forms.Padding(10);
             this.Text = "SalesForm";
+            this.Load += SalesForm_Load;
             this.topPanel.ResumeLayout(false);
             this.topPanel.PerformLayout();
             this.mainPanel.ResumeLayout(false);

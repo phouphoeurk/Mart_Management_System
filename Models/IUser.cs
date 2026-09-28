@@ -1,21 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Data;
 
 namespace Mart_Management_System.Models
 {
     public interface IUser
     {
-        User? getById(int id);
-        User? findByName(String name);
-        List<User> getAll();
-        bool save(User user);
-        bool update(User user);
-        bool delete(int id);
+        User? FindByUsername(string username);
 
-        DataTable search(string keyword);
+        User? GetById(int userId);
+
+        List<User> GetAll();
+
+        DataTable Search(string keyword);
+
+        bool Create(User user);
+
+        bool Update(User user, string? passwordHash = null);
+
+        bool SetActive(int userId, bool isActive);
     }
 }

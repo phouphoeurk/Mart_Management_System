@@ -1,21 +1,31 @@
-using System;
-using System.Collections.Generic; // សម្រាប់ប្រកាស List
+using Mart_Management_System.Enums;
 
 namespace Mart_Management_System.Models
 {
     public class Sale
     {
         public int SaleId { get; set; }
-        public int UserId { get; set; }
-        public DateTime SaleDate { get; set; }
-        public decimal Subtotal { get; set; }
-        public decimal Discount { get; set; }
-        public decimal TotalAmount { get; set; }
-        public string PaymentMethod { get; set; } = string.Empty;
-        public decimal AmountReceived { get; set; }
-        public decimal ChangeAmount { get; set; }
 
-        // OOP Composition: Sale មួយ ផ្ទុកទំនិញច្រើន (SaleDetails)
-        public List<SaleDetail> SaleDetails { get; set; } = new List<SaleDetail>();
+        public int CashierUserId { get; set; }
+
+        public DateTime SaleDate { get; set; }
+
+        public decimal Subtotal { get; set; }
+
+        public decimal DiscountAmount { get; set; }
+
+        public decimal TotalAmount { get; set; }
+
+        public PaymentMethod PaymentMethod { get; set; }
+
+        public decimal? AmountReceived { get; set; }
+
+        public decimal? ChangeAmount { get; set; }
+
+        public SaleStatus Status { get; set; }
+
+        public string CashierName { get; set; } = string.Empty;
+
+        public List<SaleDetail> SaleDetails { get; set; } = new();
     }
 }

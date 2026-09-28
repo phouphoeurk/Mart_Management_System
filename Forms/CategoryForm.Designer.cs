@@ -61,6 +61,7 @@
             this.btnAddCategory.TabIndex = 1;
             this.btnAddCategory.Text = "+ Add Category";
             this.btnAddCategory.UseVisualStyleBackColor = false;
+            this.btnAddCategory.Click += btnAddCategory_Click;
             // 
             // lblTitle
             // 
@@ -90,6 +91,7 @@
             this.txtSearch.PlaceholderText = "  Search categories by name...";
             this.txtSearch.Size = new System.Drawing.Size(300, 29);
             this.txtSearch.TabIndex = 0;
+            this.txtSearch.TextChanged += txtSearch_TextChanged;
             // 
             // dgvCategories
             // 
@@ -131,6 +133,7 @@
             this.dgvCategories.RowHeadersVisible = false;
             this.dgvCategories.RowTemplate.Height = 35;
             this.dgvCategories.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvCategories.CellContentClick += dgvCategories_CellContentClick;
             this.dgvCategories.Size = new System.Drawing.Size(1060, 560);
             this.dgvCategories.TabIndex = 2;
             // 
@@ -173,10 +176,10 @@
             // colDelete
             // 
             this.colDelete.FillWeight = 60F;
-            this.colDelete.HeaderText = "";
+            this.colDelete.HeaderText = "Action";
             this.colDelete.Name = "colDelete";
             this.colDelete.ReadOnly = true;
-            this.colDelete.Text = "Delete";
+            this.colDelete.Text = "Deactivate";
             this.colDelete.UseColumnTextForButtonValue = true;
             // 
             // CategoryForm
@@ -191,6 +194,7 @@
             this.Name = "CategoryForm";
             this.Padding = new System.Windows.Forms.Padding(20);
             this.Text = "CategoryForm";
+            this.Load += CategoryForm_Load;
             this.topPanel.ResumeLayout(false);
             this.topPanel.PerformLayout();
             this.searchPanel.ResumeLayout(false);

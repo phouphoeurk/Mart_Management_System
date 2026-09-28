@@ -6,251 +6,320 @@
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
+            if (disposing && components is not null)
             {
                 components.Dispose();
             }
+
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
-
         private void InitializeComponent()
         {
-            this.topPanel = new System.Windows.Forms.Panel();
-            this.lblTitle = new System.Windows.Forms.Label();
-            this.cardsPanel = new System.Windows.Forms.Panel();
-            this.card1 = new System.Windows.Forms.Panel();
-            this.lblCard1Value = new System.Windows.Forms.Label();
-            this.lblCard1Title = new System.Windows.Forms.Label();
-            this.card2 = new System.Windows.Forms.Panel();
-            this.lblCard2Value = new System.Windows.Forms.Label();
-            this.lblCard2Title = new System.Windows.Forms.Label();
-            this.card3 = new System.Windows.Forms.Panel();
-            this.lblCard3Value = new System.Windows.Forms.Label();
-            this.lblCard3Title = new System.Windows.Forms.Label();
-            this.card4 = new System.Windows.Forms.Panel();
-            this.lblCard4Value = new System.Windows.Forms.Label();
-            this.lblCard4Title = new System.Windows.Forms.Label();
-            this.chartsPanel = new System.Windows.Forms.Panel();
-            this.chart1Panel = new System.Windows.Forms.Panel();
-            this.lblChart1Placeholder = new System.Windows.Forms.Label();
-            this.chart2Panel = new System.Windows.Forms.Panel();
-            this.lblChart2Placeholder = new System.Windows.Forms.Label();
-            this.topPanel.SuspendLayout();
-            this.cardsPanel.SuspendLayout();
-            this.card1.SuspendLayout();
-            this.card2.SuspendLayout();
-            this.card3.SuspendLayout();
-            this.card4.SuspendLayout();
-            this.chartsPanel.SuspendLayout();
-            this.chart1Panel.SuspendLayout();
-            this.chart2Panel.SuspendLayout();
-            this.SuspendLayout();
-            // 
-            // topPanel
-            // 
-            this.topPanel.Controls.Add(this.lblTitle);
-            this.topPanel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.topPanel.Location = new System.Drawing.Point(20, 20);
-            this.topPanel.Name = "topPanel";
-            this.topPanel.Size = new System.Drawing.Size(1060, 50);
-            this.topPanel.TabIndex = 0;
-            // 
-            // lblTitle
-            // 
-            this.lblTitle.AutoSize = true;
-            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.lblTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
-            this.lblTitle.Location = new System.Drawing.Point(0, 5);
-            this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(117, 32);
-            this.lblTitle.TabIndex = 0;
-            this.lblTitle.Text = "REPORTS";
-            // 
-            // cardsPanel
-            // 
-            this.cardsPanel.Controls.Add(this.card4);
-            this.cardsPanel.Controls.Add(this.card3);
-            this.cardsPanel.Controls.Add(this.card2);
-            this.cardsPanel.Controls.Add(this.card1);
-            this.cardsPanel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.cardsPanel.Location = new System.Drawing.Point(20, 70);
-            this.cardsPanel.Name = "cardsPanel";
-            this.cardsPanel.Size = new System.Drawing.Size(1060, 130);
-            this.cardsPanel.TabIndex = 1;
-            // 
-            // card1 (Daily Sales)
-            // 
-            this.card1.BackColor = System.Drawing.Color.White;
-            this.card1.Controls.Add(this.lblCard1Value);
-            this.card1.Controls.Add(this.lblCard1Title);
-            this.card1.Location = new System.Drawing.Point(0, 15);
-            this.card1.Name = "card1";
-            this.card1.Size = new System.Drawing.Size(240, 100);
-            this.card1.TabIndex = 0;
-            this.lblCard1Title.AutoSize = true;
-            this.lblCard1Title.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.lblCard1Title.ForeColor = System.Drawing.Color.Gray;
-            this.lblCard1Title.Location = new System.Drawing.Point(20, 15);
-            this.lblCard1Title.Text = "Daily Sales";
-            this.lblCard1Value.AutoSize = true;
-            this.lblCard1Value.Font = new System.Drawing.Font("Segoe UI", 20F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.lblCard1Value.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(174)))), ((int)(((byte)(99)))));
-            this.lblCard1Value.Location = new System.Drawing.Point(15, 45);
-            this.lblCard1Value.Text = "$ 450.00";
-            // 
-            // card2 (Weekly Sales)
-            // 
-            this.card2.BackColor = System.Drawing.Color.White;
-            this.card2.Controls.Add(this.lblCard2Value);
-            this.card2.Controls.Add(this.lblCard2Title);
-            this.card2.Location = new System.Drawing.Point(260, 15);
-            this.card2.Name = "card2";
-            this.card2.Size = new System.Drawing.Size(240, 100);
-            this.card2.TabIndex = 1;
-            this.lblCard2Title.AutoSize = true;
-            this.lblCard2Title.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.lblCard2Title.ForeColor = System.Drawing.Color.Gray;
-            this.lblCard2Title.Location = new System.Drawing.Point(20, 15);
-            this.lblCard2Title.Text = "Weekly Sales";
-            this.lblCard2Value.AutoSize = true;
-            this.lblCard2Value.Font = new System.Drawing.Font("Segoe UI", 20F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.lblCard2Value.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(174)))), ((int)(((byte)(99)))));
-            this.lblCard2Value.Location = new System.Drawing.Point(15, 45);
-            this.lblCard2Value.Text = "$ 2,840.50";
-            // 
-            // card3 (Monthly Sales)
-            // 
-            this.card3.BackColor = System.Drawing.Color.White;
-            this.card3.Controls.Add(this.lblCard3Value);
-            this.card3.Controls.Add(this.lblCard3Title);
-            this.card3.Location = new System.Drawing.Point(520, 15);
-            this.card3.Name = "card3";
-            this.card3.Size = new System.Drawing.Size(240, 100);
-            this.card3.TabIndex = 2;
-            this.lblCard3Title.AutoSize = true;
-            this.lblCard3Title.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.lblCard3Title.ForeColor = System.Drawing.Color.Gray;
-            this.lblCard3Title.Location = new System.Drawing.Point(20, 15);
-            this.lblCard3Title.Text = "Monthly Sales";
-            this.lblCard3Value.AutoSize = true;
-            this.lblCard3Value.Font = new System.Drawing.Font("Segoe UI", 20F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.lblCard3Value.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(174)))), ((int)(((byte)(99)))));
-            this.lblCard3Value.Location = new System.Drawing.Point(15, 45);
-            this.lblCard3Value.Text = "$ 12,500.00";
-            // 
-            // card4 (Total Revenue)
-            // 
-            this.card4.BackColor = System.Drawing.Color.White;
-            this.card4.Controls.Add(this.lblCard4Value);
-            this.card4.Controls.Add(this.lblCard4Title);
-            this.card4.Location = new System.Drawing.Point(780, 15);
-            this.card4.Name = "card4";
-            this.card4.Size = new System.Drawing.Size(260, 100);
-            this.card4.TabIndex = 3;
-            this.lblCard4Title.AutoSize = true;
-            this.lblCard4Title.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.lblCard4Title.ForeColor = System.Drawing.Color.Gray;
-            this.lblCard4Title.Location = new System.Drawing.Point(20, 15);
-            this.lblCard4Title.Text = "Total Revenue";
-            this.lblCard4Value.AutoSize = true;
-            this.lblCard4Value.Font = new System.Drawing.Font("Segoe UI", 20F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.lblCard4Value.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
-            this.lblCard4Value.Location = new System.Drawing.Point(15, 45);
-            this.lblCard4Value.Text = "$ 145,000.00";
-            // 
-            // chartsPanel
-            // 
-            this.chartsPanel.Controls.Add(this.chart2Panel);
-            this.chartsPanel.Controls.Add(this.chart1Panel);
-            this.chartsPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.chartsPanel.Location = new System.Drawing.Point(20, 200);
-            this.chartsPanel.Name = "chartsPanel";
-            this.chartsPanel.Padding = new System.Windows.Forms.Padding(0, 10, 0, 0);
-            this.chartsPanel.Size = new System.Drawing.Size(1060, 480);
-            this.chartsPanel.TabIndex = 2;
-            // 
-            // chart1Panel (Placeholder for Line Chart)
-            // 
-            this.chart1Panel.BackColor = System.Drawing.Color.White;
-            this.chart1Panel.Controls.Add(this.lblChart1Placeholder);
-            this.chart1Panel.Dock = System.Windows.Forms.DockStyle.Left;
-            this.chart1Panel.Location = new System.Drawing.Point(0, 10);
-            this.chart1Panel.Name = "chart1Panel";
-            this.chart1Panel.Size = new System.Drawing.Size(600, 470);
-            this.chart1Panel.TabIndex = 0;
-            this.lblChart1Placeholder.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblChart1Placeholder.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.lblChart1Placeholder.ForeColor = System.Drawing.Color.Gray;
-            this.lblChart1Placeholder.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.lblChart1Placeholder.Text = "📈 Sales Trend Chart\n(UI Placeholder)";
-            // 
-            // chart2Panel (Placeholder for Pie Chart)
-            // 
-            this.chart2Panel.BackColor = System.Drawing.Color.White;
-            this.chart2Panel.Controls.Add(this.lblChart2Placeholder);
-            this.chart2Panel.Location = new System.Drawing.Point(620, 10);
-            this.chart2Panel.Name = "chart2Panel";
-            this.chart2Panel.Size = new System.Drawing.Size(420, 470);
-            this.chart2Panel.TabIndex = 1;
-            this.lblChart2Placeholder.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblChart2Placeholder.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.lblChart2Placeholder.ForeColor = System.Drawing.Color.Gray;
-            this.lblChart2Placeholder.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.lblChart2Placeholder.Text = "🥧 Top Products by Category\n(UI Placeholder)";
-            // 
-            // ReportsForm
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(241)))), ((int)(((byte)(244)))));
-            this.ClientSize = new System.Drawing.Size(1100, 700);
-            this.Controls.Add(this.chartsPanel);
-            this.Controls.Add(this.cardsPanel);
-            this.Controls.Add(this.topPanel);
-            this.Name = "ReportsForm";
-            this.Padding = new System.Windows.Forms.Padding(20);
-            this.Text = "ReportsForm";
-            this.topPanel.ResumeLayout(false);
-            this.topPanel.PerformLayout();
-            this.cardsPanel.ResumeLayout(false);
-            this.card1.ResumeLayout(false);
-            this.card1.PerformLayout();
-            this.card2.ResumeLayout(false);
-            this.card2.PerformLayout();
-            this.card3.ResumeLayout(false);
-            this.card3.PerformLayout();
-            this.card4.ResumeLayout(false);
-            this.card4.PerformLayout();
-            this.chartsPanel.ResumeLayout(false);
-            this.chart1Panel.ResumeLayout(false);
-            this.chart2Panel.ResumeLayout(false);
-            this.ResumeLayout(false);
+            topPanel = new Panel();
+            lblTitle = new Label();
+            cardsPanel = new Panel();
+            card1 = new Panel();
+            card2 = new Panel();
+            card3 = new Panel();
+            card4 = new Panel();
+            filterPanel = new Panel();
+            lblReport = new Label();
+            cbReport = new ComboBox();
+            lblFrom = new Label();
+            dtpFrom = new DateTimePicker();
+            lblTo = new Label();
+            dtpTo = new DateTimePicker();
+            btnGenerate = new Button();
+            chartsPanel = new Panel();
+            chart1Panel = new Panel();
+            lblChart1Placeholder = new Label();
+            dgvReport = new DataGridView();
+            colReportLabel = new DataGridViewTextBoxColumn();
+            colReportValue = new DataGridViewTextBoxColumn();
+            chart2Panel = new Panel();
+            lblChart2Placeholder = new Label();
+            ((System.ComponentModel.ISupportInitialize)dgvReport).BeginInit();
+            cardsPanel.SuspendLayout();
+            card1.SuspendLayout();
+            card2.SuspendLayout();
+            card3.SuspendLayout();
+            card4.SuspendLayout();
+            filterPanel.SuspendLayout();
+            chartsPanel.SuspendLayout();
+            chart1Panel.SuspendLayout();
+            chart2Panel.SuspendLayout();
+            SuspendLayout();
 
+            topPanel.Controls.Add(lblTitle);
+            topPanel.Dock = DockStyle.Top;
+            topPanel.Location = new Point(20, 20);
+            topPanel.Name = "topPanel";
+            topPanel.Size = new Size(1060, 50);
+            topPanel.TabIndex = 0;
+
+            lblTitle.AutoSize = true;
+            lblTitle.Font = new Font("Segoe UI", 20F, FontStyle.Bold);
+            lblTitle.ForeColor = Color.FromArgb(17, 17, 17);
+            lblTitle.Location = new Point(0, 5);
+            lblTitle.Name = "lblTitle";
+            lblTitle.Size = new Size(117, 32);
+            lblTitle.TabIndex = 0;
+            lblTitle.Text = "REPORTS";
+
+            cardsPanel.Controls.Add(card4);
+            cardsPanel.Controls.Add(card3);
+            cardsPanel.Controls.Add(card2);
+            cardsPanel.Controls.Add(card1);
+            cardsPanel.Dock = DockStyle.Top;
+            cardsPanel.Location = new Point(20, 70);
+            cardsPanel.Name = "cardsPanel";
+            cardsPanel.Size = new Size(1060, 130);
+            cardsPanel.TabIndex = 1;
+
+            ConfigureCard(card1, new Point(0, 15), new Size(240, 100), "Daily Sales", out lblCard1Title, out lblCard1Value);
+            ConfigureCard(card2, new Point(260, 15), new Size(240, 100), "Weekly Sales", out lblCard2Title, out lblCard2Value);
+            ConfigureCard(card3, new Point(520, 15), new Size(240, 100), "Monthly Sales", out lblCard3Title, out lblCard3Value);
+            ConfigureCard(card4, new Point(780, 15), new Size(260, 100), "Total Revenue", out lblCard4Title, out lblCard4Value);
+
+            filterPanel.Controls.Add(lblReport);
+            filterPanel.Controls.Add(cbReport);
+            filterPanel.Controls.Add(lblFrom);
+            filterPanel.Controls.Add(dtpFrom);
+            filterPanel.Controls.Add(lblTo);
+            filterPanel.Controls.Add(dtpTo);
+            filterPanel.Controls.Add(btnGenerate);
+            filterPanel.Dock = DockStyle.Top;
+            filterPanel.Location = new Point(20, 200);
+            filterPanel.Name = "filterPanel";
+            filterPanel.Size = new Size(1060, 60);
+            filterPanel.TabIndex = 2;
+
+            lblReport.AutoSize = true;
+            lblReport.Font = new Font("Segoe UI", 10F);
+            lblReport.Location = new Point(0, 20);
+            lblReport.Name = "lblReport";
+            lblReport.Size = new Size(50, 20);
+            lblReport.TabIndex = 0;
+            lblReport.Text = "Report:";
+
+            cbReport.Font = new Font("Segoe UI", 10F);
+            cbReport.Items.AddRange(new object[]
+            {
+                "Sales Trend",
+                "Revenue by Cashier",
+                "Revenue by Payment Method",
+                "Top Products",
+                "Sales by Category",
+                "Supplier Purchase History",
+                "Inventory Value"
+            });
+            cbReport.Location = new Point(60, 17);
+            cbReport.Name = "cbReport";
+            cbReport.Size = new Size(220, 28);
+            cbReport.TabIndex = 1;
+            cbReport.SelectedIndexChanged += cbReport_SelectedIndexChanged;
+
+            lblFrom.AutoSize = true;
+            lblFrom.Font = new Font("Segoe UI", 10F);
+            lblFrom.Location = new Point(310, 20);
+            lblFrom.Name = "lblFrom";
+            lblFrom.Size = new Size(35, 20);
+            lblFrom.TabIndex = 2;
+            lblFrom.Text = "From:";
+
+            dtpFrom.Format = DateTimePickerFormat.Short;
+            dtpFrom.Location = new Point(350, 17);
+            dtpFrom.Name = "dtpFrom";
+            dtpFrom.Size = new Size(115, 26);
+            dtpFrom.TabIndex = 3;
+
+            lblTo.AutoSize = true;
+            lblTo.Font = new Font("Segoe UI", 10F);
+            lblTo.Location = new Point(485, 20);
+            lblTo.Name = "lblTo";
+            lblTo.Size = new Size(25, 20);
+            lblTo.TabIndex = 4;
+            lblTo.Text = "To:";
+
+            dtpTo.Format = DateTimePickerFormat.Short;
+            dtpTo.Location = new Point(515, 17);
+            dtpTo.Name = "dtpTo";
+            dtpTo.Size = new Size(115, 26);
+            dtpTo.TabIndex = 5;
+
+            btnGenerate.BackColor = Color.FromArgb(91, 174, 99);
+            btnGenerate.FlatAppearance.BorderSize = 0;
+            btnGenerate.FlatStyle = FlatStyle.Flat;
+            btnGenerate.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnGenerate.ForeColor = Color.White;
+            btnGenerate.Location = new Point(655, 15);
+            btnGenerate.Name = "btnGenerate";
+            btnGenerate.Size = new Size(115, 32);
+            btnGenerate.TabIndex = 6;
+            btnGenerate.Text = "Generate";
+            btnGenerate.UseVisualStyleBackColor = false;
+            btnGenerate.Click += btnGenerate_Click;
+
+            chartsPanel.Controls.Add(chart2Panel);
+            chartsPanel.Controls.Add(chart1Panel);
+            chartsPanel.Dock = DockStyle.Fill;
+            chartsPanel.Location = new Point(20, 260);
+            chartsPanel.Name = "chartsPanel";
+            chartsPanel.Padding = new Padding(0, 10, 0, 0);
+            chartsPanel.Size = new Size(1060, 420);
+            chartsPanel.TabIndex = 3;
+
+            chart1Panel.BackColor = Color.White;
+            chart1Panel.Controls.Add(dgvReport);
+            chart1Panel.Controls.Add(lblChart1Placeholder);
+            chart1Panel.Dock = DockStyle.Left;
+            chart1Panel.Location = new Point(0, 10);
+            chart1Panel.Name = "chart1Panel";
+            chart1Panel.Size = new Size(620, 410);
+            chart1Panel.TabIndex = 0;
+
+            lblChart1Placeholder.Dock = DockStyle.Fill;
+            lblChart1Placeholder.Font = new Font("Segoe UI", 12F);
+            lblChart1Placeholder.ForeColor = Color.Gray;
+            lblChart1Placeholder.Text = "Select a report to view results";
+            lblChart1Placeholder.TextAlign = ContentAlignment.MiddleCenter;
+            lblChart1Placeholder.Visible = false;
+
+            dgvReport.AllowUserToAddRows = false;
+            dgvReport.AllowUserToDeleteRows = false;
+            dgvReport.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvReport.BackgroundColor = Color.White;
+            dgvReport.BorderStyle = BorderStyle.None;
+            dgvReport.ColumnHeadersHeight = 38;
+            dgvReport.Columns.AddRange(new DataGridViewColumn[]
+            {
+                colReportLabel,
+                colReportValue
+            });
+            dgvReport.Dock = DockStyle.Fill;
+            dgvReport.Name = "dgvReport";
+            dgvReport.ReadOnly = true;
+            dgvReport.RowHeadersVisible = false;
+            dgvReport.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvReport.Size = new Size(620, 410);
+            dgvReport.TabIndex = 1;
+
+            colReportLabel.HeaderText = "Report Item";
+            colReportLabel.Name = "colReportLabel";
+            colReportLabel.ReadOnly = true;
+            colReportValue.HeaderText = "Value";
+            colReportValue.Name = "colReportValue";
+            colReportValue.ReadOnly = true;
+
+            chart2Panel.BackColor = Color.White;
+            chart2Panel.Controls.Add(lblChart2Placeholder);
+            chart2Panel.Location = new Point(620, 10);
+            chart2Panel.Name = "chart2Panel";
+            chart2Panel.Size = new Size(420, 400);
+            chart2Panel.TabIndex = 1;
+
+            lblChart2Placeholder.Dock = DockStyle.Fill;
+            lblChart2Placeholder.Font = new Font("Segoe UI", 12F);
+            lblChart2Placeholder.ForeColor = Color.Gray;
+            lblChart2Placeholder.Text = "Report summary will appear here";
+            lblChart2Placeholder.TextAlign = ContentAlignment.MiddleCenter;
+
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.FromArgb(238, 241, 244);
+            ClientSize = new Size(1100, 700);
+            Controls.Add(chartsPanel);
+            Controls.Add(filterPanel);
+            Controls.Add(cardsPanel);
+            Controls.Add(topPanel);
+            Name = "ReportsForm";
+            Padding = new Padding(20);
+            Text = "Reports";
+            cardsPanel.ResumeLayout(false);
+            card1.ResumeLayout(false);
+            card1.PerformLayout();
+            card2.ResumeLayout(false);
+            card2.PerformLayout();
+            card3.ResumeLayout(false);
+            card3.PerformLayout();
+            card4.ResumeLayout(false);
+            card4.PerformLayout();
+            filterPanel.ResumeLayout(false);
+            filterPanel.PerformLayout();
+            chartsPanel.ResumeLayout(false);
+            chart1Panel.ResumeLayout(false);
+            chart1Panel.PerformLayout();
+            chart2Panel.ResumeLayout(false);
+            chart2Panel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvReport).EndInit();
+            ResumeLayout(false);
+            PerformLayout();
+            Load += ReportsForm_Load;
         }
 
-        #endregion
+        private static void ConfigureCard(
+            Panel card,
+            Point location,
+            Size size,
+            string title,
+            out Label titleLabel,
+            out Label valueLabel
+        )
+        {
+            card.BackColor = Color.White;
+            card.Location = location;
+            card.Size = size;
+            card.TabStop = false;
 
-        private System.Windows.Forms.Panel topPanel;
-        private System.Windows.Forms.Label lblTitle;
-        private System.Windows.Forms.Panel cardsPanel;
-        private System.Windows.Forms.Panel card1;
-        private System.Windows.Forms.Label lblCard1Title;
-        private System.Windows.Forms.Label lblCard1Value;
-        private System.Windows.Forms.Panel card2;
-        private System.Windows.Forms.Label lblCard2Title;
-        private System.Windows.Forms.Label lblCard2Value;
-        private System.Windows.Forms.Panel card3;
-        private System.Windows.Forms.Label lblCard3Title;
-        private System.Windows.Forms.Label lblCard3Value;
-        private System.Windows.Forms.Panel card4;
-        private System.Windows.Forms.Label lblCard4Title;
-        private System.Windows.Forms.Label lblCard4Value;
-        private System.Windows.Forms.Panel chartsPanel;
-        private System.Windows.Forms.Panel chart1Panel;
-        private System.Windows.Forms.Label lblChart1Placeholder;
-        private System.Windows.Forms.Panel chart2Panel;
-        private System.Windows.Forms.Label lblChart2Placeholder;
+            titleLabel = new Label();
+            titleLabel.AutoSize = true;
+            titleLabel.Font = new Font("Segoe UI", 11F);
+            titleLabel.ForeColor = Color.Gray;
+            titleLabel.Location = new Point(20, 15);
+            titleLabel.Text = title;
+
+            valueLabel = new Label();
+            valueLabel.AutoSize = true;
+            valueLabel.Font = new Font("Segoe UI", 20F, FontStyle.Bold);
+            valueLabel.ForeColor = Color.FromArgb(91, 174, 99);
+            valueLabel.Location = new Point(15, 45);
+            valueLabel.Text = "$0.00";
+
+            card.Controls.Add(titleLabel);
+            card.Controls.Add(valueLabel);
+        }
+
+        private Panel topPanel;
+        private Label lblTitle;
+        private Panel cardsPanel;
+        private Panel card1;
+        private Label lblCard1Title;
+        private Label lblCard1Value;
+        private Panel card2;
+        private Label lblCard2Title;
+        private Label lblCard2Value;
+        private Panel card3;
+        private Label lblCard3Title;
+        private Label lblCard3Value;
+        private Panel card4;
+        private Label lblCard4Title;
+        private Label lblCard4Value;
+        private Panel filterPanel;
+        private Label lblReport;
+        private ComboBox cbReport;
+        private Label lblFrom;
+        private DateTimePicker dtpFrom;
+        private Label lblTo;
+        private DateTimePicker dtpTo;
+        private Button btnGenerate;
+        private Panel chartsPanel;
+        private Panel chart1Panel;
+        private Label lblChart1Placeholder;
+        private DataGridView dgvReport;
+        private DataGridViewTextBoxColumn colReportLabel;
+        private DataGridViewTextBoxColumn colReportValue;
+        private Panel chart2Panel;
+        private Label lblChart2Placeholder;
     }
 }

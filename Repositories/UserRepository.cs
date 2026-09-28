@@ -1,268 +1,234 @@
-using DotNetEnv;
+using System.Data;
+using Mart_Management_System.Data;
 using Mart_Management_System.Enums;
 using Mart_Management_System.Models;
-using Mart_Management_System.Data;
 using Microsoft.Data.SqlClient;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Mart_Management_System.Repositories
 {
     public class UserRepository : IUser
-
     {
-        
-        
-        string? connString = Environment.GetEnvironmentVariable("DB_CONNECTION");
-        public void ConnectDB()
+        public User? FindByUsername(string username)
         {
-            SqlConnection conn = new SqlConnection(connString);
-            try
-            {
-                conn.Open();
-                MessageBox.Show(
-                    "Connecting to database successfully",
-                    "Database connecting succuss",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information
-                    );
-            }
-            catch (Exception)
-            {
+            const string sql = """
+                SELECT UserId, FullName, Username, PasswordHash, Role,
+                       IsActive, CreatedAt, UpdatedAt
+                FROM dbo.Users
+                WHERE Username = @username;
+                """;
 
-                MessageBox.Show(
-                    "Connecting to database failed",
-                    "Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error
-                    );
+            using SqlConnection connection = DatabaseConnection.GetConnection();
+            using SqlCommand command = new(sql, connection);
+            command.Parameters.Add("@username", SqlDbType.NVarChar, 50).Value = username;
 
-            }
-            finally
-            {
-                conn.Close();
-            }
+            connection.Open();
+            using SqlDataReader reader = command.ExecuteReader();
 
+            return reader.Read()
+                ? MapUser(reader, includePasswordHash: true)
+                : null;
         }
 
-        public bool delete(int id)
+        public User? GetById(int userId)
         {
-            SqlConnection conn = new SqlConnection(connString);
-            string sql = "DELETE FROM users WHERE id=@id";
-            SqlCommand cmd = new SqlCommand(sql, conn);
-            int deletedUser = 0;
-            try
-            {
-                conn.Open();
-                cmd.Parameters.AddWithValue("@id", id);
-                deletedUser = cmd.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Delete user id : {id} failed" + ex.Message);
-            }
-            finally
-            {
-                conn.Close();
-            }
-            return deletedUser > 0;
+            const string sql = """
+                SELECT UserId, FullName, Username, Role, IsActive,
+                       CreatedAt, UpdatedAt
+                FROM dbo.Users
+                WHERE UserId = @userId;
+                """;
+
+            using SqlConnection connection = DatabaseConnection.GetConnection();
+            using SqlCommand command = new(sql, connection);
+            command.Parameters.Add("@userId", SqlDbType.Int).Value = userId;
+
+            connection.Open();
+            using SqlDataReader reader = command.ExecuteReader();
+
+            return reader.Read()
+                ? MapUser(reader, includePasswordHash: false)
+                : null;
         }
 
-        public User? findByName(string name)
+        public List<User> GetAll()
         {
-            using SqlConnection conn = new(connString);
+            const string sql = """
+                SELECT UserId, FullName, Username, Role, IsActive,
+                       CreatedAt, UpdatedAt
+                FROM dbo.Users
+                ORDER BY Username;
+                """;
 
-            string sql = @"
-                            SELECT id, username, password, role, isActive
-                            FROM users
-                            WHERE username = @name";
+            List<User> users = new();
+            using SqlConnection connection = DatabaseConnection.GetConnection();
+            using SqlCommand command = new(sql, connection);
 
-            using SqlCommand cmd = new(sql, conn);
+            connection.Open();
+            using SqlDataReader reader = command.ExecuteReader();
 
-            cmd.Parameters.AddWithValue("@name", name);
-
-            try
+            while (reader.Read())
             {
-                conn.Open();
-
-                using SqlDataReader reader = cmd.ExecuteReader();
-
-                if (reader.Read())
-                {
-                    User user = new User
-                    {
-                        id = reader.GetInt32(0),
-                        username = reader.GetString(1),
-                        password = reader.GetString(2),
-
-                        role = Enum.Parse<UserRole>(
-                            reader.GetString(3),
-                            ignoreCase: true
-                        ),
-
-                        isActive = reader.GetBoolean(4)
-                    };
-                    return user;
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(
-                    $"User does not existing\n{ex.Message}"
-                );
+                users.Add(MapUser(reader, includePasswordHash: false));
             }
 
-            return null;
-        }
-
-        public List<User> getAll()
-        {
-            List<User> users = new List<User>();
-            using SqlConnection conn = new SqlConnection(connString);
-            string sql = "SELECT id, username, password, role, isActive FROM users";
-            using SqlCommand cmd = new SqlCommand(sql, conn);
-            try
-            {
-                conn.Open();
-                using SqlDataReader reader = cmd.ExecuteReader();
-                while (reader.Read())
-                {
-                    var user = new User
-                    {
-                        id = reader.GetInt32(0),
-                        username = reader.GetString(1),
-                        password = reader.GetString(2),
-                        role = Enum.Parse<UserRole>(reader.GetString(3)),
-                        isActive = reader.GetBoolean(4)
-                    };
-                    users.Add(user);
-                }
-
-            }
-            catch (Exception ex)
-            {
-
-                MessageBox.Show("Loading users failed\n" + ex.Message);
-            }
             return users;
         }
 
-        public User? getById(int id)
+        public DataTable Search(string keyword)
         {
-            using SqlConnection conn = new SqlConnection(connString);
-            string sql = @"SELECT id, username, password,role,isActive FROM users WHERE id = @id";
-            using SqlCommand cmd = new SqlCommand(sql, conn);
-            cmd.Parameters.AddWithValue("@id", id);
-            try
-            {
-                conn.Open();
-                using SqlDataReader reader = cmd.ExecuteReader();
-                User? user = null;
-                if (reader.Read())
-                {
-                    user = new User
-                    {
-                        id = reader.GetInt32(0),
-                        username = reader.GetString(1),
-                        password = reader.GetString(2),
-                        role = Enum.Parse<UserRole>(reader.GetString(3)),
-                        isActive = reader.GetBoolean(4)
-                    };
-                }
-                return user;
+            const string sql = """
+                SELECT UserId, FullName, Username, Role, IsActive,
+                       CreatedAt, UpdatedAt
+                FROM dbo.Users
+                WHERE Username LIKE @keyword
+                   OR FullName LIKE @keyword
+                ORDER BY Username;
+                """;
 
-            }
-            catch (Exception)
-            {
-                MessageBox.Show($"Loading user id: {id} failed");
-            }
-            return null;
+            using SqlConnection connection = DatabaseConnection.GetConnection();
+
+            DataTable results = new();
+            connection.Open();
+            using SqlDataAdapter adapter = new(sql, connection);
+            adapter.SelectCommand.Parameters.Add(
+                "@keyword",
+                SqlDbType.NVarChar,
+                150
+            ).Value = $"%{keyword.Trim()}%";
+            adapter.Fill(results);
+            return results;
         }
 
-        public bool save(User user)
+        public bool Create(User user)
         {
-            using SqlConnection conn = new SqlConnection(connString);
-            string sql = @"INSERT INTO users(username,password,role,isActive) VALUES
-            (@username,@password,@role,@isActive)
-            ";
-            using SqlCommand cmd = new SqlCommand(sql, conn);
-            int rows = 0;
-            try
-            {
-                conn.Open();
-                cmd.Parameters.AddWithValue("@username", user.username);
-                cmd.Parameters.AddWithValue("@password", user.password);
-                cmd.Parameters.AddWithValue("@role", user.role.ToString());
-                cmd.Parameters.AddWithValue("@isActive", user.isActive);
+            ArgumentNullException.ThrowIfNull(user);
+            ValidateUser(user);
 
-                rows = cmd.ExecuteNonQuery();
+            const string sql = """
+                INSERT INTO dbo.Users
+                    (FullName, Username, PasswordHash, Role, IsActive,
+                     CreatedAt, UpdatedAt)
+                VALUES
+                    (@fullName, @username, @passwordHash, @role, @isActive,
+                     SYSUTCDATETIME(), SYSUTCDATETIME());
+                """;
 
-            }
-            catch (Exception)
-            {
+            using SqlConnection connection = DatabaseConnection.GetConnection();
+            using SqlCommand command = new(sql, connection);
+            AddUserParameters(command, user, user.PasswordHash);
 
-            }
-            return rows > 0;
+            connection.Open();
+            return command.ExecuteNonQuery() == 1;
         }
 
-        public bool update(User user)
+        public bool Update(User user, string? passwordHash = null)
         {
-            using SqlConnection conn = new SqlConnection(connString);
-            string sql = @"UPDATE users SET 
-                username = @name,
-                password = @pw,
-                role     = @role,
-                isActive = @isActive
-                WHERE id = @id;
-            ";
-            using SqlCommand cmd = new SqlCommand(sql, conn);
-            int updated = 0;
-            try
-            {
-                conn.Open();
-                cmd.Parameters.AddWithValue("@id", user.id);
-                cmd.Parameters.AddWithValue("@name", user.username);
-                cmd.Parameters.AddWithValue("@pw", user.password);
-                cmd.Parameters.AddWithValue("@role", user.role.ToString());
-                cmd.Parameters.AddWithValue("@isActive", user.isActive);
+            ArgumentNullException.ThrowIfNull(user);
+            ValidateUser(user);
 
+            const string sql = """
+                UPDATE dbo.Users
+                SET FullName = @fullName,
+                    Username = @username,
+                    PasswordHash = CASE
+                        WHEN @passwordHash IS NULL THEN PasswordHash
+                        ELSE @passwordHash
+                    END,
+                    Role = @role,
+                    IsActive = @isActive,
+                    UpdatedAt = SYSUTCDATETIME()
+                WHERE UserId = @userId;
+                """;
 
-                updated = cmd.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Update user failed\n" + ex.Message);
-            }
-            return updated > 0;
+            using SqlConnection connection = DatabaseConnection.GetConnection();
+            using SqlCommand command = new(sql, connection);
+            AddUserParameters(command, user, passwordHash);
+            command.Parameters.Add("@userId", SqlDbType.Int).Value = user.UserId;
+
+            connection.Open();
+            return command.ExecuteNonQuery() == 1;
         }
 
-        public DataTable search(string keyword)
+        public bool SetActive(int userId, bool isActive)
         {
-            SqlConnection conn = new SqlConnection(connString);
-            string sql = "SELECT id, username, password, role, isActive FROM users WHERE username LIKE @keyword";
-            SqlCommand cmd = new SqlCommand(sql, conn);
-            cmd.Parameters.AddWithValue("@keyword", "%" + keyword + "%");
-            DataTable dt = new DataTable();
+            const string sql = """
+                UPDATE dbo.Users
+                SET IsActive = @isActive,
+                    UpdatedAt = SYSUTCDATETIME()
+                WHERE UserId = @userId;
+                """;
 
-            try
+            using SqlConnection connection = DatabaseConnection.GetConnection();
+            using SqlCommand command = new(sql, connection);
+            command.Parameters.Add("@isActive", SqlDbType.Bit).Value = isActive;
+            command.Parameters.Add("@userId", SqlDbType.Int).Value = userId;
+
+            connection.Open();
+            return command.ExecuteNonQuery() == 1;
+        }
+
+        private static void AddUserParameters(
+            SqlCommand command,
+            User user,
+            string? passwordHash
+        )
+        {
+            command.Parameters.Add("@fullName", SqlDbType.NVarChar, 150).Value =
+                user.FullName.Trim();
+            command.Parameters.Add("@username", SqlDbType.NVarChar, 50).Value =
+                user.Username.Trim();
+            command.Parameters.Add("@passwordHash", SqlDbType.NVarChar, 255).Value =
+                (object?)passwordHash ?? DBNull.Value;
+            command.Parameters.Add("@role", SqlDbType.NVarChar, 20).Value =
+                user.Role.ToString();
+            command.Parameters.Add("@isActive", SqlDbType.Bit).Value = user.IsActive;
+        }
+
+        private static void ValidateUser(User user)
+        {
+            if (string.IsNullOrWhiteSpace(user.FullName))
             {
-                conn.Open();
-                SqlDataAdapter da = new SqlDataAdapter(cmd);
-                da.Fill(dt);
+                throw new ArgumentException("Full name is required.", nameof(user));
             }
-            catch (Exception e)
+
+            if (string.IsNullOrWhiteSpace(user.Username))
             {
-                MessageBox.Show(e.Message);
+                throw new ArgumentException("Username is required.", nameof(user));
             }
-            finally
+        }
+
+        private static User MapUser(
+            SqlDataReader reader,
+            bool includePasswordHash
+        )
+        {
+            int passwordColumn = includePasswordHash ? 3 : -1;
+            int roleColumn = includePasswordHash ? 4 : 3;
+            int activeColumn = includePasswordHash ? 5 : 4;
+            int createdColumn = includePasswordHash ? 6 : 5;
+            int updatedColumn = includePasswordHash ? 7 : 6;
+
+            string roleText = reader.GetString(roleColumn);
+            if (!Enum.TryParse(roleText, ignoreCase: true, out UserRole role))
             {
-                conn.Close();
+                throw new InvalidOperationException(
+                    $"Unsupported user role '{roleText}'."
+                );
             }
-            return dt;
+
+            return new User
+            {
+                UserId = reader.GetInt32(0),
+                FullName = reader.GetString(1),
+                Username = reader.GetString(2),
+                PasswordHash = includePasswordHash
+                    ? reader.GetString(passwordColumn)
+                    : string.Empty,
+                Role = role,
+                IsActive = reader.GetBoolean(activeColumn),
+                CreatedAt = reader.GetDateTime(createdColumn),
+                UpdatedAt = reader.GetDateTime(updatedColumn)
+            };
         }
     }
 }
