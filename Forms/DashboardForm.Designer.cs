@@ -39,7 +39,6 @@ namespace Mart_Management_System.Forms
             dashboardLayout.SuspendLayout();
             headerLayout.SuspendLayout();
             cardsLayout.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)chartPanel).BeginInit();
             SuspendLayout();
 
             dashboardLayout.BackColor = Color.FromArgb(238, 241, 244);
