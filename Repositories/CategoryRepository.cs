@@ -5,7 +5,7 @@ using Microsoft.Data.SqlClient;
 
 namespace Mart_Management_System.Repositories
 {
-    public class CategoryRepository
+    public class CategoryRepository : IRepository<Category>
     {
         public List<Category> GetAll(string? keyword = null)
         {
