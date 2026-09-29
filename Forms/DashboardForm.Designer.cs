@@ -229,6 +229,7 @@ namespace Mart_Management_System.Forms
         )
         {
             card.BackColor = Color.White;
+            card.Dock = DockStyle.Fill;
             card.Margin = new Padding(0, 10, 8, 10);
             card.Padding = new Padding(0);
             card.TabStop = false;

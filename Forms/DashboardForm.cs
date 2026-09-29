@@ -79,7 +79,7 @@ namespace Mart_Management_System.Forms
             decimal maximum = _salesTrend.Count == 0
                 ? 0
                 : _salesTrend.Max(row => row.Value);
-            decimal scaleMaximum = maximum <= 0 ? 1 : maximum;
+            decimal scaleMaximum = RoundUpToNiceMaximum(maximum);
 
             using Font axisFont = new("Segoe UI", 8F);
             using Font valueFont = new("Segoe UI", 8F, FontStyle.Bold);
@@ -96,7 +96,7 @@ namespace Mart_Management_System.Forms
 
                 decimal value = scaleMaximum * gridIndex / 4m;
                 graphics.DrawString(
-                    value.ToString("C0", CultureInfo.CurrentCulture),
+                    FormatAxisValue(value, scaleMaximum),
                     axisFont,
                     axisBrush,
                     6,
@@ -140,7 +140,7 @@ namespace Mart_Management_System.Forms
                 if (value > 0)
                 {
                     graphics.DrawString(
-                        value.ToString("C0", CultureInfo.CurrentCulture),
+                        FormatAxisValue(value, scaleMaximum),
                         valueFont,
                         valueBrush,
                         x - 8,
@@ -159,6 +159,36 @@ namespace Mart_Management_System.Forms
                     topMargin + (chartHeight / 2) - 10
                 );
             }
+        }
+
+        private static decimal RoundUpToNiceMaximum(decimal maximum)
+        {
+            if (maximum <= 0)
+            {
+                return 10m;
+            }
+
+            decimal magnitude = (decimal)Math.Pow(
+                10,
+                Math.Floor(Math.Log10((double)maximum))
+            );
+
+            foreach (decimal multiplier in new[] { 1m, 2m, 5m })
+            {
+                decimal candidate = multiplier * magnitude;
+                if (maximum <= candidate)
+                {
+                    return candidate;
+                }
+            }
+
+            return 10m * magnitude;
+        }
+
+        private static string FormatAxisValue(decimal value, decimal scaleMaximum)
+        {
+            string format = scaleMaximum < 10m ? "C2" : "C0";
+            return value.ToString(format, CultureInfo.CurrentCulture);
         }
     }
 }
