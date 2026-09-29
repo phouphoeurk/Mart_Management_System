@@ -2,7 +2,7 @@ using Mart_Management_System.Enums;
 
 namespace Mart_Management_System.Models
 {
-    public class User
+    public class User : AuditableEntity
     {
         public int UserId { get; set; }
 
@@ -14,10 +14,8 @@ namespace Mart_Management_System.Models
 
         public UserRole Role { get; set; }
 
-        public bool IsActive { get; set; }
-
-        public DateTime CreatedAt { get; set; }
-
         public DateTime UpdatedAt { get; set; }
+
+        public override string GetDisplayName() => FullName;
     }
 }

@@ -1,6 +1,6 @@
 namespace Mart_Management_System.Models
 {
-    public class Product
+    public class Product : AuditableEntity
     {
         public int ProductId { get; set; }
 
@@ -22,12 +22,10 @@ namespace Mart_Management_System.Models
 
         public DateTime? ExpiryDate { get; set; }
 
-        public bool IsActive { get; set; }
-
-        public DateTime CreatedAt { get; set; }
-
         public string CategoryName { get; set; } = string.Empty;
 
         public string? SupplierName { get; set; }
+
+        public override string GetDisplayName() => ProductName;
     }
 }

@@ -1,6 +1,6 @@
 namespace Mart_Management_System.Models
 {
-    public class Category
+    public class Category : AuditableEntity
     {
         public int CategoryId { get; set; }
 
@@ -8,8 +8,6 @@ namespace Mart_Management_System.Models
 
         public string? Description { get; set; }
 
-        public bool IsActive { get; set; }
-
-        public DateTime CreatedAt { get; set; }
+        public override string GetDisplayName() => CategoryName;
     }
 }

@@ -1,6 +1,6 @@
 namespace Mart_Management_System.Models
 {
-    public class Supplier
+    public class Supplier : AuditableEntity
     {
         public int SupplierId { get; set; }
 
@@ -12,8 +12,6 @@ namespace Mart_Management_System.Models
 
         public string? Address { get; set; }
 
-        public bool IsActive { get; set; }
-
-        public DateTime CreatedAt { get; set; }
+        public override string GetDisplayName() => SupplierName;
     }
 }
