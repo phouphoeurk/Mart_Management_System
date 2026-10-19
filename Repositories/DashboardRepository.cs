@@ -81,6 +81,306 @@ namespace Mart_Management_System.Repositories
             };
         }
 
+        public DashboardSnapshot GetDashboardSnapshot(
+            DateTime rangeFrom,
+            DateTime rangeTo,
+            DateTime previousFrom,
+            DateTime previousTo,
+            bool hourlyTrend,
+            int topProductsLimit = 5,
+            int recentSalesLimit = 5,
+            int lowStockLimit = 5
+        )
+        {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("DashboardRepository.GetDashboardSnapshot");
+
+            string trendSql = hourlyTrend
+                ? """
+                    SELECT DATEPART(HOUR, s.SaleDate) AS SaleHour,
+                           SUM(s.TotalAmount) AS Revenue
+                    FROM dbo.Sales AS s
+                    WHERE s.Status = 'Completed'
+                      AND s.SaleDate >= @fromDate
+                      AND s.SaleDate < @toNextDay
+                    GROUP BY DATEPART(HOUR, s.SaleDate)
+                    ORDER BY SaleHour;
+                    """
+                : """
+                    SELECT CAST(s.SaleDate AS date) AS SaleDay,
+                           SUM(s.TotalAmount) AS Revenue
+                    FROM dbo.Sales AS s
+                    WHERE s.Status = 'Completed'
+                      AND s.SaleDate >= @fromDate
+                      AND s.SaleDate < @toNextDay
+                    GROUP BY CAST(s.SaleDate AS date)
+                    ORDER BY SaleDay;
+                    """;
+
+            string sql = $"""
+                SELECT
+                    ISNULL((SELECT SUM(s.TotalAmount) FROM dbo.Sales AS s
+                            WHERE s.Status = 'Completed'
+                              AND s.SaleDate >= @today AND s.SaleDate < @tomorrow), 0),
+                    ISNULL((SELECT COUNT(*) FROM dbo.Sales AS s
+                            WHERE s.Status = 'Completed'
+                              AND s.SaleDate >= @today AND s.SaleDate < @tomorrow), 0),
+                    (SELECT COUNT(*) FROM dbo.Products WHERE IsActive = 1),
+                    (SELECT COUNT(*) FROM dbo.Products
+                     WHERE IsActive = 1 AND StockQuantity <= ReorderLevel),
+                    (SELECT COUNT(*) FROM dbo.Products
+                     WHERE IsActive = 1 AND ExpiryDate >= @today
+                       AND ExpiryDate < DATEADD(DAY, 30, @tomorrow)),
+                    COALESCE((SELECT TOP 1 p.ProductName
+                              FROM dbo.SaleDetails AS sd
+                              INNER JOIN dbo.Sales AS s ON s.SaleId = sd.SaleId
+                              INNER JOIN dbo.Products AS p ON p.ProductId = sd.ProductId
+                              WHERE s.Status = 'Completed'
+                              GROUP BY p.ProductName
+                              ORDER BY SUM(sd.Quantity) DESC, p.ProductName), 'No sales yet'),
+                    CAST(COALESCE((SELECT TOP 1 SUM(sd.Quantity)
+                                   FROM dbo.SaleDetails AS sd
+                                   INNER JOIN dbo.Sales AS s ON s.SaleId = sd.SaleId
+                                   WHERE s.Status = 'Completed'
+                                   GROUP BY sd.ProductId
+                                   ORDER BY SUM(sd.Quantity) DESC, sd.ProductId), 0) AS decimal(18,2));
+
+                SELECT
+                    ISNULL((SELECT SUM(s.TotalAmount) FROM dbo.Sales AS s
+                            WHERE s.Status = 'Completed'
+                              AND s.SaleDate >= @fromDate AND s.SaleDate < @toNextDay), 0),
+                    ISNULL((SELECT COUNT(*) FROM dbo.Sales AS s
+                            WHERE s.Status = 'Completed'
+                              AND s.SaleDate >= @fromDate AND s.SaleDate < @toNextDay), 0),
+                    COALESCE((SELECT TOP 1 p.ProductName
+                              FROM dbo.SaleDetails AS sd
+                              INNER JOIN dbo.Sales AS s ON s.SaleId = sd.SaleId
+                              INNER JOIN dbo.Products AS p ON p.ProductId = sd.ProductId
+                              WHERE s.Status = 'Completed'
+                                AND s.SaleDate >= @fromDate AND s.SaleDate < @toNextDay
+                              GROUP BY p.ProductId, p.ProductName
+                              ORDER BY SUM(sd.Quantity) DESC, p.ProductName), 'No sales yet'),
+                    CAST(COALESCE((SELECT TOP 1 SUM(sd.Quantity)
+                                   FROM dbo.SaleDetails AS sd
+                                   INNER JOIN dbo.Sales AS s ON s.SaleId = sd.SaleId
+                                   WHERE s.Status = 'Completed'
+                                     AND s.SaleDate >= @fromDate AND s.SaleDate < @toNextDay
+                                   GROUP BY sd.ProductId
+                                   ORDER BY SUM(sd.Quantity) DESC, sd.ProductId), 0) AS decimal(18,2));
+
+                SELECT
+                    ISNULL((SELECT SUM(s.TotalAmount) FROM dbo.Sales AS s
+                            WHERE s.Status = 'Completed'
+                              AND s.SaleDate >= @prevFrom AND s.SaleDate < @prevNextDay), 0),
+                    ISNULL((SELECT COUNT(*) FROM dbo.Sales AS s
+                            WHERE s.Status = 'Completed'
+                              AND s.SaleDate >= @prevFrom AND s.SaleDate < @prevNextDay), 0),
+                    COALESCE((SELECT TOP 1 p.ProductName
+                              FROM dbo.SaleDetails AS sd
+                              INNER JOIN dbo.Sales AS s ON s.SaleId = sd.SaleId
+                              INNER JOIN dbo.Products AS p ON p.ProductId = sd.ProductId
+                              WHERE s.Status = 'Completed'
+                                AND s.SaleDate >= @prevFrom AND s.SaleDate < @prevNextDay
+                              GROUP BY p.ProductId, p.ProductName
+                              ORDER BY SUM(sd.Quantity) DESC, p.ProductName), 'No sales yet'),
+                    CAST(COALESCE((SELECT TOP 1 SUM(sd.Quantity)
+                                   FROM dbo.SaleDetails AS sd
+                                   INNER JOIN dbo.Sales AS s ON s.SaleId = sd.SaleId
+                                   WHERE s.Status = 'Completed'
+                                     AND s.SaleDate >= @prevFrom AND s.SaleDate < @prevNextDay
+                                   GROUP BY sd.ProductId
+                                   ORDER BY SUM(sd.Quantity) DESC, sd.ProductId), 0) AS decimal(18,2));
+
+                {trendSql}
+
+                SELECT TOP (@topLimit) p.ProductName,
+                       SUM(sd.Quantity) AS Quantity,
+                       SUM(sd.LineSubtotal) AS Revenue
+                FROM dbo.SaleDetails AS sd
+                INNER JOIN dbo.Sales AS s ON s.SaleId = sd.SaleId
+                INNER JOIN dbo.Products AS p ON p.ProductId = sd.ProductId
+                WHERE s.Status = 'Completed'
+                  AND s.SaleDate >= @fromDate AND s.SaleDate < @toNextDay
+                GROUP BY p.ProductId, p.ProductName
+                ORDER BY Quantity DESC, p.ProductName;
+
+                SELECT s.PaymentMethod, SUM(s.TotalAmount)
+                FROM dbo.Sales AS s
+                WHERE s.Status = 'Completed'
+                  AND s.SaleDate >= @fromDate AND s.SaleDate < @toNextDay
+                GROUP BY s.PaymentMethod
+                ORDER BY SUM(s.TotalAmount) DESC;
+
+                SELECT TOP (@recentLimit)
+                       s.SaleId, s.SaleDate, s.CashierUserId,
+                       ISNULL(NULLIF(u.FullName, ''), u.Username) AS CashierName,
+                       s.PaymentMethod, s.TotalAmount, s.Status
+                FROM dbo.Sales AS s
+                INNER JOIN dbo.Users AS u ON u.UserId = s.CashierUserId
+                ORDER BY s.SaleDate DESC, s.SaleId DESC;
+
+                SELECT TOP (@lowStockLimit) ProductName, StockQuantity, ReorderLevel
+                FROM dbo.Products
+                WHERE IsActive = 1 AND StockQuantity <= ReorderLevel
+                ORDER BY (CAST(StockQuantity AS decimal(18,2)) / NULLIF(ReorderLevel, 0)) ASC,
+                         StockQuantity ASC, ProductName;
+                """;
+
+            using SqlConnection connection = DatabaseConnection.GetConnection();
+            using SqlCommand command = new(sql, connection);
+            command.Parameters.Add("@today", SqlDbType.DateTime2).Value =
+                DateTime.Today;
+            command.Parameters.Add("@tomorrow", SqlDbType.DateTime2).Value =
+                DateTime.Today.AddDays(1);
+            command.Parameters.Add("@fromDate", SqlDbType.DateTime2).Value =
+                rangeFrom.Date;
+            command.Parameters.Add("@toNextDay", SqlDbType.DateTime2).Value =
+                rangeTo.Date.AddDays(1);
+            command.Parameters.Add("@prevFrom", SqlDbType.DateTime2).Value =
+                previousFrom.Date;
+            command.Parameters.Add("@prevNextDay", SqlDbType.DateTime2).Value =
+                previousTo.Date.AddDays(1);
+            command.Parameters.Add("@topLimit", SqlDbType.Int).Value =
+                topProductsLimit;
+            command.Parameters.Add("@recentLimit", SqlDbType.Int).Value =
+                recentSalesLimit;
+            command.Parameters.Add("@lowStockLimit", SqlDbType.Int).Value =
+                lowStockLimit;
+
+            DashboardSnapshot snapshot = new();
+            connection.Open();
+            using SqlDataReader reader = command.ExecuteReader();
+
+            if (reader.Read())
+            {
+                snapshot.Summary = new DashboardSummary
+                {
+                    TodayRevenue = reader.GetDecimalSafe(0),
+                    TodaySalesCount = reader.GetInt32Safe(1),
+                    ActiveProducts = reader.GetInt32Safe(2),
+                    LowStockCount = reader.GetInt32Safe(3),
+                    ExpiringSoonCount = reader.GetInt32Safe(4),
+                    TopSellingProduct = reader.GetStringSafe(5),
+                    TopSellingQuantity = reader.GetDecimalSafe(6)
+                };
+            }
+
+            if (reader.NextResult() && reader.Read())
+            {
+                snapshot.Current = new RangeSummary
+                {
+                    Revenue = reader.GetDecimalSafe(0),
+                    SalesCount = reader.GetInt32Safe(1),
+                    TopSellingProduct = reader.GetStringSafe(2),
+                    TopSellingQuantity = reader.GetDecimalSafe(3)
+                };
+            }
+
+            if (reader.NextResult() && reader.Read())
+            {
+                snapshot.Previous = new RangeSummary
+                {
+                    Revenue = reader.GetDecimalSafe(0),
+                    SalesCount = reader.GetInt32Safe(1),
+                    TopSellingProduct = reader.GetStringSafe(2),
+                    TopSellingQuantity = reader.GetDecimalSafe(3)
+                };
+            }
+
+            if (reader.NextResult())
+            {
+                List<ReportRow> trend = new();
+                while (reader.Read())
+                {
+                    ReportRow row = new();
+                    row.Label = hourlyTrend
+                        ? reader.GetInt32Safe(0).ToString("00")
+                        : reader.GetDateTime(0).ToString("yyyy-MM-dd");
+                    row.Value = reader.GetDecimalSafe(1);
+                    row.DisplayValue = row.Value.ToString("C2");
+                    trend.Add(row);
+                }
+
+                snapshot.Trend = trend;
+            }
+
+            if (reader.NextResult())
+            {
+                List<ReportRow> topProducts = new();
+                while (reader.Read())
+                {
+                    decimal quantity = reader.GetDecimalSafe(1);
+                    decimal revenue = reader.GetDecimalSafe(2);
+                    topProducts.Add(new ReportRow
+                    {
+                        Label = reader.GetStringSafe(0),
+                        Value = quantity,
+                        DisplayValue = $"{quantity:0} units / {revenue:C2}"
+                    });
+                }
+
+                snapshot.TopProducts = topProducts;
+            }
+
+            if (reader.NextResult())
+            {
+                List<ReportRow> paymentMix = new();
+                while (reader.Read())
+                {
+                    ReportRow row = new()
+                    {
+                        Label = reader.GetStringSafe(0),
+                        Value = reader.GetDecimalSafe(1)
+                    };
+                    row.DisplayValue = row.Value.ToString("C2");
+                    paymentMix.Add(row);
+                }
+
+                snapshot.PaymentMix = paymentMix;
+            }
+
+            if (reader.NextResult())
+            {
+                List<SaleSummary> recentSales = new();
+                while (reader.Read())
+                {
+                    recentSales.Add(new SaleSummary
+                    {
+                        SaleId = reader.GetInt32Safe(0),
+                        SaleDate = reader.GetDateTime(1),
+                        CashierUserId = reader.GetInt32Safe(2),
+                        CashierName = reader.GetStringSafe(3),
+                        PaymentMethod = reader.GetStringSafe(4),
+                        TotalAmount = reader.GetDecimalSafe(5),
+                        Status = reader.GetStringSafe(6)
+                    });
+                }
+
+                snapshot.RecentSales = recentSales;
+            }
+
+            if (reader.NextResult())
+            {
+                List<ReportRow> lowStock = new();
+                while (reader.Read())
+                {
+                    int stock = reader.GetInt32Safe(1);
+                    int reorder = reader.GetInt32Safe(2);
+                    lowStock.Add(new ReportRow
+                    {
+                        Label = reader.GetStringSafe(0),
+                        Value = stock,
+                        DisplayValue = reorder > 0
+                            ? $"{stock} / reorder {reorder}"
+                            : $"{stock} left"
+                    });
+                }
+
+                snapshot.LowStock = lowStock;
+            }
+
+            return snapshot;
+        }
+
         public RangeSummary GetRangeSummary(DateTime fromDate, DateTime toDate)
         {
             using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("DashboardRepository.GetRangeSummary");

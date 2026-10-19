@@ -224,16 +224,37 @@ namespace Mart_Management_System.Forms
                     string periodText
                 ) = GetRangeBounds(_range);
 
-                LoadSummaryCards();
-                LoadRangeCards(from, to, prevFrom, prevTo, compareText, periodText);
-                LoadTrendChart(from, to);
+                DashboardSnapshot snapshot =
+                    _dashboardRepository.GetDashboardSnapshot(
+                        from,
+                        to,
+                        prevFrom,
+                        prevTo,
+                        _range == DashboardRange.Day,
+                        5,
+                        5,
+                        5
+                    );
+
+                LoadSummaryCards(snapshot.Summary);
+                LoadRangeCards(
+                    snapshot.Current,
+                    snapshot.Previous,
+                    compareText,
+                    periodText
+                );
+
+                _granularity = _range == DashboardRange.Day
+                    ? TrendGranularity.Hour
+                    : TrendGranularity.Day;
+                _trend = snapshot.Trend;
 
                 lblChartTitle.Text = ChartTitleFor(_range);
 
-                LoadTopProductsWidget(from, to);
-                LoadPaymentsWidget(from, to);
-                LoadRecentSalesWidget();
-                LoadLowStockWidget();
+                LoadTopProductsWidget(snapshot.TopProducts);
+                LoadPaymentsWidget(snapshot.PaymentMix);
+                LoadRecentSalesWidget(snapshot.RecentSales);
+                LoadLowStockWidget(snapshot.LowStock);
 
                 lblLastUpdated.Text = $"Updated {DateTime.Now:yyyy-MM-dd HH:mm}";
                 chartPanel.Invalidate();
@@ -253,283 +274,146 @@ namespace Mart_Management_System.Forms
             StartFade();
         }
 
-        private void LoadSummaryCards()
+        private void LoadSummaryCards(DashboardSummary summary)
         {
-            try
-            {
-                DashboardSummary summary = _dashboardRepository.GetSummary();
-                SetCard(
-                    3,
-                    summary.ActiveProducts.ToString("N0"),
-                    ("in catalog now", Color.Gray),
-                    "Products currently enabled in the catalog."
-                );
-                SetCard(
-                    4,
-                    summary.LowStockCount.ToString("N0"),
-                    ("at or below reorder level", Color.Gray),
-                    "Products with stock at or below the reorder level."
-                );
-                SetCard(
-                    5,
-                    summary.ExpiringSoonCount.ToString("N0"),
-                    ("within the next 30 days", Color.Gray),
-                    "Products expiring within the next 30 days."
-                );
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.ToString());
-                SetCard(
-                    3,
-                    "\u2014",
-                    ("unavailable", DeltaDownColor),
-                    "Catalog summary unavailable."
-                );
-                SetCard(
-                    4,
-                    "\u2014",
-                    ("unavailable", DeltaDownColor),
-                    "Catalog summary unavailable."
-                );
-                SetCard(
-                    5,
-                    "\u2014",
-                    ("unavailable", DeltaDownColor),
-                    "Catalog summary unavailable."
-                );
-            }
+            SetCard(
+                3,
+                summary.ActiveProducts.ToString("N0"),
+                ("in catalog now", Color.Gray),
+                "Products currently enabled in the catalog."
+            );
+            SetCard(
+                4,
+                summary.LowStockCount.ToString("N0"),
+                ("at or below reorder level", Color.Gray),
+                "Products with stock at or below the reorder level."
+            );
+            SetCard(
+                5,
+                summary.ExpiringSoonCount.ToString("N0"),
+                ("within the next 30 days", Color.Gray),
+                "Products expiring within the next 30 days."
+            );
         }
 
         private void LoadRangeCards(
-            DateTime from,
-            DateTime to,
-            DateTime prevFrom,
-            DateTime prevTo,
+            RangeSummary current,
+            RangeSummary previous,
             string compareText,
             string periodText
         )
         {
-            try
-            {
-                RangeSummary current = _dashboardRepository.GetRangeSummary(from, to);
-                RangeSummary previous = _dashboardRepository.GetRangeSummary(
-                    prevFrom,
-                    prevTo
-                );
-
-                SetCard(
-                    0,
-                    current.Revenue.ToString("C2"),
-                    BuildDelta(current.Revenue, previous.Revenue, compareText),
-                    $"Completed sales revenue for {periodText}."
-                );
-                SetCard(
-                    1,
-                    current.SalesCount.ToString("N0"),
-                    BuildDelta(current.SalesCount, previous.SalesCount, compareText),
-                    $"Completed sales count for {periodText}."
-                );
-                SetCard(
-                    2,
-                    current.TopSellingProduct,
-                    BuildTopSellerDelta(current, previous, compareText),
-                    current.TopSellingQuantity > 0
-                        ? $"{current.TopSellingQuantity:0} units sold for {periodText}."
-                        : "No completed sales in this period."
-                );
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.ToString());
-                SetCard(
-                    0,
-                    "\u2014",
-                    ("unavailable", DeltaDownColor),
-                    "Revenue unavailable."
-                );
-                SetCard(
-                    1,
-                    "\u2014",
-                    ("unavailable", DeltaDownColor),
-                    "Sales unavailable."
-                );
-                SetCard(
-                    2,
-                    "\u2014",
-                    ("unavailable", DeltaDownColor),
-                    "Top seller unavailable."
-                );
-            }
+            SetCard(
+                0,
+                current.Revenue.ToString("C2"),
+                BuildDelta(current.Revenue, previous.Revenue, compareText),
+                $"Completed sales revenue for {periodText}."
+            );
+            SetCard(
+                1,
+                current.SalesCount.ToString("N0"),
+                BuildDelta(current.SalesCount, previous.SalesCount, compareText),
+                $"Completed sales count for {periodText}."
+            );
+            SetCard(
+                2,
+                current.TopSellingProduct,
+                BuildTopSellerDelta(current, previous, compareText),
+                current.TopSellingQuantity > 0
+                    ? $"{current.TopSellingQuantity:0} units sold for {periodText}."
+                    : "No completed sales in this period."
+            );
         }
 
-        private void LoadTrendChart(DateTime from, DateTime to)
+        private void LoadTopProductsWidget(List<ReportRow> topProducts)
         {
-            _granularity = _range == DashboardRange.Day
-                ? TrendGranularity.Hour
-                : TrendGranularity.Day;
-
-            try
-            {
-                _trend = _granularity == TrendGranularity.Hour
-                    ? _dashboardRepository.GetHourlyTrend(from)
-                    : _dashboardRepository.GetSalesTrend(from, to);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.ToString());
-                _trend = new List<ReportRow>();
-                lblMessage.Text = "Unable to load the sales trend chart.";
-            }
+            decimal topMax = topProducts.Count > 0
+                ? Math.Max(1m, topProducts[0].Value)
+                : 1m;
+            _widgetTopProducts.SetContent(
+                "Top Products",
+                topProducts.Select(
+                    row => new WidgetRow
+                    {
+                        LeftText = row.Label,
+                        RightText = $"{row.Value:0} u",
+                        BarFraction = (float)(row.Value / topMax)
+                    }
+                ),
+                "No sales in this period"
+            );
+            toolTip.SetToolTip(
+                _widgetTopProducts,
+                "Top selling products for the selected period."
+            );
         }
 
-        private void LoadTopProductsWidget(DateTime from, DateTime to)
+        private void LoadPaymentsWidget(List<ReportRow> payments)
         {
-            try
-            {
-                List<ReportRow> topProducts = _dashboardRepository.GetTopProducts(
-                    from,
-                    to,
-                    5
-                );
-                decimal topMax = topProducts.Count > 0
-                    ? Math.Max(1m, topProducts[0].Value)
-                    : 1m;
-                _widgetTopProducts.SetContent(
-                    "Top Products",
-                    topProducts.Select(
-                        row => new WidgetRow
-                        {
-                            LeftText = row.Label,
-                            RightText = $"{row.Value:0} u",
-                            BarFraction = (float)(row.Value / topMax)
-                        }
-                    ),
-                    "No sales in this period"
-                );
-                toolTip.SetToolTip(
-                    _widgetTopProducts,
-                    "Top selling products for the selected period."
-                );
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.ToString());
-                _widgetTopProducts.SetContent(
-                    "Top Products",
-                    Array.Empty<WidgetRow>(),
-                    "Unable to load top products"
-                );
-            }
+            decimal paymentTotal = payments.Sum(row => row.Value);
+            _widgetPayments.SetContent(
+                "Payment Mix",
+                payments.Select(
+                    row => new WidgetRow
+                    {
+                        LeftText = row.Label,
+                        RightText = row.Value.ToString("C2"),
+                        BarFraction = paymentTotal > 0
+                            ? (float?)(row.Value / paymentTotal)
+                            : null
+                    }
+                ),
+                "No completed sales in this period"
+            );
+            toolTip.SetToolTip(
+                _widgetPayments,
+                "Revenue split by payment method."
+            );
         }
 
-        private void LoadPaymentsWidget(DateTime from, DateTime to)
+        private void LoadRecentSalesWidget(List<SaleSummary> recent)
         {
-            try
-            {
-                List<ReportRow> payments =
-                    _dashboardRepository.GetRevenueByPaymentMethod(from, to);
-                decimal paymentTotal = payments.Sum(row => row.Value);
-                _widgetPayments.SetContent(
-                    "Payment Mix",
-                    payments.Select(
-                        row => new WidgetRow
-                        {
-                            LeftText = row.Label,
-                            RightText = row.Value.ToString("C2"),
-                            BarFraction = paymentTotal > 0
-                                ? (float?)(row.Value / paymentTotal)
-                                : null
-                        }
-                    ),
-                    "No completed sales in this period"
-                );
-                toolTip.SetToolTip(
-                    _widgetPayments,
-                    "Revenue split by payment method."
-                );
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.ToString());
-                _widgetPayments.SetContent(
-                    "Payment Mix",
-                    Array.Empty<WidgetRow>(),
-                    "Unable to load payment mix"
-                );
-            }
+            _widgetRecentSales.SetContent(
+                "Recent Sales",
+                recent.Select(
+                    sale => new WidgetRow
+                    {
+                        LeftText =
+                            $"{sale.SaleDate:MM-dd HH:mm}  {sale.CashierName}",
+                        RightText = sale.TotalAmount.ToString("C2"),
+                        RightColor = sale.Status.Equals(
+                            "Completed",
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                            ? DeltaUpColor
+                            : Color.Gray
+                    }
+                ),
+                "No sales yet"
+            );
+            toolTip.SetToolTip(
+                _widgetRecentSales,
+                "Most recent sales on record."
+            );
         }
 
-        private void LoadRecentSalesWidget()
+        private void LoadLowStockWidget(List<ReportRow> lowStock)
         {
-            try
-            {
-                List<SaleSummary> recent = _dashboardRepository.GetRecentSales(5);
-                _widgetRecentSales.SetContent(
-                    "Recent Sales",
-                    recent.Select(
-                        sale => new WidgetRow
-                        {
-                            LeftText =
-                                $"{sale.SaleDate:MM-dd HH:mm}  {sale.CashierName}",
-                            RightText = sale.TotalAmount.ToString("C2"),
-                            RightColor = sale.Status.Equals(
-                                "Completed",
-                                StringComparison.OrdinalIgnoreCase
-                            )
-                                ? DeltaUpColor
-                                : Color.Gray
-                        }
-                    ),
-                    "No sales yet"
-                );
-                toolTip.SetToolTip(
-                    _widgetRecentSales,
-                    "Most recent sales on record."
-                );
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.ToString());
-                _widgetRecentSales.SetContent(
-                    "Recent Sales",
-                    Array.Empty<WidgetRow>(),
-                    "Unable to load recent sales"
-                );
-            }
-        }
-
-        private void LoadLowStockWidget()
-        {
-            try
-            {
-                List<ReportRow> lowStock =
-                    _dashboardRepository.GetLowStockProducts(5);
-                _widgetLowStock.SetContent(
-                    "Low Stock",
-                    lowStock.Select(
-                        row => new WidgetRow
-                        {
-                            LeftText = row.Label,
-                            RightText = row.DisplayValue
-                        }
-                    ),
-                    "All products above reorder level"
-                );
-                toolTip.SetToolTip(
-                    _widgetLowStock,
-                    "Products at or below their reorder level."
-                );
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.ToString());
-                _widgetLowStock.SetContent(
-                    "Low Stock",
-                    Array.Empty<WidgetRow>(),
-                    "Unable to load low stock"
-                );
-            }
+            _widgetLowStock.SetContent(
+                "Low Stock",
+                lowStock.Select(
+                    row => new WidgetRow
+                    {
+                        LeftText = row.Label,
+                        RightText = row.DisplayValue
+                    }
+                ),
+                "All products above reorder level"
+            );
+            toolTip.SetToolTip(
+                _widgetLowStock,
+                "Products at or below their reorder level."
+            );
         }
 
         private void SetCard(
