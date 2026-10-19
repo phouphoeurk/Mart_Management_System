@@ -11,3 +11,7 @@ bin/
 *.log
 
 
+opencode.json
+opencode.json
+appsettings.json
+_PerfHarness/
