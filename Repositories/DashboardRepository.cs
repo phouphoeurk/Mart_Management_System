@@ -79,6 +79,171 @@ namespace Mart_Management_System.Repositories
             };
         }
 
+        public RangeSummary GetRangeSummary(DateTime fromDate, DateTime toDate)
+        {
+            const string sql = """
+                SELECT
+                    ISNULL((
+                        SELECT SUM(s.TotalAmount)
+                        FROM dbo.Sales AS s
+                        WHERE s.Status = 'Completed'
+                          AND s.SaleDate >= @fromDate
+                          AND s.SaleDate < @toNextDay
+                    ), 0),
+                    ISNULL((
+                        SELECT COUNT(*)
+                        FROM dbo.Sales AS s
+                        WHERE s.Status = 'Completed'
+                          AND s.SaleDate >= @fromDate
+                          AND s.SaleDate < @toNextDay
+                    ), 0),
+                    COALESCE((
+                        SELECT TOP 1 p.ProductName
+                        FROM dbo.SaleDetails AS sd
+                        INNER JOIN dbo.Sales AS s ON s.SaleId = sd.SaleId
+                        INNER JOIN dbo.Products AS p ON p.ProductId = sd.ProductId
+                        WHERE s.Status = 'Completed'
+                          AND s.SaleDate >= @fromDate
+                          AND s.SaleDate < @toNextDay
+                        GROUP BY p.ProductId, p.ProductName
+                        ORDER BY SUM(sd.Quantity) DESC, p.ProductName
+                    ), 'No sales yet'),
+                    CAST(COALESCE((
+                        SELECT TOP 1 SUM(sd.Quantity)
+                        FROM dbo.SaleDetails AS sd
+                        INNER JOIN dbo.Sales AS s ON s.SaleId = sd.SaleId
+                        WHERE s.Status = 'Completed'
+                          AND s.SaleDate >= @fromDate
+                          AND s.SaleDate < @toNextDay
+                        GROUP BY sd.ProductId
+                        ORDER BY SUM(sd.Quantity) DESC, sd.ProductId
+                    ), 0) AS decimal(18,2));
+                """;
+
+            using SqlConnection connection = DatabaseConnection.GetConnection();
+            using SqlCommand command = new(sql, connection);
+            command.Parameters.Add("@fromDate", SqlDbType.DateTime2).Value =
+                fromDate.Date;
+            command.Parameters.Add("@toNextDay", SqlDbType.DateTime2).Value =
+                toDate.Date.AddDays(1);
+
+            connection.Open();
+            using SqlDataReader reader = command.ExecuteReader();
+            if (!reader.Read())
+            {
+                return new RangeSummary();
+            }
+
+            return new RangeSummary
+            {
+                Revenue = reader.GetDecimal(0),
+                SalesCount = reader.GetInt32(1),
+                TopSellingProduct = reader.GetString(2),
+                TopSellingQuantity = reader.GetDecimal(3)
+            };
+        }
+
+        public List<ReportRow> GetHourlyTrend(DateTime date)
+        {
+            const string sql = """
+                SELECT DATEPART(HOUR, s.SaleDate) AS SaleHour,
+                       SUM(s.TotalAmount) AS Revenue
+                FROM dbo.Sales AS s
+                WHERE s.Status = 'Completed'
+                  AND s.SaleDate >= @fromDate
+                  AND s.SaleDate < @toNextDay
+                GROUP BY DATEPART(HOUR, s.SaleDate)
+                ORDER BY SaleHour;
+                """;
+
+            return ReadRows(
+                sql,
+                (reader, row) =>
+                {
+                    row.Label = reader.GetInt32(0).ToString("00");
+                    row.Value = reader.GetDecimal(1);
+                    row.DisplayValue = row.Value.ToString("C2");
+                },
+                date,
+                date
+            );
+        }
+
+        public List<SaleSummary> GetRecentSales(int limit = 5)
+        {
+            const string sql = """
+                SELECT TOP (@limit)
+                       s.SaleId, s.SaleDate, s.CashierUserId,
+                       ISNULL(NULLIF(u.FullName, ''), u.Username) AS CashierName,
+                       s.PaymentMethod, s.TotalAmount, s.Status
+                FROM dbo.Sales AS s
+                INNER JOIN dbo.Users AS u
+                    ON u.UserId = s.CashierUserId
+                ORDER BY s.SaleDate DESC, s.SaleId DESC;
+                """;
+
+            List<SaleSummary> sales = new();
+            using SqlConnection connection = DatabaseConnection.GetConnection();
+            using SqlCommand command = new(sql, connection);
+            command.Parameters.Add("@limit", SqlDbType.Int).Value = limit;
+
+            connection.Open();
+            using SqlDataReader reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                sales.Add(new SaleSummary
+                {
+                    SaleId = reader.GetInt32(0),
+                    SaleDate = reader.GetDateTime(1),
+                    CashierUserId = reader.GetInt32(2),
+                    CashierName = reader.GetString(3),
+                    PaymentMethod = reader.GetString(4),
+                    TotalAmount = reader.GetDecimal(5),
+                    Status = reader.GetString(6)
+                });
+            }
+
+            return sales;
+        }
+
+        public List<ReportRow> GetLowStockProducts(int limit = 5)
+        {
+            const string sql = """
+                SELECT TOP (@limit)
+                       ProductName, StockQuantity, ReorderLevel
+                FROM dbo.Products
+                WHERE IsActive = 1
+                  AND StockQuantity <= ReorderLevel
+                ORDER BY (CAST(StockQuantity AS decimal(18,2))
+                          / NULLIF(ReorderLevel, 0)) ASC,
+                         StockQuantity ASC,
+                         ProductName;
+                """;
+
+            List<ReportRow> rows = new();
+            using SqlConnection connection = DatabaseConnection.GetConnection();
+            using SqlCommand command = new(sql, connection);
+            command.Parameters.Add("@limit", SqlDbType.Int).Value = limit;
+
+            connection.Open();
+            using SqlDataReader reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                int stock = reader.GetInt32(1);
+                int reorder = reader.GetInt32(2);
+                rows.Add(new ReportRow
+                {
+                    Label = reader.GetString(0),
+                    Value = stock,
+                    DisplayValue = reorder > 0
+                        ? $"{stock} / reorder {reorder}"
+                        : $"{stock} left"
+                });
+            }
+
+            return rows;
+        }
+
         public ReportTotals GetPeriodTotals()
         {
             DateTime today = DateTime.Today;

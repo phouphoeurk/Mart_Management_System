@@ -1,3 +1,5 @@
+using Mart_Management_System.UI;
+
 namespace Mart_Management_System.Forms
 {
     partial class DashboardForm
@@ -11,6 +13,7 @@ namespace Mart_Management_System.Forms
                 components.Dispose();
             }
 
+            _fadeTimer?.Dispose();
             base.Dispose(disposing);
         }
 
@@ -22,56 +25,74 @@ namespace Mart_Management_System.Forms
             dashboardLayout = new TableLayoutPanel();
             headerLayout = new TableLayoutPanel();
             lblTitle = new Label();
+            toggleRange = new SegmentedToggle();
             btnRefresh = new Button();
-            cardsLayout = new TableLayoutPanel();
-            cardRevenue = new Panel();
-            cardSales = new Panel();
-            cardProducts = new Panel();
-            cardLowStock = new Panel();
-            cardExpiry = new Panel();
-            cardTopProduct = new Panel();
-            lblTopProductQuantity = new Label();
+            middlePanel = new BufferedPanel();
+            fadeOverlay = new BufferedPanel();
+            contentLayout = new TableLayoutPanel();
+            chartCard = new RoundedPanel();
+            chartPanel = new BufferedPanel();
             lblChartTitle = new Label();
-            chartPanel = new Panel();
+            widgetsLayout = new TableLayoutPanel();
+            cardsLayout = new TableLayoutPanel();
             footerLayout = new TableLayoutPanel();
             lblMessage = new Label();
             lblLastUpdated = new Label();
             dashboardLayout.SuspendLayout();
             headerLayout.SuspendLayout();
+            middlePanel.SuspendLayout();
+            contentLayout.SuspendLayout();
+            chartCard.SuspendLayout();
+            widgetsLayout.SuspendLayout();
             cardsLayout.SuspendLayout();
+            footerLayout.SuspendLayout();
             SuspendLayout();
 
             dashboardLayout.BackColor = Color.FromArgb(238, 241, 244);
             dashboardLayout.ColumnCount = 1;
-            dashboardLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            dashboardLayout.ColumnStyles.Add(
+                new ColumnStyle(SizeType.Percent, 100F)
+            );
             dashboardLayout.Controls.Add(headerLayout, 0, 0);
-            dashboardLayout.Controls.Add(cardsLayout, 0, 1);
-            dashboardLayout.Controls.Add(lblChartTitle, 0, 2);
-            dashboardLayout.Controls.Add(chartPanel, 0, 3);
-            dashboardLayout.Controls.Add(footerLayout, 0, 4);
+            dashboardLayout.Controls.Add(middlePanel, 0, 1);
+            dashboardLayout.Controls.Add(footerLayout, 0, 2);
             dashboardLayout.Dock = DockStyle.Fill;
             dashboardLayout.Margin = new Padding(0);
             dashboardLayout.Name = "dashboardLayout";
-            dashboardLayout.RowCount = 5;
-            dashboardLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 64F));
-            dashboardLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 190F));
-            dashboardLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 32F));
-            dashboardLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            dashboardLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 60F));
+            dashboardLayout.RowCount = 3;
+            dashboardLayout.RowStyles.Add(
+                new RowStyle(SizeType.Absolute, 64F)
+            );
+            dashboardLayout.RowStyles.Add(
+                new RowStyle(SizeType.Percent, 100F)
+            );
+            dashboardLayout.RowStyles.Add(
+                new RowStyle(SizeType.Absolute, 54F)
+            );
             dashboardLayout.Size = new Size(1100, 700);
             dashboardLayout.TabIndex = 0;
 
-            headerLayout.ColumnCount = 2;
-            headerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            headerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 160F));
+            headerLayout.ColumnCount = 3;
+            headerLayout.ColumnStyles.Add(
+                new ColumnStyle(SizeType.Percent, 100F)
+            );
+            headerLayout.ColumnStyles.Add(
+                new ColumnStyle(SizeType.Absolute, 250F)
+            );
+            headerLayout.ColumnStyles.Add(
+                new ColumnStyle(SizeType.Absolute, 140F)
+            );
             headerLayout.Controls.Add(lblTitle, 0, 0);
-            headerLayout.Controls.Add(btnRefresh, 1, 0);
+            headerLayout.Controls.Add(toggleRange, 1, 0);
+            headerLayout.Controls.Add(btnRefresh, 2, 0);
             headerLayout.Dock = DockStyle.Fill;
             headerLayout.Margin = new Padding(0);
             headerLayout.Name = "headerLayout";
             headerLayout.Padding = new Padding(20, 0, 20, 0);
             headerLayout.RowCount = 1;
-            headerLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            headerLayout.RowStyles.Add(
+                new RowStyle(SizeType.Percent, 100F)
+            );
             headerLayout.Size = new Size(1100, 64);
             headerLayout.TabIndex = 0;
 
@@ -80,10 +101,15 @@ namespace Mart_Management_System.Forms
             lblTitle.Font = new Font("Segoe UI", 22F, FontStyle.Bold);
             lblTitle.ForeColor = Color.FromArgb(17, 17, 17);
             lblTitle.Name = "lblTitle";
-            lblTitle.Size = new Size(900, 64);
+            lblTitle.Size = new Size(670, 64);
             lblTitle.TabIndex = 0;
             lblTitle.Text = "DASHBOARD";
             lblTitle.TextAlign = ContentAlignment.MiddleLeft;
+
+            toggleRange.Dock = DockStyle.Fill;
+            toggleRange.Margin = new Padding(12, 15, 0, 15);
+            toggleRange.Name = "toggleRange";
+            toggleRange.TabIndex = 1;
 
             btnRefresh.BackColor = Color.FromArgb(91, 174, 99);
             btnRefresh.Dock = DockStyle.Fill;
@@ -91,82 +117,151 @@ namespace Mart_Management_System.Forms
             btnRefresh.FlatStyle = FlatStyle.Flat;
             btnRefresh.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             btnRefresh.ForeColor = Color.White;
-            btnRefresh.Margin = new Padding(0, 13, 0, 13);
+            btnRefresh.Margin = new Padding(12, 13, 0, 13);
             btnRefresh.Name = "btnRefresh";
-            btnRefresh.Size = new Size(160, 38);
-            btnRefresh.TabIndex = 1;
+            btnRefresh.Size = new Size(140, 38);
+            btnRefresh.TabIndex = 2;
             btnRefresh.Text = "Refresh";
             btnRefresh.UseVisualStyleBackColor = false;
             btnRefresh.Click += btnRefresh_Click;
 
-            // Six equal-width columns so the cards stay side by side and scale
-            // with the form instead of being pinned to fixed offsets.
+            middlePanel.BackColor = Color.FromArgb(238, 241, 244);
+            middlePanel.Controls.Add(fadeOverlay);
+            middlePanel.Controls.Add(contentLayout);
+            middlePanel.Controls.Add(cardsLayout);
+            middlePanel.Dock = DockStyle.Fill;
+            middlePanel.Margin = new Padding(0);
+            middlePanel.Name = "middlePanel";
+            middlePanel.Size = new Size(1100, 582);
+            middlePanel.TabIndex = 1;
+            middlePanel.Resize += middlePanel_Resize;
+
+            // Added first so it sits at the front of the z-order; Dock.None keeps
+            // it out of the dock pass and its bounds are set on resize.
+            fadeOverlay.BackColor = Color.FromArgb(
+                0,
+                238,
+                241,
+                244
+            );
+            fadeOverlay.Dock = DockStyle.None;
+            fadeOverlay.Location = new Point(0, 0);
+            fadeOverlay.Margin = new Padding(0);
+            fadeOverlay.Name = "fadeOverlay";
+            fadeOverlay.Size = new Size(1100, 582);
+            fadeOverlay.TabIndex = 0;
+            fadeOverlay.Visible = false;
+
+            contentLayout.BackColor = Color.FromArgb(238, 241, 244);
+            contentLayout.ColumnCount = 2;
+            contentLayout.ColumnStyles.Add(
+                new ColumnStyle(SizeType.Percent, 56F)
+            );
+            contentLayout.ColumnStyles.Add(
+                new ColumnStyle(SizeType.Percent, 44F)
+            );
+            contentLayout.Controls.Add(chartCard, 0, 0);
+            contentLayout.Controls.Add(widgetsLayout, 1, 0);
+            contentLayout.Dock = DockStyle.Fill;
+            contentLayout.Margin = new Padding(0);
+            contentLayout.Name = "contentLayout";
+            contentLayout.Padding = new Padding(20, 0, 20, 4);
+            contentLayout.RowCount = 1;
+            contentLayout.RowStyles.Add(
+                new RowStyle(SizeType.Percent, 100F)
+            );
+            contentLayout.Size = new Size(1100, 430);
+            contentLayout.TabIndex = 1;
+
+            chartCard.BackColor = Color.White;
+            chartCard.Controls.Add(chartPanel);
+            chartCard.Controls.Add(lblChartTitle);
+            chartCard.Dock = DockStyle.Fill;
+            chartCard.Margin = new Padding(0, 0, 5, 0);
+            chartCard.Name = "chartCard";
+            chartCard.Padding = new Padding(4, 4, 4, 4);
+            chartCard.Size = new Size(600, 426);
+            chartCard.TabIndex = 0;
+
+            chartPanel.BackColor = Color.White;
+            chartPanel.Dock = DockStyle.Fill;
+            chartPanel.Location = new Point(0, 40);
+            chartPanel.Margin = new Padding(0);
+            chartPanel.Name = "chartPanel";
+            chartPanel.Size = new Size(600, 386);
+            chartPanel.TabIndex = 1;
+            chartPanel.Paint += ChartPanel_Paint;
+
+            lblChartTitle.AutoSize = false;
+            lblChartTitle.Dock = DockStyle.Top;
+            lblChartTitle.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
+            lblChartTitle.ForeColor = Color.FromArgb(17, 17, 17);
+            lblChartTitle.Location = new Point(0, 0);
+            lblChartTitle.Margin = new Padding(0);
+            lblChartTitle.Name = "lblChartTitle";
+            lblChartTitle.Padding = new Padding(14, 0, 0, 0);
+            lblChartTitle.Size = new Size(600, 40);
+            lblChartTitle.TabIndex = 0;
+            lblChartTitle.Text = "SALES REVENUE \u2014 LAST 7 DAYS";
+            lblChartTitle.TextAlign = ContentAlignment.MiddleLeft;
+
+            widgetsLayout.BackColor = Color.FromArgb(238, 241, 244);
+            widgetsLayout.ColumnCount = 2;
+            widgetsLayout.ColumnStyles.Add(
+                new ColumnStyle(SizeType.Percent, 50F)
+            );
+            widgetsLayout.ColumnStyles.Add(
+                new ColumnStyle(SizeType.Percent, 50F)
+            );
+            widgetsLayout.Dock = DockStyle.Fill;
+            widgetsLayout.Margin = new Padding(5, 0, 0, 0);
+            widgetsLayout.Name = "widgetsLayout";
+            widgetsLayout.RowCount = 2;
+            widgetsLayout.RowStyles.Add(
+                new RowStyle(SizeType.Percent, 50F)
+            );
+            widgetsLayout.RowStyles.Add(
+                new RowStyle(SizeType.Percent, 50F)
+            );
+            widgetsLayout.Size = new Size(479, 426);
+            widgetsLayout.TabIndex = 1;
+
+            // Dock pass runs last-added first, so the top strip is claimed first.
+            cardsLayout.BackColor = Color.FromArgb(238, 241, 244);
             cardsLayout.ColumnCount = 6;
-            cardsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 16.666666F));
-            cardsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 16.666666F));
-            cardsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 16.666666F));
-            cardsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 16.666666F));
-            cardsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 16.666666F));
-            cardsLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 16.666666F));
-            cardsLayout.Controls.Add(cardRevenue, 0, 0);
-            cardsLayout.Controls.Add(cardSales, 1, 0);
-            cardsLayout.Controls.Add(cardProducts, 2, 0);
-            cardsLayout.Controls.Add(cardLowStock, 3, 0);
-            cardsLayout.Controls.Add(cardExpiry, 4, 0);
-            cardsLayout.Controls.Add(cardTopProduct, 5, 0);
-            cardsLayout.Dock = DockStyle.Fill;
+            cardsLayout.ColumnStyles.Add(
+                new ColumnStyle(SizeType.Percent, 16.666666F)
+            );
+            cardsLayout.ColumnStyles.Add(
+                new ColumnStyle(SizeType.Percent, 16.666666F)
+            );
+            cardsLayout.ColumnStyles.Add(
+                new ColumnStyle(SizeType.Percent, 16.666666F)
+            );
+            cardsLayout.ColumnStyles.Add(
+                new ColumnStyle(SizeType.Percent, 16.666666F)
+            );
+            cardsLayout.ColumnStyles.Add(
+                new ColumnStyle(SizeType.Percent, 16.666666F)
+            );
+            cardsLayout.ColumnStyles.Add(
+                new ColumnStyle(SizeType.Percent, 16.666666F)
+            );
+            cardsLayout.Dock = DockStyle.Top;
             cardsLayout.Margin = new Padding(0);
             cardsLayout.Name = "cardsLayout";
             cardsLayout.Padding = new Padding(20, 0, 20, 0);
             cardsLayout.RowCount = 1;
-            cardsLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            cardsLayout.Size = new Size(1100, 190);
-            cardsLayout.TabIndex = 1;
-
-            ConfigureCard(cardRevenue, "Today's Revenue", out lblRevenueTitle, out lblRevenueValue, out _);
-            ConfigureCard(cardSales, "Today's Sales", out lblSalesTitle, out lblSalesValue, out _);
-            ConfigureCard(cardProducts, "Active Products", out lblProductsTitle, out lblProductsValue, out _);
-            ConfigureCard(cardLowStock, "Low Stock", out lblLowStockTitle, out lblLowStockValue, out _);
-            ConfigureCard(cardExpiry, "Expiring Soon", out lblExpiryTitle, out lblExpiryValue, out _);
-            ConfigureCard(cardTopProduct, "Top Seller", out lblTopProductTitle, out lblTopProductValue, out TableLayoutPanel topProductLayout);
-
-            // The final card carries no trailing gap so the row stays balanced.
-            cardTopProduct.Margin = new Padding(0, 10, 0, 10);
-            lblTopProductValue.AutoEllipsis = true;
-            lblTopProductValue.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
-
-            lblTopProductQuantity.AutoSize = false;
-            lblTopProductQuantity.Dock = DockStyle.Fill;
-            lblTopProductQuantity.Font = new Font("Segoe UI", 8.5F);
-            lblTopProductQuantity.ForeColor = Color.Gray;
-            lblTopProductQuantity.Name = "lblTopProductQuantity";
-            lblTopProductQuantity.TabIndex = 2;
-            lblTopProductQuantity.Text = "No completed sales yet";
-            lblTopProductQuantity.TextAlign = ContentAlignment.MiddleLeft;
-            topProductLayout.Controls.Add(lblTopProductQuantity, 0, 2);
-
-            lblChartTitle.AutoSize = false;
-            lblChartTitle.Dock = DockStyle.Fill;
-            lblChartTitle.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
-            lblChartTitle.ForeColor = Color.FromArgb(17, 17, 17);
-            lblChartTitle.Margin = new Padding(0);
-            lblChartTitle.Name = "lblChartTitle";
-            lblChartTitle.Padding = new Padding(20, 0, 0, 0);
-            lblChartTitle.Size = new Size(1100, 32);
-            lblChartTitle.TabIndex = 2;
-            lblChartTitle.Text = "SALES REVENUE \u2014 LAST 7 DAYS";
-            lblChartTitle.TextAlign = ContentAlignment.MiddleLeft;
-
-            chartPanel.BackColor = Color.White;
-            chartPanel.Dock = DockStyle.Fill;
-            chartPanel.Margin = new Padding(20, 0, 20, 8);
-            chartPanel.Name = "chartPanel";
-            chartPanel.Size = new Size(1060, 336);
-            chartPanel.TabIndex = 3;
-            chartPanel.Paint += ChartPanel_Paint;
+            cardsLayout.RowStyles.Add(
+                new RowStyle(SizeType.Percent, 100F)
+            );
+            cardsLayout.Size = new Size(1100, 152);
+            cardsLayout.TabIndex = 2;
 
             footerLayout.ColumnCount = 1;
-            footerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            footerLayout.ColumnStyles.Add(
+                new ColumnStyle(SizeType.Percent, 100F)
+            );
             footerLayout.Controls.Add(lblMessage, 0, 0);
             footerLayout.Controls.Add(lblLastUpdated, 0, 1);
             footerLayout.Dock = DockStyle.Fill;
@@ -174,16 +269,20 @@ namespace Mart_Management_System.Forms
             footerLayout.Name = "footerLayout";
             footerLayout.Padding = new Padding(20, 0, 20, 0);
             footerLayout.RowCount = 2;
-            footerLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            footerLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            footerLayout.Size = new Size(1100, 60);
-            footerLayout.TabIndex = 4;
+            footerLayout.RowStyles.Add(
+                new RowStyle(SizeType.Percent, 50F)
+            );
+            footerLayout.RowStyles.Add(
+                new RowStyle(SizeType.Percent, 50F)
+            );
+            footerLayout.Size = new Size(1100, 54);
+            footerLayout.TabIndex = 2;
 
             lblMessage.AutoSize = false;
             lblMessage.Dock = DockStyle.Fill;
             lblMessage.ForeColor = Color.Firebrick;
             lblMessage.Name = "lblMessage";
-            lblMessage.Size = new Size(1060, 30);
+            lblMessage.Size = new Size(1060, 27);
             lblMessage.TabIndex = 0;
             lblMessage.Text = string.Empty;
             lblMessage.TextAlign = ContentAlignment.MiddleLeft;
@@ -192,7 +291,7 @@ namespace Mart_Management_System.Forms
             lblLastUpdated.Dock = DockStyle.Fill;
             lblLastUpdated.ForeColor = Color.Gray;
             lblLastUpdated.Name = "lblLastUpdated";
-            lblLastUpdated.Size = new Size(1060, 30);
+            lblLastUpdated.Size = new Size(1060, 27);
             lblLastUpdated.TabIndex = 1;
             lblLastUpdated.Text = string.Empty;
             lblLastUpdated.TextAlign = ContentAlignment.MiddleLeft;
@@ -202,7 +301,7 @@ namespace Mart_Management_System.Forms
             BackColor = Color.FromArgb(238, 241, 244);
             ClientSize = new Size(1100, 700);
             Controls.Add(dashboardLayout);
-            MinimumSize = new Size(700, 500);
+            MinimumSize = new Size(860, 540);
             Name = "DashboardForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Dashboard";
@@ -210,9 +309,11 @@ namespace Mart_Management_System.Forms
             dashboardLayout.PerformLayout();
             headerLayout.ResumeLayout(false);
             headerLayout.PerformLayout();
+            middlePanel.ResumeLayout(false);
+            contentLayout.ResumeLayout(false);
+            chartCard.ResumeLayout(false);
+            widgetsLayout.ResumeLayout(false);
             cardsLayout.ResumeLayout(false);
-            cardsLayout.PerformLayout();
-            chartPanel.ResumeLayout(false);
             footerLayout.ResumeLayout(false);
             footerLayout.PerformLayout();
             ResumeLayout(false);
@@ -220,86 +321,22 @@ namespace Mart_Management_System.Forms
             Load += DashboardForm_Load;
         }
 
-        private static void ConfigureCard(
-            Panel card,
-            string title,
-            out Label titleLabel,
-            out Label valueLabel,
-            out TableLayoutPanel cardLayout
-        )
-        {
-            card.BackColor = Color.White;
-            card.Dock = DockStyle.Fill;
-            card.Margin = new Padding(0, 10, 8, 10);
-            card.Padding = new Padding(0);
-            card.TabStop = false;
-
-            titleLabel = new Label();
-            titleLabel.AutoSize = false;
-            titleLabel.Dock = DockStyle.Fill;
-            titleLabel.Font = new Font("Segoe UI", 9F);
-            titleLabel.ForeColor = Color.Gray;
-            titleLabel.Name = "lblTitle";
-            titleLabel.Text = title;
-            titleLabel.TextAlign = ContentAlignment.MiddleLeft;
-
-            valueLabel = new Label();
-            valueLabel.AutoSize = false;
-            valueLabel.Dock = DockStyle.Fill;
-            valueLabel.Font = new Font("Segoe UI", 17F, FontStyle.Bold);
-            valueLabel.ForeColor = Color.FromArgb(91, 174, 99);
-            valueLabel.Name = "lblValue";
-            valueLabel.Text = "$0.00";
-            valueLabel.TextAlign = ContentAlignment.MiddleLeft;
-
-            cardLayout = new TableLayoutPanel();
-            cardLayout.ColumnCount = 1;
-            cardLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            cardLayout.Dock = DockStyle.Fill;
-            cardLayout.Margin = new Padding(0);
-            cardLayout.Padding = new Padding(14, 12, 14, 12);
-            cardLayout.RowCount = 3;
-            cardLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 36F));
-            cardLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            cardLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 24F));
-
-            cardLayout.Controls.Add(titleLabel, 0, 0);
-            cardLayout.Controls.Add(valueLabel, 0, 1);
-
-            card.SuspendLayout();
-            card.Controls.Add(cardLayout);
-            card.ResumeLayout(false);
-        }
-
         private TableLayoutPanel dashboardLayout;
         private TableLayoutPanel headerLayout;
+        private TableLayoutPanel contentLayout;
+        private TableLayoutPanel widgetsLayout;
         private TableLayoutPanel cardsLayout;
         private TableLayoutPanel footerLayout;
         private Label lblTitle;
-        private ToolTip toolTip;
-        private Button btnRefresh;
         private Label lblChartTitle;
-        private Panel chartPanel;
-        private Panel cardRevenue;
-        private Label lblRevenueTitle;
-        private Label lblRevenueValue;
-        private Panel cardSales;
-        private Label lblSalesTitle;
-        private Label lblSalesValue;
-        private Panel cardProducts;
-        private Label lblProductsTitle;
-        private Label lblProductsValue;
-        private Panel cardLowStock;
-        private Label lblLowStockTitle;
-        private Label lblLowStockValue;
-        private Panel cardExpiry;
-        private Label lblExpiryTitle;
-        private Label lblExpiryValue;
-        private Panel cardTopProduct;
-        private Label lblTopProductTitle;
-        private Label lblTopProductValue;
-        private Label lblTopProductQuantity;
         private Label lblMessage;
         private Label lblLastUpdated;
+        private ToolTip toolTip;
+        private Button btnRefresh;
+        private SegmentedToggle toggleRange;
+        private BufferedPanel middlePanel;
+        private BufferedPanel fadeOverlay;
+        private BufferedPanel chartPanel;
+        private RoundedPanel chartCard;
     }
 }
