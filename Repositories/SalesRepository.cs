@@ -13,7 +13,8 @@ namespace Mart_Management_System.Repositories
             ArgumentNullException.ThrowIfNull(filter);
 
             const string sql = """
-                SELECT s.SaleId, s.SaleDate, s.CashierUserId, u.FullName,
+                SELECT s.SaleId, s.SaleDate, s.CashierUserId,
+                       COALESCE(NULLIF(u.FullName, ''), u.Username),
                        s.PaymentMethod, s.TotalAmount, s.Status
                 FROM dbo.Sales AS s
                 INNER JOIN dbo.Users AS u
@@ -70,7 +71,8 @@ namespace Mart_Management_System.Repositories
             const string headerSql = """
                 SELECT s.SaleId, s.CashierUserId, s.SaleDate, s.Subtotal,
                        s.DiscountAmount, s.TotalAmount, s.PaymentMethod,
-                       s.AmountReceived, s.ChangeAmount, s.Status, u.FullName
+                       s.AmountReceived, s.ChangeAmount, s.Status,
+                       COALESCE(NULLIF(u.FullName, ''), u.Username)
                 FROM dbo.Sales AS s
                 INNER JOIN dbo.Users AS u
                     ON u.UserId = s.CashierUserId

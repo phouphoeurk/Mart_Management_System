@@ -14,7 +14,8 @@ namespace Mart_Management_System.Repositories
                 SELECT po.PurchaseOrderId, po.SupplierId, po.CreatedByUserId,
                        po.PurchaseDate, po.Status, po.Subtotal,
                        po.DiscountAmount, po.TotalAmount,
-                       s.SupplierName, u.FullName
+                       s.SupplierName,
+                       COALESCE(NULLIF(u.FullName, ''), u.Username)
                 FROM dbo.PurchaseOrders AS po
                 INNER JOIN dbo.Suppliers AS s
                     ON s.SupplierId = po.SupplierId

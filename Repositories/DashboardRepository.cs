@@ -293,13 +293,14 @@ namespace Mart_Management_System.Repositories
         )
         {
             const string sql = """
-                SELECT u.FullName, SUM(s.TotalAmount)
+                SELECT COALESCE(NULLIF(u.FullName, ''), u.Username),
+                       SUM(s.TotalAmount)
                 FROM dbo.Sales AS s
                 INNER JOIN dbo.Users AS u ON u.UserId = s.CashierUserId
                 WHERE s.Status = 'Completed'
                   AND s.SaleDate >= @fromDate
                   AND s.SaleDate < DATEADD(DAY, 1, @toDate)
-                GROUP BY u.UserId, u.FullName
+                GROUP BY u.UserId, u.FullName, u.Username
                 ORDER BY SUM(s.TotalAmount) DESC;
                 """;
 
