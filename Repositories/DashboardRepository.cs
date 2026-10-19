@@ -305,11 +305,11 @@ namespace Mart_Management_System.Repositories
             using SqlDataReader reader = command.ExecuteReader();
             while (reader.Read())
             {
-                decimal revenue = reader.GetDecimal(1);
-                decimal quantity = reader.GetDecimal(2);
+                decimal revenue = reader.GetDecimalSafe(1);
+                decimal quantity = reader.GetDecimalSafe(2);
                 rows.Add(new ReportRow
                 {
-                    Label = reader.GetString(0),
+                    Label = reader.GetStringSafe(0),
                     Value = revenue,
                     DisplayValue =
                         $"{revenue:C2} \u00B7 {quantity:0} units"
