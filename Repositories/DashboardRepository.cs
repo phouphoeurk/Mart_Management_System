@@ -220,10 +220,35 @@ namespace Mart_Management_System.Repositories
                          ProductName;
                 """;
 
+            return ReadLowStock(sql, limit);
+        }
+
+        public List<ReportRow> GetLowStockReport()
+        {
+            const string sql = """
+                SELECT ProductName, StockQuantity, ReorderLevel
+                FROM dbo.Products
+                WHERE IsActive = 1
+                  AND StockQuantity <= ReorderLevel
+                ORDER BY (CAST(StockQuantity AS decimal(18,2))
+                          / NULLIF(ReorderLevel, 0)) ASC,
+                         StockQuantity ASC,
+                         ProductName;
+                """;
+
+            return ReadLowStock(sql, limit: null);
+        }
+
+        private static List<ReportRow> ReadLowStock(string sql, int? limit)
+        {
             List<ReportRow> rows = new();
             using SqlConnection connection = DatabaseConnection.GetConnection();
             using SqlCommand command = new(sql, connection);
-            command.Parameters.Add("@limit", SqlDbType.Int).Value = limit;
+            if (limit.HasValue)
+            {
+                command.Parameters.Add("@limit", SqlDbType.Int).Value =
+                    limit.Value;
+            }
 
             connection.Open();
             using SqlDataReader reader = command.ExecuteReader();
@@ -242,6 +267,116 @@ namespace Mart_Management_System.Repositories
             }
 
             return rows;
+        }
+
+        public List<ReportRow> GetSalesByProduct(
+            DateTime fromDate,
+            DateTime toDate
+        )
+        {
+            const string sql = """
+                SELECT p.ProductName,
+                       SUM(sd.LineSubtotal) AS Revenue,
+                       SUM(sd.Quantity) AS Quantity
+                FROM dbo.SaleDetails AS sd
+                INNER JOIN dbo.Sales AS s ON s.SaleId = sd.SaleId
+                INNER JOIN dbo.Products AS p ON p.ProductId = sd.ProductId
+                WHERE s.Status = 'Completed'
+                  AND s.SaleDate >= @fromDate
+                  AND s.SaleDate < DATEADD(DAY, 1, @toDate)
+                GROUP BY p.ProductId, p.ProductName
+                ORDER BY Revenue DESC, p.ProductName;
+                """;
+
+            List<ReportRow> rows = new();
+            using SqlConnection connection = DatabaseConnection.GetConnection();
+            using SqlCommand command = new(sql, connection);
+            AddDateParameters(command, fromDate, toDate);
+
+            connection.Open();
+            using SqlDataReader reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                decimal revenue = reader.GetDecimal(1);
+                decimal quantity = reader.GetDecimal(2);
+                rows.Add(new ReportRow
+                {
+                    Label = reader.GetString(0),
+                    Value = revenue,
+                    DisplayValue =
+                        $"{revenue:C2} \u00B7 {quantity:0} units"
+                });
+            }
+
+            return rows;
+        }
+
+        public List<ReportRow> GetProfitReport(
+            DateTime fromDate,
+            DateTime toDate
+        )
+        {
+            const string sql = """
+                SELECT
+                    ISNULL((
+                        SELECT SUM(s.TotalAmount)
+                        FROM dbo.Sales AS s
+                        WHERE s.Status = 'Completed'
+                          AND s.SaleDate >= @fromDate
+                          AND s.SaleDate < DATEADD(DAY, 1, @toDate)
+                    ), 0),
+                    ISNULL((
+                        SELECT SUM(CAST(sd.Quantity AS decimal(18,2))
+                                   * p.CostPrice)
+                        FROM dbo.SaleDetails AS sd
+                        INNER JOIN dbo.Sales AS s ON s.SaleId = sd.SaleId
+                        INNER JOIN dbo.Products AS p
+                            ON p.ProductId = sd.ProductId
+                        WHERE s.Status = 'Completed'
+                          AND s.SaleDate >= @fromDate
+                          AND s.SaleDate < DATEADD(DAY, 1, @toDate)
+                    ), 0);
+                """;
+
+            decimal revenue;
+            decimal costOfGoodsSold;
+            using (SqlConnection connection = DatabaseConnection.GetConnection())
+            using (SqlCommand command = new(sql, connection))
+            {
+                AddDateParameters(command, fromDate, toDate);
+                connection.Open();
+                using SqlDataReader reader = command.ExecuteReader();
+                if (!reader.Read())
+                {
+                    return new List<ReportRow>();
+                }
+
+                revenue = reader.GetDecimal(0);
+                costOfGoodsSold = reader.GetDecimal(1);
+            }
+
+            decimal grossProfit = revenue - costOfGoodsSold;
+            return new List<ReportRow>
+            {
+                new()
+                {
+                    Label = "Revenue",
+                    Value = revenue,
+                    DisplayValue = revenue.ToString("C2")
+                },
+                new()
+                {
+                    Label = "Cost of goods sold",
+                    Value = costOfGoodsSold,
+                    DisplayValue = costOfGoodsSold.ToString("C2")
+                },
+                new()
+                {
+                    Label = "Gross profit",
+                    Value = grossProfit,
+                    DisplayValue = grossProfit.ToString("C2")
+                }
+            };
         }
 
         public ReportTotals GetPeriodTotals()
