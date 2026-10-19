@@ -61,6 +61,7 @@
             lblAdmin.Size = new Size(170, 21);
             lblAdmin.TabIndex = 1;
             lblAdmin.Text = "👤 ADMIN | LOGOUT";
+            lblAdmin.Click += lblAdmin_Click;
             // 
             // lblLogo
             // 
@@ -75,7 +76,7 @@
             // 
             // panelSidebar
             // 
-            panelSidebar.BackColor = Color.FromArgb(255, 255, 255);
+            panelSidebar.BackColor = Color.FromArgb(30, 30, 30);
             panelSidebar.Controls.Add(butLogout);
             panelSidebar.Controls.Add(butSettings);
             panelSidebar.Controls.Add(btnUsers);
