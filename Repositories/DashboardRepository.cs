@@ -695,11 +695,48 @@ namespace Mart_Management_System.Repositories
             DateTime weekStart = today.AddDays(-(int)today.DayOfWeek);
             DateTime monthStart = new(today.Year, today.Month, 1);
 
+            const string sql = """
+                SELECT
+                    ISNULL((SELECT SUM(TotalAmount) FROM dbo.Sales
+                            WHERE Status = 'Completed'
+                              AND SaleDate >= @dayFrom AND SaleDate < @toNextDay), 0),
+                    ISNULL((SELECT SUM(TotalAmount) FROM dbo.Sales
+                            WHERE Status = 'Completed'
+                              AND SaleDate >= @weekFrom AND SaleDate < @toNextDay), 0),
+                    ISNULL((SELECT SUM(TotalAmount) FROM dbo.Sales
+                            WHERE Status = 'Completed'
+                              AND SaleDate >= @monthFrom AND SaleDate < @toNextDay), 0),
+                    ISNULL((SELECT SUM(TotalAmount) FROM dbo.Sales
+                            WHERE Status = 'Completed'
+                              AND SaleDate >= @allFrom AND SaleDate < @toNextDay), 0);
+                """;
+
+            using SqlConnection connection = DatabaseConnection.GetConnection();
+            using SqlCommand command = new(sql, connection);
+            command.Parameters.Add("@dayFrom", SqlDbType.DateTime2).Value =
+                today.Date;
+            command.Parameters.Add("@weekFrom", SqlDbType.DateTime2).Value =
+                weekStart.Date;
+            command.Parameters.Add("@monthFrom", SqlDbType.DateTime2).Value =
+                monthStart.Date;
+            command.Parameters.Add("@allFrom", SqlDbType.DateTime2).Value =
+                new DateTime(2000, 1, 1);
+            command.Parameters.Add("@toNextDay", SqlDbType.DateTime2).Value =
+                today.Date.AddDays(1);
+
+            connection.Open();
+            using SqlDataReader reader = command.ExecuteReader();
+            if (!reader.Read())
+            {
+                return new ReportTotals();
+            }
+
             return new ReportTotals
             {
-                DailySales = GetRevenueBetween(today, today),
-                WeeklySales = GetRevenueBetween(weekStart, today),
-                MonthlySales = GetRevenueBetween(monthStart, today)
+                DailySales = reader.GetDecimalSafe(0),
+                WeeklySales = reader.GetDecimalSafe(1),
+                MonthlySales = reader.GetDecimalSafe(2),
+                AllTimeRevenue = reader.GetDecimalSafe(3)
             };
         }
 

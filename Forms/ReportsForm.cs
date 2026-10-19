@@ -50,6 +50,7 @@ namespace Mart_Management_System.Forms
                 lblCard1Value.Text = totals.DailySales.ToString("C2");
                 lblCard2Value.Text = totals.WeeklySales.ToString("C2");
                 lblCard3Value.Text = totals.MonthlySales.ToString("C2");
+                lblCard4Value.Text = totals.AllTimeRevenue.ToString("C2");
             }
             catch (Exception ex)
             {
@@ -57,16 +58,6 @@ namespace Mart_Management_System.Forms
                 lblCard1Value.Text = "Error";
                 lblCard2Value.Text = "Error";
                 lblCard3Value.Text = "Error";
-            }
-
-            try
-            {
-                lblCard4Value.Text = _dashboardRepository.GetAllTimeRevenue()
-                    .ToString("C2");
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.ToString());
                 lblCard4Value.Text = "Error";
             }
         }
