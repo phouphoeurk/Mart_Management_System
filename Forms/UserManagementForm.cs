@@ -1,6 +1,7 @@
 ﻿using Mart_Management_System.Enums;
 using Mart_Management_System.Models;
 using Mart_Management_System.Repositories;
+using Mart_Management_System.UI;
 
 namespace Mart_Management_System.Forms
 {
@@ -8,6 +9,7 @@ namespace Mart_Management_System.Forms
     {
         private readonly UserRepository _userRepository;
         private readonly User _currentAdministrator;
+        private readonly SearchDebouncer _searchDebouncer;
 
         public UserManagementForm()
             : this(new User
@@ -35,6 +37,9 @@ namespace Mart_Management_System.Forms
                 txtSearch.Enabled = false;
                 cbRoleFilter.Enabled = false;
             }
+
+            _searchDebouncer = new SearchDebouncer(250, LoadUsers);
+            FormClosed += (_, _) => _searchDebouncer.Dispose();
         }
 
         private bool IsAdministrator => _currentAdministrator.Role == UserRole.Admin;
@@ -65,7 +70,7 @@ namespace Mart_Management_System.Forms
         {
             if (IsAdministrator)
             {
-                LoadUsers();
+                _searchDebouncer.Trigger();
             }
         }
 

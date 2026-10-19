@@ -1,6 +1,7 @@
 ﻿using Mart_Management_System.Enums;
 using Mart_Management_System.Models;
 using Mart_Management_System.Repositories;
+using Mart_Management_System.UI;
 
 namespace Mart_Management_System.Forms
 {
@@ -9,6 +10,7 @@ namespace Mart_Management_System.Forms
         private readonly ProductRepository _productRepository;
         private readonly CategoryRepository _categoryRepository;
         private readonly User _currentAdministrator;
+        private readonly SearchDebouncer _searchDebouncer;
 
         public ProductForm()
             : this(new User
@@ -30,6 +32,9 @@ namespace Mart_Management_System.Forms
             _categoryRepository = new CategoryRepository();
 
             InitializeComponent();
+
+            _searchDebouncer = new SearchDebouncer(250, LoadProducts);
+            FormClosed += (_, _) => _searchDebouncer.Dispose();
         }
 
         private void ProductForm_Load(object sender, EventArgs e)
@@ -49,7 +54,7 @@ namespace Mart_Management_System.Forms
 
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
-            LoadProducts();
+            _searchDebouncer.Trigger();
         }
 
         private void cbCategoryFilter_SelectedIndexChanged(
