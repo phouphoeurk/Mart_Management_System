@@ -2,6 +2,7 @@
 using Mart_Management_System.Enums;
 using Mart_Management_System.Models;
 using Mart_Management_System.Repositories;
+using Mart_Management_System.UI;
 
 namespace Mart_Management_System.Forms
 {
@@ -11,6 +12,7 @@ namespace Mart_Management_System.Forms
         private readonly ProductRepository _productRepository;
         private readonly SalesRepository _salesRepository;
         private readonly List<CartLine> _cart = new();
+        private readonly SearchDebouncer _searchDebouncer;
 
         public SalesForm()
             : this(new User
@@ -32,6 +34,10 @@ namespace Mart_Management_System.Forms
             _salesRepository = new SalesRepository();
 
             InitializeComponent();
+
+            _searchDebouncer = new SearchDebouncer(250, LoadProducts);
+            txtSearchBarcode.KeyDown += txtSearchBarcode_KeyDown;
+            FormClosed += (_, _) => _searchDebouncer.Dispose();
         }
 
         private void SalesForm_Load(object sender, EventArgs e)
@@ -42,7 +48,16 @@ namespace Mart_Management_System.Forms
 
         private void txtSearchBarcode_TextChanged(object sender, EventArgs e)
         {
-            LoadProducts();
+            _searchDebouncer.Trigger();
+        }
+
+        private void txtSearchBarcode_KeyDown(object? sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                _searchDebouncer.Flush();
+                e.SuppressKeyPress = true;
+            }
         }
 
         private void dgvProducts_CellContentClick(
