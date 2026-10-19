@@ -262,5 +262,10 @@ namespace Mart_Management_System.Forms
 
             public override string ToString() => Name;
         }
+
+        private void cbSupplier_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
