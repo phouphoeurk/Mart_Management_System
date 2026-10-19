@@ -1,5 +1,10 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+#if DEBUG
+using System.Data;
+using System.Diagnostics;
+using Mart_Management_System.Diagnostics;
+#endif
 
 namespace Mart_Management_System.Data
 {
@@ -10,7 +15,18 @@ namespace Mart_Management_System.Data
 
         public static SqlConnection GetConnection()
         {
-            return new SqlConnection(GetConnectionString());
+            SqlConnection connection = new(GetConnectionString());
+#if DEBUG
+            long startTimestamp = Stopwatch.GetTimestamp();
+            connection.StateChange += (_, eventArgs) =>
+            {
+                if (eventArgs.CurrentState == ConnectionState.Open)
+                {
+                    PerfTimer.Log("SqlConnection.Open", startTimestamp);
+                }
+            };
+#endif
+            return connection;
         }
 
         public static string GetConnectionString()

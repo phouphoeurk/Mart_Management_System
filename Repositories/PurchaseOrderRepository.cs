@@ -2,6 +2,7 @@ using System.Data;
 using Mart_Management_System.Data;
 using Mart_Management_System.Enums;
 using Mart_Management_System.Models;
+using Mart_Management_System.Diagnostics;
 using Microsoft.Data.SqlClient;
 
 namespace Mart_Management_System.Repositories
@@ -10,6 +11,7 @@ namespace Mart_Management_System.Repositories
     {
         public List<PurchaseOrder> GetAll(PurchaseOrderStatus? status = null)
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("PurchaseOrderRepository.GetAll");
             const string sql = """
                 SELECT po.PurchaseOrderId, po.SupplierId, po.CreatedByUserId,
                        po.PurchaseDate, po.Status, po.Subtotal,
@@ -60,6 +62,7 @@ namespace Mart_Management_System.Repositories
 
         public PurchaseOrder? GetById(int purchaseOrderId)
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("PurchaseOrderRepository.GetById");
             const string headerSql = """
                 SELECT po.PurchaseOrderId, po.SupplierId, po.CreatedByUserId,
                        po.PurchaseDate, po.Status, po.Subtotal,
@@ -127,6 +130,7 @@ namespace Mart_Management_System.Repositories
 
         public int CreateDraft(PurchaseOrder order)
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("PurchaseOrderRepository.CreateDraft");
             ArgumentNullException.ThrowIfNull(order);
             ValidateOrder(order);
 
@@ -205,6 +209,7 @@ namespace Mart_Management_System.Repositories
 
         public bool Receive(int purchaseOrderId, int userId)
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("PurchaseOrderRepository.Receive");
             const string statusSql = """
                 SELECT Status
                 FROM dbo.PurchaseOrders WITH (UPDLOCK, ROWLOCK)

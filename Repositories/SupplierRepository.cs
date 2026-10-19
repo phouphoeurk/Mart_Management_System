@@ -1,6 +1,7 @@
 using System.Data;
 using Mart_Management_System.Data;
 using Mart_Management_System.Models;
+using Mart_Management_System.Diagnostics;
 using Microsoft.Data.SqlClient;
 
 namespace Mart_Management_System.Repositories
@@ -9,6 +10,7 @@ namespace Mart_Management_System.Repositories
     {
         public List<Supplier> GetAll(string? keyword = null)
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("SupplierRepository.GetAll");
             const string sql = """
                 SELECT SupplierId, SupplierName, Phone, Email, Address,
                        IsActive, CreatedAt
@@ -39,6 +41,7 @@ namespace Mart_Management_System.Repositories
 
         public Supplier? GetById(int supplierId)
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("SupplierRepository.GetById");
             const string sql = """
                 SELECT SupplierId, SupplierName, Phone, Email, Address,
                        IsActive, CreatedAt
@@ -57,6 +60,7 @@ namespace Mart_Management_System.Repositories
 
         public bool Create(Supplier supplier)
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("SupplierRepository.Create");
             ArgumentNullException.ThrowIfNull(supplier);
             ValidateSupplier(supplier);
 
@@ -78,6 +82,7 @@ namespace Mart_Management_System.Repositories
 
         public bool Update(Supplier supplier)
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("SupplierRepository.Update");
             ArgumentNullException.ThrowIfNull(supplier);
             ValidateSupplier(supplier);
 
@@ -102,6 +107,7 @@ namespace Mart_Management_System.Repositories
 
         public bool SetActive(int supplierId, bool isActive)
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("SupplierRepository.SetActive");
             const string sql = """
                 UPDATE dbo.Suppliers
                 SET IsActive = @isActive

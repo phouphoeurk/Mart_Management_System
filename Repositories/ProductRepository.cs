@@ -2,6 +2,7 @@ using System.Data;
 using Mart_Management_System.Data;
 using Mart_Management_System.Enums;
 using Mart_Management_System.Models;
+using Mart_Management_System.Diagnostics;
 using Microsoft.Data.SqlClient;
 
 namespace Mart_Management_System.Repositories
@@ -14,6 +15,7 @@ namespace Mart_Management_System.Repositories
             bool activeOnly = false
         )
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("ProductRepository.GetAll");
             const string sql = """
                 SELECT p.ProductId, p.ProductName, p.Barcode, p.CategoryId,
                        p.SupplierId, p.CostPrice, p.SellingPrice, p.StockQuantity,
@@ -55,6 +57,7 @@ namespace Mart_Management_System.Repositories
 
         public Product? GetById(int productId)
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("ProductRepository.GetById");
             const string sql = """
                 SELECT p.ProductId, p.ProductName, p.Barcode, p.CategoryId,
                        p.SupplierId, p.CostPrice, p.SellingPrice, p.StockQuantity,
@@ -83,6 +86,7 @@ namespace Mart_Management_System.Repositories
             string? inventoryNotes = null
         )
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("ProductRepository.Create");
             ArgumentNullException.ThrowIfNull(product);
             ValidateProduct(product);
 
@@ -138,6 +142,7 @@ namespace Mart_Management_System.Repositories
             string? inventoryNotes = null
         )
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("ProductRepository.Update");
             ArgumentNullException.ThrowIfNull(product);
             ValidateProduct(product);
 
@@ -227,6 +232,7 @@ namespace Mart_Management_System.Repositories
 
         public bool SetActive(int productId, bool isActive)
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("ProductRepository.SetActive");
             const string sql = """
                 UPDATE dbo.Products
                 SET IsActive = @isActive

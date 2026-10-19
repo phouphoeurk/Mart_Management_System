@@ -2,6 +2,7 @@ using System.Data;
 using Mart_Management_System.Data;
 using Mart_Management_System.Enums;
 using Mart_Management_System.Models;
+using Mart_Management_System.Diagnostics;
 using Microsoft.Data.SqlClient;
 
 namespace Mart_Management_System.Repositories
@@ -13,6 +14,7 @@ namespace Mart_Management_System.Repositories
             int? productId = null
         )
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("InventoryRepository.GetRecent");
             const string sql = """
                 SELECT TOP (@limit)
                        it.InventoryTransactionId, it.ProductId, it.UserId,
@@ -58,6 +60,7 @@ namespace Mart_Management_System.Repositories
 
         public List<Product> GetLowStockProducts()
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("InventoryRepository.GetLowStockProducts");
             const string sql = """
                 SELECT p.ProductId, p.ProductName, p.Barcode, p.CategoryId,
                        p.SupplierId, p.CostPrice, p.SellingPrice, p.StockQuantity,
@@ -76,6 +79,7 @@ namespace Mart_Management_System.Repositories
 
         public List<Product> GetOutOfStockProducts()
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("InventoryRepository.GetOutOfStockProducts");
             const string sql = """
                 SELECT p.ProductId, p.ProductName, p.Barcode, p.CategoryId,
                        p.SupplierId, p.CostPrice, p.SellingPrice, p.StockQuantity,
@@ -94,6 +98,7 @@ namespace Mart_Management_System.Repositories
 
         public List<Product> GetExpiringProducts(int days = 30)
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("InventoryRepository.GetExpiringProducts");
             const string sql = """
                 SELECT p.ProductId, p.ProductName, p.Barcode, p.CategoryId,
                        p.SupplierId, p.CostPrice, p.SellingPrice, p.StockQuantity,
@@ -125,6 +130,7 @@ namespace Mart_Management_System.Repositories
 
         public List<Product> GetExpiredProducts()
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("InventoryRepository.GetExpiredProducts");
             const string sql = """
                 SELECT p.ProductId, p.ProductName, p.Barcode, p.CategoryId,
                        p.SupplierId, p.CostPrice, p.SellingPrice, p.StockQuantity,
@@ -149,6 +155,7 @@ namespace Mart_Management_System.Repositories
             string? notes = null
         )
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("InventoryRepository.AdjustStock");
             if (quantityDelta == 0)
             {
                 throw new ArgumentException(
@@ -224,6 +231,7 @@ namespace Mart_Management_System.Repositories
             string? notes
         )
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("InventoryRepository.InsertTransaction");
             const string sql = """
                 INSERT INTO dbo.InventoryTransactions
                     (ProductId, UserId, TransactionType, QuantityChange,

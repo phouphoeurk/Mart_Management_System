@@ -2,6 +2,7 @@ using System.Data;
 using Mart_Management_System.Data;
 using Mart_Management_System.Enums;
 using Mart_Management_System.Models;
+using Mart_Management_System.Diagnostics;
 using Microsoft.Data.SqlClient;
 
 namespace Mart_Management_System.Repositories
@@ -10,6 +11,7 @@ namespace Mart_Management_System.Repositories
     {
         public List<SaleSummary> GetHistory(SaleHistoryFilter filter)
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("SalesRepository.GetHistory");
             ArgumentNullException.ThrowIfNull(filter);
 
             const string sql = """
@@ -68,6 +70,7 @@ namespace Mart_Management_System.Repositories
 
         public Sale? GetSale(int saleId)
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("SalesRepository.GetSale");
             const string headerSql = """
                 SELECT s.SaleId, s.CashierUserId, s.SaleDate, s.Subtotal,
                        s.DiscountAmount, s.TotalAmount, s.PaymentMethod,
@@ -148,6 +151,7 @@ namespace Mart_Management_System.Repositories
 
         public int CreateCompletedSale(Sale sale)
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("SalesRepository.CreateCompletedSale");
             ArgumentNullException.ThrowIfNull(sale);
             ValidateSale(sale);
 

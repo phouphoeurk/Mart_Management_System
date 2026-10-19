@@ -1,6 +1,7 @@
 using System.Data;
 using Mart_Management_System.Data;
 using Mart_Management_System.Models;
+using Mart_Management_System.Diagnostics;
 using Microsoft.Data.SqlClient;
 
 namespace Mart_Management_System.Repositories
@@ -9,6 +10,7 @@ namespace Mart_Management_System.Repositories
     {
         public List<Category> GetAll(string? keyword = null)
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("CategoryRepository.GetAll");
             const string sql = """
                 SELECT CategoryId, CategoryName, Description, IsActive, CreatedAt
                 FROM dbo.Categories
@@ -38,6 +40,7 @@ namespace Mart_Management_System.Repositories
 
         public Category? GetById(int categoryId)
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("CategoryRepository.GetById");
             const string sql = """
                 SELECT CategoryId, CategoryName, Description, IsActive, CreatedAt
                 FROM dbo.Categories
@@ -55,6 +58,7 @@ namespace Mart_Management_System.Repositories
 
         public bool Create(Category category)
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("CategoryRepository.Create");
             ArgumentNullException.ThrowIfNull(category);
             ValidateCategory(category);
 
@@ -75,6 +79,7 @@ namespace Mart_Management_System.Repositories
 
         public bool Update(Category category)
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("CategoryRepository.Update");
             ArgumentNullException.ThrowIfNull(category);
             ValidateCategory(category);
 
@@ -97,6 +102,7 @@ namespace Mart_Management_System.Repositories
 
         public bool SetActive(int categoryId, bool isActive)
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("CategoryRepository.SetActive");
             const string sql = """
                 UPDATE dbo.Categories
                 SET IsActive = @isActive

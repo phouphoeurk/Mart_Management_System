@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using Mart_Management_System.Data;
 using Mart_Management_System.Models;
+using Mart_Management_System.Diagnostics;
 using Microsoft.Data.SqlClient;
 
 namespace Mart_Management_System.Repositories
@@ -9,6 +10,7 @@ namespace Mart_Management_System.Repositories
     {
         public DashboardSummary GetSummary()
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("DashboardRepository.GetSummary");
             const string sql = """
                 SELECT
                     ISNULL((
@@ -81,6 +83,7 @@ namespace Mart_Management_System.Repositories
 
         public RangeSummary GetRangeSummary(DateTime fromDate, DateTime toDate)
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("DashboardRepository.GetRangeSummary");
             const string sql = """
                 SELECT
                     ISNULL((
@@ -145,6 +148,7 @@ namespace Mart_Management_System.Repositories
 
         public List<ReportRow> GetHourlyTrend(DateTime date)
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("DashboardRepository.GetHourlyTrend");
             const string sql = """
                 SELECT DATEPART(HOUR, s.SaleDate) AS SaleHour,
                        SUM(s.TotalAmount) AS Revenue
@@ -171,6 +175,7 @@ namespace Mart_Management_System.Repositories
 
         public List<SaleSummary> GetRecentSales(int limit = 5)
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("DashboardRepository.GetRecentSales");
             const string sql = """
                 SELECT TOP (@limit)
                        s.SaleId, s.SaleDate, s.CashierUserId,
@@ -208,6 +213,7 @@ namespace Mart_Management_System.Repositories
 
         public List<ReportRow> GetLowStockProducts(int limit = 5)
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("DashboardRepository.GetLowStockProducts");
             const string sql = """
                 SELECT TOP (@limit)
                        ProductName, StockQuantity, ReorderLevel
@@ -225,6 +231,7 @@ namespace Mart_Management_System.Repositories
 
         public List<ReportRow> GetLowStockReport()
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("DashboardRepository.GetLowStockReport");
             const string sql = """
                 SELECT ProductName, StockQuantity, ReorderLevel
                 FROM dbo.Products
@@ -274,6 +281,7 @@ namespace Mart_Management_System.Repositories
             DateTime toDate
         )
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("DashboardRepository.GetSalesByProduct");
             const string sql = """
                 SELECT p.ProductName,
                        SUM(sd.LineSubtotal) AS Revenue,
@@ -316,6 +324,7 @@ namespace Mart_Management_System.Repositories
             DateTime toDate
         )
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("DashboardRepository.GetProfitReport");
             const string sql = """
                 SELECT
                     ISNULL((
@@ -381,6 +390,7 @@ namespace Mart_Management_System.Repositories
 
         public ReportTotals GetPeriodTotals()
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("DashboardRepository.GetPeriodTotals");
             DateTime today = DateTime.Today;
             DateTime weekStart = today.AddDays(-(int)today.DayOfWeek);
             DateTime monthStart = new(today.Year, today.Month, 1);
@@ -398,6 +408,7 @@ namespace Mart_Management_System.Repositories
             DateTime toDate
         )
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("DashboardRepository.GetSalesTrend");
             const string sql = """
                 SELECT CAST(s.SaleDate AS date) AS SaleDay,
                        SUM(s.TotalAmount) AS Revenue
@@ -427,6 +438,7 @@ namespace Mart_Management_System.Repositories
             DateTime toDate
         )
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("DashboardRepository.GetRevenueByCashier");
             const string sql = """
                 SELECT COALESCE(NULLIF(u.FullName, ''), u.Username),
                        SUM(s.TotalAmount)
@@ -457,6 +469,7 @@ namespace Mart_Management_System.Repositories
             DateTime toDate
         )
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("DashboardRepository.GetRevenueByPaymentMethod");
             const string sql = """
                 SELECT s.PaymentMethod, SUM(s.TotalAmount)
                 FROM dbo.Sales AS s
@@ -486,6 +499,7 @@ namespace Mart_Management_System.Repositories
             int limit = 10
         )
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("DashboardRepository.GetTopProducts");
             const string sql = """
                 SELECT TOP (@limit)
                        p.ProductName,
@@ -529,6 +543,7 @@ namespace Mart_Management_System.Repositories
             DateTime toDate
         )
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("DashboardRepository.GetSalesByCategory");
             const string sql = """
                 SELECT c.CategoryName, SUM(sd.LineSubtotal)
                 FROM dbo.SaleDetails AS sd
@@ -557,6 +572,7 @@ namespace Mart_Management_System.Repositories
 
         public List<ReportRow> GetSupplierPurchaseHistory()
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("DashboardRepository.GetSupplierPurchaseHistory");
             const string sql = """
                 SELECT s.SupplierName, SUM(po.TotalAmount)
                 FROM dbo.PurchaseOrders AS po
@@ -589,11 +605,13 @@ namespace Mart_Management_System.Repositories
 
         public decimal GetAllTimeRevenue()
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("DashboardRepository.GetAllTimeRevenue");
             return GetRevenueBetween(new DateTime(2000, 1, 1), DateTime.Today);
         }
 
         public decimal GetInventoryValue()
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("DashboardRepository.GetInventoryValue");
             const string sql = """
                 SELECT ISNULL(SUM(CAST(StockQuantity AS decimal(18,2)) * CostPrice), 0)
                 FROM dbo.Products
