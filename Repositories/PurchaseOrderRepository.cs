@@ -60,6 +60,126 @@ namespace Mart_Management_System.Repositories
             return orders;
         }
 
+        public PurchasePageData GetPurchasePageData(int recentOrdersLimit = 15)
+        {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("PurchaseOrderRepository.GetPurchasePageData");
+            const string sql = """
+                SELECT TOP (@recentOrdersLimit)
+                       po.PurchaseOrderId, po.SupplierId, po.CreatedByUserId,
+                       po.PurchaseDate, po.Status, po.Subtotal,
+                       po.DiscountAmount, po.TotalAmount,
+                       s.SupplierName,
+                       COALESCE(NULLIF(u.FullName, ''), u.Username)
+                FROM dbo.PurchaseOrders AS po
+                INNER JOIN dbo.Suppliers AS s ON s.SupplierId = po.SupplierId
+                INNER JOIN dbo.Users AS u ON u.UserId = po.CreatedByUserId
+                ORDER BY po.PurchaseDate DESC, po.PurchaseOrderId DESC;
+
+                SELECT SupplierId, SupplierName, Phone, Email, Address,
+                       IsActive, CreatedAt
+                FROM dbo.Suppliers
+                WHERE IsActive = 1
+                ORDER BY SupplierName;
+
+                SELECT p.ProductId, p.ProductName, p.Barcode, p.CategoryId,
+                       p.SupplierId, p.CostPrice, p.SellingPrice, p.StockQuantity,
+                       p.ReorderLevel, p.ExpiryDate, p.IsActive, p.CreatedAt,
+                       c.CategoryName, s.SupplierName
+                FROM dbo.Products AS p
+                INNER JOIN dbo.Categories AS c ON c.CategoryId = p.CategoryId
+                LEFT JOIN dbo.Suppliers AS s ON s.SupplierId = p.SupplierId
+                WHERE p.IsActive = 1
+                ORDER BY p.ProductName;
+                """;
+
+            PurchasePageData page = new();
+            using SqlConnection connection = DatabaseConnection.GetConnection();
+            using SqlCommand command = new(sql, connection);
+            command.Parameters.Add("@recentOrdersLimit", SqlDbType.Int).Value =
+                recentOrdersLimit;
+
+            connection.Open();
+            using SqlDataReader reader = command.ExecuteReader();
+
+            List<PurchaseOrder> orders = new();
+            while (reader.Read())
+            {
+                orders.Add(new PurchaseOrder
+                {
+                    PurchaseOrderId = reader.GetInt32(0),
+                    SupplierId = reader.GetInt32(1),
+                    CreatedByUserId = reader.GetInt32(2),
+                    PurchaseDate = reader.GetDateTime(3),
+                    Status = ParseStatus(reader.GetString(4)),
+                    Subtotal = reader.GetDecimal(5),
+                    DiscountAmount = reader.GetDecimal(6),
+                    TotalAmount = reader.GetDecimal(7),
+                    SupplierName = reader.IsDBNull(8)
+                        ? string.Empty
+                        : reader.GetString(8),
+                    CreatedByName = reader.IsDBNull(9)
+                        ? string.Empty
+                        : reader.GetString(9),
+                    PurchaseOrderDetails = new List<PurchaseOrderDetail>()
+                });
+            }
+
+            page.RecentOrders = orders;
+
+            if (reader.NextResult())
+            {
+                List<Supplier> suppliers = new();
+                while (reader.Read())
+                {
+                    suppliers.Add(new Supplier
+                    {
+                        SupplierId = reader.GetInt32(0),
+                        SupplierName = reader.GetString(1),
+                        Phone = reader.IsDBNull(2) ? null : reader.GetString(2),
+                        Email = reader.IsDBNull(3) ? null : reader.GetString(3),
+                        Address = reader.IsDBNull(4) ? null : reader.GetString(4),
+                        IsActive = reader.GetBoolean(5),
+                        CreatedAt = reader.GetDateTime(6)
+                    });
+                }
+
+                page.ActiveSuppliers = suppliers;
+            }
+
+            if (reader.NextResult())
+            {
+                List<Product> products = new();
+                while (reader.Read())
+                {
+                    products.Add(new Product
+                    {
+                        ProductId = reader.GetInt32(0),
+                        ProductName = reader.GetString(1),
+                        Barcode = reader.IsDBNull(2) ? null : reader.GetString(2),
+                        CategoryId = reader.GetInt32(3),
+                        SupplierId = reader.IsDBNull(4) ? null : reader.GetInt32(4),
+                        CostPrice = reader.GetDecimal(5),
+                        SellingPrice = reader.GetDecimal(6),
+                        StockQuantity = reader.GetInt32(7),
+                        ReorderLevel = reader.GetInt32(8),
+                        ExpiryDate = reader.IsDBNull(9)
+                            ? null
+                            : reader.GetDateTime(9),
+                        IsActive = reader.GetBoolean(10),
+                        CreatedAt = reader.GetDateTime(11),
+                        CategoryName = reader.GetString(12),
+                        SupplierName = reader.IsDBNull(13)
+                            ? null
+                            : reader.GetString(13)
+                    });
+                }
+
+                page.ActiveProducts = products;
+            }
+
+            return page;
+        }
+
         public PurchaseOrder? GetById(int purchaseOrderId)
         {
             using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("PurchaseOrderRepository.GetById");
