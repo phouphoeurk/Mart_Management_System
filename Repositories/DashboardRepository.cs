@@ -283,7 +283,7 @@ namespace Mart_Management_System.Repositories
                 INNER JOIN dbo.Products AS p ON p.ProductId = sd.ProductId
                 WHERE s.Status = 'Completed'
                   AND s.SaleDate >= @fromDate
-                  AND s.SaleDate < DATEADD(DAY, 1, @toDate)
+                  AND s.SaleDate < @toNextDay
                 GROUP BY p.ProductId, p.ProductName
                 ORDER BY Revenue DESC, p.ProductName;
                 """;
@@ -323,7 +323,7 @@ namespace Mart_Management_System.Repositories
                         FROM dbo.Sales AS s
                         WHERE s.Status = 'Completed'
                           AND s.SaleDate >= @fromDate
-                          AND s.SaleDate < DATEADD(DAY, 1, @toDate)
+                          AND s.SaleDate < @toNextDay
                     ), 0),
                     ISNULL((
                         SELECT SUM(CAST(sd.Quantity AS decimal(18,2))
@@ -334,7 +334,7 @@ namespace Mart_Management_System.Repositories
                             ON p.ProductId = sd.ProductId
                         WHERE s.Status = 'Completed'
                           AND s.SaleDate >= @fromDate
-                          AND s.SaleDate < DATEADD(DAY, 1, @toDate)
+                          AND s.SaleDate < @toNextDay
                     ), 0);
                 """;
 
@@ -404,7 +404,7 @@ namespace Mart_Management_System.Repositories
                 FROM dbo.Sales AS s
                 WHERE s.Status = 'Completed'
                   AND s.SaleDate >= @fromDate
-                  AND s.SaleDate < DATEADD(DAY, 1, @toDate)
+                  AND s.SaleDate < @toNextDay
                 GROUP BY CAST(s.SaleDate AS date)
                 ORDER BY SaleDay;
                 """;
@@ -434,7 +434,7 @@ namespace Mart_Management_System.Repositories
                 INNER JOIN dbo.Users AS u ON u.UserId = s.CashierUserId
                 WHERE s.Status = 'Completed'
                   AND s.SaleDate >= @fromDate
-                  AND s.SaleDate < DATEADD(DAY, 1, @toDate)
+                  AND s.SaleDate < @toNextDay
                 GROUP BY u.UserId, u.FullName, u.Username
                 ORDER BY SUM(s.TotalAmount) DESC;
                 """;
@@ -462,7 +462,7 @@ namespace Mart_Management_System.Repositories
                 FROM dbo.Sales AS s
                 WHERE s.Status = 'Completed'
                   AND s.SaleDate >= @fromDate
-                  AND s.SaleDate < DATEADD(DAY, 1, @toDate)
+                  AND s.SaleDate < @toNextDay
                 GROUP BY s.PaymentMethod
                 ORDER BY SUM(s.TotalAmount) DESC;
                 """;
@@ -496,7 +496,7 @@ namespace Mart_Management_System.Repositories
                 INNER JOIN dbo.Products AS p ON p.ProductId = sd.ProductId
                 WHERE s.Status = 'Completed'
                   AND s.SaleDate >= @fromDate
-                  AND s.SaleDate < DATEADD(DAY, 1, @toDate)
+                  AND s.SaleDate < @toNextDay
                 GROUP BY p.ProductId, p.ProductName
                 ORDER BY Quantity DESC, p.ProductName;
                 """;
@@ -511,8 +511,8 @@ namespace Mart_Management_System.Repositories
             using SqlDataReader reader = command.ExecuteReader();
             while (reader.Read())
             {
-                decimal quantity = reader.GetDecimal(1);
-                decimal revenue = reader.GetDecimal(2);
+                decimal quantity = Convert.ToDecimal(reader.GetValue(1));
+                decimal revenue = Convert.ToDecimal(reader.GetValue(2));
                 rows.Add(new ReportRow
                 {
                     Label = reader.GetString(0),
@@ -537,7 +537,7 @@ namespace Mart_Management_System.Repositories
                 INNER JOIN dbo.Categories AS c ON c.CategoryId = p.CategoryId
                 WHERE s.Status = 'Completed'
                   AND s.SaleDate >= @fromDate
-                  AND s.SaleDate < DATEADD(DAY, 1, @toDate)
+                  AND s.SaleDate < @toNextDay
                 GROUP BY c.CategoryId, c.CategoryName
                 ORDER BY SUM(sd.LineSubtotal) DESC;
                 """;
@@ -613,7 +613,7 @@ namespace Mart_Management_System.Repositories
                 FROM dbo.Sales
                 WHERE Status = 'Completed'
                   AND SaleDate >= @fromDate
-                  AND SaleDate < DATEADD(DAY, 1, @toDate);
+                  AND SaleDate < @toNextDay;
                 """;
 
             using SqlConnection connection = DatabaseConnection.GetConnection();
@@ -656,6 +656,8 @@ namespace Mart_Management_System.Repositories
             command.Parameters.Add("@fromDate", SqlDbType.DateTime2).Value =
                 fromDate.Date;
             command.Parameters.Add("@toDate", SqlDbType.DateTime2).Value = toDate.Date;
+            command.Parameters.Add("@toNextDay", SqlDbType.DateTime2).Value =
+                toDate.Date.AddDays(1);
         }
     }
 }

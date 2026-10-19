@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Mart_Management_System.Enums;
 using Mart_Management_System.Models;
 using Mart_Management_System.Repositories;
@@ -127,8 +128,9 @@ namespace Mart_Management_System.Forms
                     dgvAlerts.Rows[rowIndex].Tag = product;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Debug.WriteLine(ex.ToString());
                 MessageBox.Show(
                     "Unable to load stock alerts.",
                     "Stock Alerts",
@@ -140,24 +142,37 @@ namespace Mart_Management_System.Forms
 
         private void LoadHistory()
         {
-            foreach (InventoryTransaction transaction in _inventoryRepository.GetRecent())
+            try
             {
-                string reference = transaction.SaleId.HasValue
-                    ? $"Sale #{transaction.SaleId.Value}"
-                    : transaction.PurchaseOrderId.HasValue
-                        ? $"PO #{transaction.PurchaseOrderId.Value}"
-                        : "Manual";
+                foreach (InventoryTransaction transaction in _inventoryRepository.GetRecent())
+                {
+                    string reference = transaction.SaleId.HasValue
+                        ? $"Sale #{transaction.SaleId.Value}"
+                        : transaction.PurchaseOrderId.HasValue
+                            ? $"PO #{transaction.PurchaseOrderId.Value}"
+                            : "Manual";
 
-                int rowIndex = dgvAlerts.Rows.Add(
-                    transaction.ProductName,
-                    transaction.TransactionType.ToString(),
-                    transaction.QuantityChange,
-                    reference,
-                    transaction.CreatedAt.ToString("yyyy-MM-dd HH:mm"),
-                    transaction.UserName,
-                    transaction.Notes ?? string.Empty
+                    int rowIndex = dgvAlerts.Rows.Add(
+                        transaction.ProductName,
+                        transaction.TransactionType.ToString(),
+                        transaction.QuantityChange,
+                        reference,
+                        transaction.CreatedAt.ToString("yyyy-MM-dd HH:mm"),
+                        transaction.UserName,
+                        transaction.Notes ?? string.Empty
+                    );
+                    dgvAlerts.Rows[rowIndex].Tag = transaction;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+                MessageBox.Show(
+                    "Unable to load inventory history.",
+                    "Stock Alerts",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
                 );
-                dgvAlerts.Rows[rowIndex].Tag = transaction;
             }
         }
 

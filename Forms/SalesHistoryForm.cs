@@ -1,4 +1,5 @@
-﻿using Mart_Management_System.Enums;
+﻿using System.Diagnostics;
+using Mart_Management_System.Enums;
 using Mart_Management_System.Models;
 using Mart_Management_System.Repositories;
 
@@ -82,8 +83,9 @@ namespace Mart_Management_System.Forms
                 using SaleDetailsForm form = new(sale);
                 form.ShowDialog(this);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Debug.WriteLine(ex.ToString());
                 MessageBox.Show(
                     "Unable to load the sale details.",
                     "Sales History",
@@ -123,8 +125,9 @@ namespace Mart_Management_System.Forms
 
                 cbCashier.SelectedIndex = 0;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Debug.WriteLine(ex.ToString());
                 MessageBox.Show(
                     "Unable to load the cashier filter.",
                     "Sales History",
@@ -157,8 +160,9 @@ namespace Mart_Management_System.Forms
                     dgvSalesHistory.Rows[rowIndex].Tag = sale;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Debug.WriteLine(ex.ToString());
                 MessageBox.Show(
                     "Unable to load sales history.",
                     "Sales History",

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Drawing.Drawing2D;
 using System.Globalization;
 using Mart_Management_System.Models;
@@ -223,32 +224,99 @@ namespace Mart_Management_System.Forms
                     string periodText
                 ) = GetRangeBounds(_range);
 
+                LoadSummaryCards();
+                LoadRangeCards(from, to, prevFrom, prevTo, compareText, periodText);
+                LoadTrendChart(from, to);
+
+                lblChartTitle.Text = ChartTitleFor(_range);
+
+                LoadTopProductsWidget(from, to);
+                LoadPaymentsWidget(from, to);
+                LoadRecentSalesWidget();
+                LoadLowStockWidget();
+
+                lblLastUpdated.Text = $"Updated {DateTime.Now:yyyy-MM-dd HH:mm}";
+                chartPanel.Invalidate();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+                _trend = new List<ReportRow>();
+                lblMessage.Text = "Unable to load dashboard data.";
+                chartPanel.Invalidate();
+            }
+            finally
+            {
+                UseWaitCursor = false;
+            }
+
+            StartFade();
+        }
+
+        private void LoadSummaryCards()
+        {
+            try
+            {
                 DashboardSummary summary = _dashboardRepository.GetSummary();
-                RangeSummary current = _dashboardRepository.GetRangeSummary(
-                    from,
-                    to
+                SetCard(
+                    3,
+                    summary.ActiveProducts.ToString("N0"),
+                    ("in catalog now", Color.Gray),
+                    "Products currently enabled in the catalog."
                 );
+                SetCard(
+                    4,
+                    summary.LowStockCount.ToString("N0"),
+                    ("at or below reorder level", Color.Gray),
+                    "Products with stock at or below the reorder level."
+                );
+                SetCard(
+                    5,
+                    summary.ExpiringSoonCount.ToString("N0"),
+                    ("within the next 30 days", Color.Gray),
+                    "Products expiring within the next 30 days."
+                );
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+                SetCard(
+                    3,
+                    "\u2014",
+                    ("unavailable", DeltaDownColor),
+                    "Catalog summary unavailable."
+                );
+                SetCard(
+                    4,
+                    "\u2014",
+                    ("unavailable", DeltaDownColor),
+                    "Catalog summary unavailable."
+                );
+                SetCard(
+                    5,
+                    "\u2014",
+                    ("unavailable", DeltaDownColor),
+                    "Catalog summary unavailable."
+                );
+            }
+        }
+
+        private void LoadRangeCards(
+            DateTime from,
+            DateTime to,
+            DateTime prevFrom,
+            DateTime prevTo,
+            string compareText,
+            string periodText
+        )
+        {
+            try
+            {
+                RangeSummary current = _dashboardRepository.GetRangeSummary(from, to);
                 RangeSummary previous = _dashboardRepository.GetRangeSummary(
                     prevFrom,
                     prevTo
                 );
-                _granularity = _range == DashboardRange.Day
-                    ? TrendGranularity.Hour
-                    : TrendGranularity.Day;
-                _trend = _granularity == TrendGranularity.Hour
-                    ? _dashboardRepository.GetHourlyTrend(from)
-                    : _dashboardRepository.GetSalesTrend(from, to);
-
-                List<ReportRow> topProducts = _dashboardRepository.GetTopProducts(
-                    from,
-                    to,
-                    5
-                );
-                List<ReportRow> payments =
-                    _dashboardRepository.GetRevenueByPaymentMethod(from, to);
-                List<SaleSummary> recent = _dashboardRepository.GetRecentSales(5);
-                List<ReportRow> lowStock =
-                    _dashboardRepository.GetLowStockProducts(5);
 
                 SetCard(
                     0,
@@ -270,27 +338,60 @@ namespace Mart_Management_System.Forms
                         ? $"{current.TopSellingQuantity:0} units sold for {periodText}."
                         : "No completed sales in this period."
                 );
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
                 SetCard(
-                    3,
-                    summary.ActiveProducts.ToString("N0"),
-                    ("in catalog now", Color.Gray),
-                    "Products currently enabled in the catalog."
+                    0,
+                    "\u2014",
+                    ("unavailable", DeltaDownColor),
+                    "Revenue unavailable."
                 );
                 SetCard(
-                    4,
-                    summary.LowStockCount.ToString("N0"),
-                    ("at or below reorder level", Color.Gray),
-                    "Products with stock at or below the reorder level."
+                    1,
+                    "\u2014",
+                    ("unavailable", DeltaDownColor),
+                    "Sales unavailable."
                 );
                 SetCard(
-                    5,
-                    summary.ExpiringSoonCount.ToString("N0"),
-                    ("within the next 30 days", Color.Gray),
-                    "Products expiring within the next 30 days."
+                    2,
+                    "\u2014",
+                    ("unavailable", DeltaDownColor),
+                    "Top seller unavailable."
                 );
+            }
+        }
 
-                lblChartTitle.Text = ChartTitleFor(_range);
+        private void LoadTrendChart(DateTime from, DateTime to)
+        {
+            _granularity = _range == DashboardRange.Day
+                ? TrendGranularity.Hour
+                : TrendGranularity.Day;
 
+            try
+            {
+                _trend = _granularity == TrendGranularity.Hour
+                    ? _dashboardRepository.GetHourlyTrend(from)
+                    : _dashboardRepository.GetSalesTrend(from, to);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+                _trend = new List<ReportRow>();
+                lblMessage.Text = "Unable to load the sales trend chart.";
+            }
+        }
+
+        private void LoadTopProductsWidget(DateTime from, DateTime to)
+        {
+            try
+            {
+                List<ReportRow> topProducts = _dashboardRepository.GetTopProducts(
+                    from,
+                    to,
+                    5
+                );
                 decimal topMax = topProducts.Count > 0
                     ? Math.Max(1m, topProducts[0].Value)
                     : 1m;
@@ -306,7 +407,28 @@ namespace Mart_Management_System.Forms
                     ),
                     "No sales in this period"
                 );
+                toolTip.SetToolTip(
+                    _widgetTopProducts,
+                    "Top selling products for the selected period."
+                );
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+                _widgetTopProducts.SetContent(
+                    "Top Products",
+                    Array.Empty<WidgetRow>(),
+                    "Unable to load top products"
+                );
+            }
+        }
 
+        private void LoadPaymentsWidget(DateTime from, DateTime to)
+        {
+            try
+            {
+                List<ReportRow> payments =
+                    _dashboardRepository.GetRevenueByPaymentMethod(from, to);
                 decimal paymentTotal = payments.Sum(row => row.Value);
                 _widgetPayments.SetContent(
                     "Payment Mix",
@@ -322,7 +444,27 @@ namespace Mart_Management_System.Forms
                     ),
                     "No completed sales in this period"
                 );
+                toolTip.SetToolTip(
+                    _widgetPayments,
+                    "Revenue split by payment method."
+                );
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+                _widgetPayments.SetContent(
+                    "Payment Mix",
+                    Array.Empty<WidgetRow>(),
+                    "Unable to load payment mix"
+                );
+            }
+        }
 
+        private void LoadRecentSalesWidget()
+        {
+            try
+            {
+                List<SaleSummary> recent = _dashboardRepository.GetRecentSales(5);
                 _widgetRecentSales.SetContent(
                     "Recent Sales",
                     recent.Select(
@@ -341,7 +483,28 @@ namespace Mart_Management_System.Forms
                     ),
                     "No sales yet"
                 );
+                toolTip.SetToolTip(
+                    _widgetRecentSales,
+                    "Most recent sales on record."
+                );
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+                _widgetRecentSales.SetContent(
+                    "Recent Sales",
+                    Array.Empty<WidgetRow>(),
+                    "Unable to load recent sales"
+                );
+            }
+        }
 
+        private void LoadLowStockWidget()
+        {
+            try
+            {
+                List<ReportRow> lowStock =
+                    _dashboardRepository.GetLowStockProducts(5);
                 _widgetLowStock.SetContent(
                     "Low Stock",
                     lowStock.Select(
@@ -353,39 +516,20 @@ namespace Mart_Management_System.Forms
                     ),
                     "All products above reorder level"
                 );
-
-                toolTip.SetToolTip(
-                    _widgetTopProducts,
-                    "Top selling products for the selected period."
-                );
-                toolTip.SetToolTip(
-                    _widgetPayments,
-                    "Revenue split by payment method."
-                );
-                toolTip.SetToolTip(
-                    _widgetRecentSales,
-                    "Most recent sales on record."
-                );
                 toolTip.SetToolTip(
                     _widgetLowStock,
                     "Products at or below their reorder level."
                 );
-
-                lblLastUpdated.Text = $"Updated {DateTime.Now:yyyy-MM-dd HH:mm}";
-                chartPanel.Invalidate();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                _trend = new List<ReportRow>();
-                lblMessage.Text = "Unable to load dashboard data.";
-                chartPanel.Invalidate();
+                Debug.WriteLine(ex.ToString());
+                _widgetLowStock.SetContent(
+                    "Low Stock",
+                    Array.Empty<WidgetRow>(),
+                    "Unable to load low stock"
+                );
             }
-            finally
-            {
-                UseWaitCursor = false;
-            }
-
-            StartFade();
         }
 
         private void SetCard(
