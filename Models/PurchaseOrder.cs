@@ -20,6 +20,10 @@ namespace Mart_Management_System.Models
 
         public decimal TotalAmount { get; set; }
 
+        public string SupplierName { get; set; } = string.Empty;
+
+        public string CreatedByName { get; set; } = string.Empty;
+
         public List<PurchaseOrderDetail> PurchaseOrderDetails { get; set; } = new();
     }
 }

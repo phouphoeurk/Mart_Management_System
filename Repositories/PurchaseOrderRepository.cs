@@ -44,6 +44,12 @@ namespace Mart_Management_System.Repositories
                     Subtotal = reader.GetDecimal(5),
                     DiscountAmount = reader.GetDecimal(6),
                     TotalAmount = reader.GetDecimal(7),
+                    SupplierName = reader.IsDBNull(8)
+                        ? string.Empty
+                        : reader.GetString(8),
+                    CreatedByName = reader.IsDBNull(9)
+                        ? string.Empty
+                        : reader.GetString(9),
                     PurchaseOrderDetails = new List<PurchaseOrderDetail>()
                 });
             }

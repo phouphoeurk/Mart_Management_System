@@ -44,6 +44,8 @@ namespace Mart_Management_System.Forms
 
         private void PurchaseOrderForm_Load(object sender, EventArgs e)
         {
+            LoadPastOrders();
+
             if (_currentAdministrator.Role != UserRole.Admin)
             {
                 return;
@@ -62,6 +64,34 @@ namespace Mart_Management_System.Forms
             {
                 lblStatus.Text =
                     "Add an active product before receiving stock.";
+            }
+        }
+
+        private void LoadPastOrders()
+        {
+            try
+            {
+                dgvPastOrders.Rows.Clear();
+                foreach (
+                    PurchaseOrder order in _purchaseOrderRepository
+                        .GetAll()
+                        .Take(15)
+                )
+                {
+                    dgvPastOrders.Rows.Add(
+                        order.PurchaseOrderId,
+                        order.PurchaseDate.ToString("yyyy-MM-dd"),
+                        order.SupplierName,
+                        order.TotalAmount.ToString("C2"),
+                        order.Status.ToString()
+                    );
+                }
+
+                lblPastTitle.Text = "RECENT ORDERS";
+            }
+            catch (Exception)
+            {
+                lblPastTitle.Text = "RECENT ORDERS (UNAVAILABLE)";
             }
         }
 
@@ -202,6 +232,7 @@ namespace Mart_Management_System.Forms
                     MessageBoxIcon.Information
                 );
                 ResetOrder();
+                LoadPastOrders();
             }
             catch (Exception)
             {
@@ -232,6 +263,15 @@ namespace Mart_Management_System.Forms
 
         private void numDiscount_ValueChanged(object sender, EventArgs e)
         {
+            decimal subtotal = _lines.Sum(
+                line => line.Quantity * line.UnitCost
+            );
+            if (numDiscount.Value > subtotal)
+            {
+                numDiscount.Value = subtotal;
+                lblStatus.Text = "Discount was limited to the order subtotal.";
+            }
+
             RefreshLines();
         }
 
@@ -292,6 +332,7 @@ namespace Mart_Management_System.Forms
                 SetEditingEnabled(false);
                 btnNewOrder.Enabled = true;
                 btnReceive.Enabled = true;
+                LoadPastOrders();
 
                 if (showSuccess)
                 {
