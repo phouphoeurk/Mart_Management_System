@@ -30,6 +30,7 @@ namespace Mart_Management_System.Forms
             colDiscount = new DataGridViewTextBoxColumn();
             colLineTotal = new DataGridViewTextBoxColumn();
             btnClose = new Button();
+            btnReprint = new Button();
             ((System.ComponentModel.ISupportInitialize)dgvDetails).BeginInit();
             SuspendLayout();
 
@@ -141,6 +142,18 @@ namespace Mart_Management_System.Forms
             btnClose.Text = "Close";
             btnClose.Click += btnClose_Click;
 
+            btnReprint.BackColor = Color.FromArgb(91, 122, 139);
+            btnReprint.FlatStyle = FlatStyle.Flat;
+            btnReprint.FlatAppearance.BorderSize = 0;
+            btnReprint.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnReprint.ForeColor = Color.White;
+            btnReprint.Location = new Point(630, 505);
+            btnReprint.Name = "btnReprint";
+            btnReprint.Size = new Size(130, 36);
+            btnReprint.TabIndex = 9;
+            btnReprint.Text = "Reprint Receipt";
+            btnReprint.Click += btnReprint_Click;
+
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(238, 241, 244);
@@ -153,6 +166,7 @@ namespace Mart_Management_System.Forms
             Controls.Add(lblStatus);
             Controls.Add(lblTotal);
             Controls.Add(dgvDetails);
+            Controls.Add(btnReprint);
             Controls.Add(btnClose);
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
@@ -179,5 +193,6 @@ namespace Mart_Management_System.Forms
         private DataGridViewTextBoxColumn colDiscount;
         private DataGridViewTextBoxColumn colLineTotal;
         private Button btnClose;
+        private Button btnReprint;
     }
 }

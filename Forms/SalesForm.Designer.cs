@@ -35,6 +35,7 @@
             this.summaryPanel = new System.Windows.Forms.Panel();
             this.btnCheckout = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
+            this.btnPrintPreBill = new System.Windows.Forms.Button();
             this.lblChangeValue = new System.Windows.Forms.Label();
             this.lblChange = new System.Windows.Forms.Label();
             this.txtCashReceived = new System.Windows.Forms.TextBox();
@@ -180,6 +181,7 @@
             this.summaryPanel.BackColor = System.Drawing.Color.White;
             this.summaryPanel.Controls.Add(this.btnCheckout);
             this.summaryPanel.Controls.Add(this.btnClear);
+            this.summaryPanel.Controls.Add(this.btnPrintPreBill);
             this.summaryPanel.Controls.Add(this.lblChangeValue);
             this.summaryPanel.Controls.Add(this.lblChange);
             this.summaryPanel.Controls.Add(this.txtCashReceived);
@@ -279,6 +281,16 @@
             this.btnClear.Size = new System.Drawing.Size(120, 40);
             this.btnClear.Text = "Clear Cart";
             this.btnClear.Click += btnClear_Click;
+
+            this.btnPrintPreBill.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(122)))), ((int)(((byte)(139)))));
+            this.btnPrintPreBill.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnPrintPreBill.FlatAppearance.BorderSize = 0;
+            this.btnPrintPreBill.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.btnPrintPreBill.ForeColor = System.Drawing.Color.White;
+            this.btnPrintPreBill.Location = new System.Drawing.Point(150, 145);
+            this.btnPrintPreBill.Size = new System.Drawing.Size(140, 40);
+            this.btnPrintPreBill.Text = "Print Pre-bill";
+            this.btnPrintPreBill.Click += btnPrintPreBill_Click;
 
             // 
             // leftPanel
@@ -438,5 +450,6 @@
         private System.Windows.Forms.Label lblChangeValue;
         private System.Windows.Forms.Button btnCheckout;
         private System.Windows.Forms.Button btnClear;
+        private System.Windows.Forms.Button btnPrintPreBill;
     }
 }
