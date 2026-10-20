@@ -200,6 +200,42 @@ namespace Mart_Management_System.Forms
                 : _currentUser.FullName;
         }
 
+        private void PrintPaidReceipt(Sale sale)
+        {
+            try
+            {
+                ReceiptData receipt = new()
+                {
+                    ShopName = ReceiptPrinter.ShopName,
+                    Title = "PAYMENT RECEIPT",
+                    SaleId = sale.SaleId,
+                    Date = sale.SaleDate,
+                    CashierName = GetCashierDisplayName(),
+                    Items = _cart
+                        .Select(line => new ReceiptLineItem(
+                            line.Product.ProductName,
+                            line.Quantity,
+                            line.UnitPrice,
+                            line.Quantity * line.UnitPrice
+                        ))
+                        .ToList(),
+                    Subtotal = sale.Subtotal,
+                    Discount = sale.DiscountAmount,
+                    Total = sale.TotalAmount,
+                    PaymentMethod = sale.PaymentMethod.ToString(),
+                    AmountReceived = sale.AmountReceived,
+                    ChangeAmount = sale.ChangeAmount,
+                    Footer = "Thank you"
+                };
+
+                ReceiptPrinter.Print(receipt, this);
+            }
+            catch (Exception ex)
+            {
+                ShowSaleError($"Unable to print the receipt. {ex.Message}");
+            }
+        }
+
         private void btnCheckout_Click(object sender, EventArgs e)
         {
             if (!TryBuildSale(out Sale? sale, out string errorMessage))
@@ -211,12 +247,24 @@ namespace Mart_Management_System.Forms
             try
             {
                 int saleId = _salesRepository.CreateCompletedSale(sale!);
+                sale!.SaleId = saleId;
                 MessageBox.Show(
                     $"Sale completed successfully.\nSale ID: {saleId}",
                     "Payment Successful",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information
                 );
+
+                if (MessageBox.Show(
+                    "Print receipt?",
+                    "Payment Successful",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question
+                ) == DialogResult.Yes)
+                {
+                    PrintPaidReceipt(sale!);
+                }
+
                 ResetSale();
                 LoadProducts();
             }
