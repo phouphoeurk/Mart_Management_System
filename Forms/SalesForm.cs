@@ -2,6 +2,7 @@
 using Mart_Management_System.Enums;
 using Mart_Management_System.Models;
 using Mart_Management_System.Repositories;
+using Mart_Management_System.Services;
 using Mart_Management_System.UI;
 
 namespace Mart_Management_System.Forms
@@ -136,6 +137,67 @@ namespace Mart_Management_System.Forms
         {
             ResetSale();
             LoadProducts();
+        }
+
+        private void btnPrintPreBill_Click(object sender, EventArgs e)
+        {
+            if (_cart.Count == 0)
+            {
+                MessageBox.Show(
+                    "The cart is empty. Add at least one product before printing a pre-bill.",
+                    "Sales / POS",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information
+                );
+                return;
+            }
+
+            decimal subtotal = _cart.Sum(
+                line => line.Quantity * line.UnitPrice
+            );
+            if (!TryReadDecimal(txtDiscount.Text, out decimal discount)
+                || discount < 0
+                || discount > subtotal)
+            {
+                discount = 0;
+            }
+
+            ReceiptData receipt = new()
+            {
+                ShopName = ReceiptPrinter.ShopName,
+                Title = "PRE-BILL / ORDER SUMMARY",
+                Subtitle = "NOT A PAYMENT RECEIPT",
+                Date = DateTime.Now,
+                CashierName = GetCashierDisplayName(),
+                Items = _cart
+                    .Select(line => new ReceiptLineItem(
+                        line.Product.ProductName,
+                        line.Quantity,
+                        line.UnitPrice,
+                        line.Quantity * line.UnitPrice
+                    ))
+                    .ToList(),
+                Subtotal = subtotal,
+                Discount = discount,
+                Total = subtotal - discount,
+                Footer = "Prices may change. Not paid yet."
+            };
+
+            try
+            {
+                ReceiptPrinter.Print(receipt, this);
+            }
+            catch (Exception ex)
+            {
+                ShowSaleError($"Unable to print the pre-bill. {ex.Message}");
+            }
+        }
+
+        private string GetCashierDisplayName()
+        {
+            return string.IsNullOrWhiteSpace(_currentUser.FullName)
+                ? _currentUser.Username
+                : _currentUser.FullName;
         }
 
         private void btnCheckout_Click(object sender, EventArgs e)
