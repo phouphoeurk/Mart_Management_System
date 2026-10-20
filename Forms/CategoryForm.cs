@@ -1,16 +1,20 @@
 ﻿using Mart_Management_System.Models;
 using Mart_Management_System.Repositories;
+using Mart_Management_System.UI;
 
 namespace Mart_Management_System.Forms
 {
     public partial class CategoryForm : Form
     {
         private readonly CategoryRepository _categoryRepository;
+        private readonly SearchDebouncer _searchDebouncer;
 
         public CategoryForm()
         {
             InitializeComponent();
             _categoryRepository = new CategoryRepository();
+            _searchDebouncer = new SearchDebouncer(250, LoadCategories);
+            FormClosed += (_, _) => _searchDebouncer.Dispose();
         }
 
         private void CategoryForm_Load(object sender, EventArgs e)
@@ -29,7 +33,7 @@ namespace Mart_Management_System.Forms
 
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
-            LoadCategories();
+            _searchDebouncer.Trigger();
         }
 
         private void dgvCategories_CellContentClick(

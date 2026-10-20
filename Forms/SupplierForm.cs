@@ -1,16 +1,20 @@
 ﻿using Mart_Management_System.Models;
 using Mart_Management_System.Repositories;
+using Mart_Management_System.UI;
 
 namespace Mart_Management_System.Forms
 {
     public partial class SupplierForm : Form
     {
         private readonly SupplierRepository _supplierRepository;
+        private readonly SearchDebouncer _searchDebouncer;
 
         public SupplierForm()
         {
             InitializeComponent();
             _supplierRepository = new SupplierRepository();
+            _searchDebouncer = new SearchDebouncer(250, LoadSuppliers);
+            FormClosed += (_, _) => _searchDebouncer.Dispose();
         }
 
         private void SupplierForm_Load(object sender, EventArgs e)
@@ -29,7 +33,7 @@ namespace Mart_Management_System.Forms
 
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
-            LoadSuppliers();
+            _searchDebouncer.Trigger();
         }
 
         private void dgvSuppliers_CellContentClick(

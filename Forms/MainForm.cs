@@ -1,12 +1,25 @@
 ﻿using Mart_Management_System.Enums;
 using Mart_Management_System.Models;
 using Mart_Management_System.UI;
+#if DEBUG
+using System.Diagnostics;
+using Mart_Management_System.Diagnostics;
+#endif
 
 namespace Mart_Management_System.Forms
 {
     public partial class MainForm : Form
     {
-        private static readonly Color SidebarInactiveColor = Color.FromArgb(51, 51, 51);
+        private static readonly Color SidebarBackColor = Color.FromArgb(
+            30,
+            30,
+            30
+        );
+        private static readonly Color SidebarInactiveColor = Color.FromArgb(
+            211,
+            211,
+            211
+        );
         private readonly User _currentUser;
         private Button? _currentActiveButton;
         private Form? _currentChildForm;
@@ -34,15 +47,16 @@ namespace Mart_Management_System.Forms
             UiTheme.Apply(this);
             ApplyRoleVisibility();
 
-            lblAdmin.Text = $"{_currentUser.FullName} | {_currentUser.Role} | Logout";
+            lblAdmin.Text =
+                $"{DisplayName(_currentUser)} | {_currentUser.Role} | Logout";
 
             if (_currentUser.Role == UserRole.Admin)
             {
-                OpenChildForm(new DashboardForm(), btnDashboard);
+                OpenChildForm(() => new DashboardForm(), btnDashboard);
             }
             else
             {
-                OpenChildForm(new SalesForm(), btnSales);
+                OpenChildForm(() => new SalesForm(), btnSales);
             }
         }
 
@@ -83,16 +97,23 @@ namespace Mart_Management_System.Forms
             butLogout.Dock = DockStyle.Bottom;
             butLogout.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             butLogout.AutoSize = false;
-            butLogout.BackColor = Color.White;
+            butLogout.BackColor = SidebarBackColor;
             butLogout.FlatAppearance.BorderSize = 0;
             butLogout.FlatStyle = FlatStyle.Flat;
             butLogout.Font = new Font("Segoe UI", 12F);
             butLogout.ForeColor = SidebarInactiveColor;
             butLogout.Size = new Size(220, 50);
             butLogout.TabIndex = 11;
-            butLogout.Text = " 🚪 Logout";
+            butLogout.Text = "  🚪 Logout";
             butLogout.TextAlign = ContentAlignment.MiddleLeft;
             butLogout.UseVisualStyleBackColor = false;
+        }
+
+        private static string DisplayName(User user)
+        {
+            return string.IsNullOrWhiteSpace(user.FullName)
+                ? user.Username
+                : user.FullName;
         }
 
         private static void ConfigureSidebarButton(
@@ -103,7 +124,7 @@ namespace Mart_Management_System.Forms
         {
             button.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             button.AutoSize = false;
-            button.BackColor = Color.White;
+            button.BackColor = SidebarBackColor;
             button.Dock = DockStyle.Top;
             button.FlatAppearance.BorderSize = 0;
             button.FlatStyle = FlatStyle.Flat;
@@ -146,13 +167,16 @@ namespace Mart_Management_System.Forms
             return button == btnSales || button == btnSalesHistory;
         }
 
-        private void OpenChildForm(Form childForm, Button senderButton)
+        private void OpenChildForm(Func<Form> formFactory, Button senderButton)
         {
             if (!CanOpen(senderButton))
             {
-                childForm.Dispose();
                 return;
             }
+
+#if DEBUG
+            long startTimestamp = Stopwatch.GetTimestamp();
+#endif
 
             if (_currentChildForm is not null)
             {
@@ -162,15 +186,38 @@ namespace Mart_Management_System.Forms
 
             HighlightActiveButton(senderButton);
 
+            Form childForm = formFactory();
+#if DEBUG
+            string tag = childForm.GetType().Name;
+            PerfTimer.Log($"nav:{tag}:construct", startTimestamp);
+#endif
+
             _currentChildForm = childForm;
             childForm.TopLevel = false;
             childForm.FormBorderStyle = FormBorderStyle.None;
             childForm.Dock = DockStyle.Fill;
 
+            mainContentPanel.SuspendLayout();
             mainContentPanel.Controls.Clear();
             mainContentPanel.Controls.Add(childForm);
+            mainContentPanel.ResumeLayout();
+
             UiTheme.Apply(childForm);
+
+#if DEBUG
+            long showStart = Stopwatch.GetTimestamp();
+#endif
             childForm.Show();
+#if DEBUG
+            PerfTimer.Log($"nav:{tag}:show(load+layout)", showStart);
+
+            childForm.Paint += (_, _) =>
+            {
+                PerfTimer.Log($"nav:{tag}:click-to-first-paint", startTimestamp);
+            };
+
+            PerfTimer.Log($"nav:{tag}:total-handler", startTimestamp);
+#endif
         }
 
         private void HighlightActiveButton(Button clickedButton)
@@ -192,28 +239,28 @@ namespace Mart_Management_System.Forms
 
         private void btnDashboard_Click(object sender, EventArgs e)
         {
-            OpenChildForm(new DashboardForm(), (Button)sender);
+            OpenChildForm(() => new DashboardForm(), (Button)sender);
         }
 
         private void btnProducts_Click(object sender, EventArgs e)
         {
-            OpenChildForm(new ProductForm(_currentUser), (Button)sender);
+            OpenChildForm(() => new ProductForm(_currentUser), (Button)sender);
         }
 
         private void btnCategories_Click(object sender, EventArgs e)
         {
-            OpenChildForm(new CategoryForm(), (Button)sender);
+            OpenChildForm(() => new CategoryForm(), (Button)sender);
         }
 
         private void btnSuppliers_Click(object sender, EventArgs e)
         {
-            OpenChildForm(new SupplierForm(), (Button)sender);
+            OpenChildForm(() => new SupplierForm(), (Button)sender);
         }
 
         private void btnStockAlerts_Click(object sender, EventArgs e)
         {
             OpenChildForm(
-                new StockAlertsForm(_currentUser),
+                () => new StockAlertsForm(_currentUser),
                 (Button)sender
             );
         }
@@ -221,43 +268,53 @@ namespace Mart_Management_System.Forms
         private void btnPurchases_Click(object sender, EventArgs e)
         {
             OpenChildForm(
-                new PurchaseOrderForm(_currentUser),
+                () => new PurchaseOrderForm(_currentUser),
                 (Button)sender
             );
         }
 
         private void btnSales_Click(object sender, EventArgs e)
         {
-            OpenChildForm(new SalesForm(_currentUser), (Button)sender);
+            OpenChildForm(() => new SalesForm(_currentUser), (Button)sender);
         }
 
         private void btnSalesHistory_Click(object sender, EventArgs e)
         {
             OpenChildForm(
-                new SalesHistoryForm(_currentUser),
+                () => new SalesHistoryForm(_currentUser),
                 (Button)sender
             );
         }
 
         private void btnReports_Click(object sender, EventArgs e)
         {
-            OpenChildForm(new ReportsForm(), (Button)sender);
+            OpenChildForm(() => new ReportsForm(), (Button)sender);
         }
 
         private void btnUsers_Click(object sender, EventArgs e)
         {
             OpenChildForm(
-                new UserManagementForm(_currentUser),
+                () => new UserManagementForm(_currentUser),
                 (Button)sender
             );
         }
 
         private void butSettings_Click(object sender, EventArgs e)
         {
-            OpenChildForm(new Settings(_currentUser), (Button)sender);
+            OpenChildForm(() => new Settings(_currentUser), (Button)sender);
         }
 
         private void butLogout_Click(object sender, EventArgs e)
+        {
+            Logout();
+        }
+
+        private void lblAdmin_Click(object sender, EventArgs e)
+        {
+            Logout();
+        }
+
+        private void Logout()
         {
             Hide();
             using LoginForm loginForm = new();

@@ -53,7 +53,7 @@ This project was developed as part of the **Object-Oriented Analysis and Design 
 - **Stock Alerts** (Admin): Low stock, out of stock, expiring soon, expired; adjust stock via Stock Adjustment.
 - **Stock Adjustment**: Manual adjustments with notes (creates inventory transaction).
 - **User Management** (Admin): View/search/filter users by role, activate/deactivate users, create/edit users. Self-deactivation and last-active-admin protection enforced.
-- **Reports** (Admin): Sales trend, revenue by cashier, revenue by payment method, top products, sales by category, supplier purchase history, inventory value.
+- **Reports** (Admin): 10 report types — sales trend, revenue by cashier, revenue by payment method, top products, sales by category, sales by product, supplier purchase history, inventory value, low stock, profit — with CSV export and print preview.
 - **Settings** (Admin): View account information.
 
 ## 4. Technology Stack
@@ -368,7 +368,7 @@ erDiagram
 | Purchases | Create draft PO, add details, receive PO to update inventory. | `PurchaseOrderForm` |
 | Stock Alerts | View low/out/expiring/expired; adjust stock. | `StockAlertsForm`, `StockAdjustmentForm` |
 | User Management | Add/edit users, activate/deactivate. Enforces admin self-protection and minimum active admin. | `UserManagementForm`, `UserEditForm` |
-| Reports | Generate selected report for date range; view inventory value. | `ReportsForm` |
+| Reports | Generate any of 10 report types for a date range; export CSV or print preview. | `ReportsForm` |
 | Sales History | Filter and view completed/cancelled/refunded sales. | `SalesHistoryForm`, `SaleDetailsForm` |
 | Settings | Admin only. Two panels: "Account Info" shows the signed-in user's name, username, role and status (read-only); "User Management" points to the Users screen. | `Settings` |
 
@@ -408,7 +408,7 @@ erDiagram
 ## 13. Roadmap
 
 - [ ] Add unit/integration tests
-- [ ] Export reports (PDF/CSV)
+- [x] Export reports (PDF/CSV) — CSV export and print preview (print to PDF via system printer)
 - [ ] Barcode scanning support
 - [ ] Audit logging
 - [ ] Dark/light theme enhancements (UiTheme exists)
@@ -484,7 +484,7 @@ University coursework — all rights reserved as per course requirements.
 - **Stock Alerts** (Admin)៖ ស្តុកទាប ស្តុកអស់ ជិតផុតកំណត់ និងផុតកំណត់ហើយ ហើយអាចកែតម្រូវស្តុកតាម Stock Adjustment។
 - **Stock Adjustment**៖ កែតម្រូវស្តុកដោយដៃជាមួយកំណត់ចំណាំ (បង្កើត inventory transaction)។ ការកែតម្រូវត្រូវបដិសេធ បើស្តុកក្រោយកែតិចជាង 0 ឬផលិតផលអសកម្ម។
 - **User Management** (Admin)៖ មើល/ស្វែងរក/ច្រោះអ្នកប្រើតាមតួនាទី ធ្វើឱ្យសកម្ម/អសកម្ម បង្កើត/កែអ្នកប្រើ។ មានការការពារមិនឱ្យបិទគណនីខ្លួនឯង និងត្រូវមាន Admin សកម្មយ៉ាងតិចម្នាក់។
-- **Reports** (Admin)៖ Sales trend, revenue by cashier, revenue by payment method, top products, sales by category, supplier purchase history និង inventory value។
+- **Reports** (Admin)៖ Sales trend, revenue by cashier, revenue by payment method, top products, sales by category, sales by product, supplier purchase history, inventory value, low stock និង profit (export CSV / print preview)។
 - **Settings** (Admin)៖ មើលព័ត៌មានគណនី (read-only)។
 
 ## 4. បច្ចេកវិទ្យាដែលប្រើ

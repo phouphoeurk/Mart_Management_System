@@ -2,6 +2,7 @@ using System.Data;
 using Mart_Management_System.Data;
 using Mart_Management_System.Enums;
 using Mart_Management_System.Models;
+using Mart_Management_System.Diagnostics;
 using Microsoft.Data.SqlClient;
 
 namespace Mart_Management_System.Repositories
@@ -13,6 +14,7 @@ namespace Mart_Management_System.Repositories
             int? productId = null
         )
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("InventoryRepository.GetRecent");
             const string sql = """
                 SELECT TOP (@limit)
                        it.InventoryTransactionId, it.ProductId, it.UserId,
@@ -58,6 +60,7 @@ namespace Mart_Management_System.Repositories
 
         public List<Product> GetLowStockProducts()
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("InventoryRepository.GetLowStockProducts");
             const string sql = """
                 SELECT p.ProductId, p.ProductName, p.Barcode, p.CategoryId,
                        p.SupplierId, p.CostPrice, p.SellingPrice, p.StockQuantity,
@@ -76,6 +79,7 @@ namespace Mart_Management_System.Repositories
 
         public List<Product> GetOutOfStockProducts()
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("InventoryRepository.GetOutOfStockProducts");
             const string sql = """
                 SELECT p.ProductId, p.ProductName, p.Barcode, p.CategoryId,
                        p.SupplierId, p.CostPrice, p.SellingPrice, p.StockQuantity,
@@ -94,6 +98,7 @@ namespace Mart_Management_System.Repositories
 
         public List<Product> GetExpiringProducts(int days = 30)
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("InventoryRepository.GetExpiringProducts");
             const string sql = """
                 SELECT p.ProductId, p.ProductName, p.Barcode, p.CategoryId,
                        p.SupplierId, p.CostPrice, p.SellingPrice, p.StockQuantity,
@@ -125,6 +130,7 @@ namespace Mart_Management_System.Repositories
 
         public List<Product> GetExpiredProducts()
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("InventoryRepository.GetExpiredProducts");
             const string sql = """
                 SELECT p.ProductId, p.ProductName, p.Barcode, p.CategoryId,
                        p.SupplierId, p.CostPrice, p.SellingPrice, p.StockQuantity,
@@ -142,6 +148,124 @@ namespace Mart_Management_System.Repositories
             return ReadProducts(sql);
         }
 
+        public StockAlertSnapshot GetStockAlertSnapshot(
+            int historyLimit = 200,
+            int expiringDays = 30
+        )
+        {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("InventoryRepository.GetStockAlertSnapshot");
+            const string productColumns = """
+                p.ProductId, p.ProductName, p.Barcode, p.CategoryId,
+                p.SupplierId, p.CostPrice, p.SellingPrice, p.StockQuantity,
+                p.ReorderLevel, p.ExpiryDate, p.IsActive, p.CreatedAt,
+                c.CategoryName, s.SupplierName
+                """;
+            const string productFrom = """
+                FROM dbo.Products AS p
+                INNER JOIN dbo.Categories AS c ON c.CategoryId = p.CategoryId
+                LEFT JOIN dbo.Suppliers AS s ON s.SupplierId = p.SupplierId
+                """;
+
+            string sql = $"""
+                SELECT {productColumns} {productFrom}
+                WHERE p.IsActive = 1 AND p.StockQuantity <= p.ReorderLevel
+                ORDER BY p.StockQuantity, p.ProductName;
+
+                SELECT {productColumns} {productFrom}
+                WHERE p.IsActive = 1 AND p.StockQuantity = 0
+                ORDER BY p.ProductName;
+
+                SELECT {productColumns} {productFrom}
+                WHERE p.IsActive = 1
+                  AND p.ExpiryDate IS NOT NULL
+                  AND p.ExpiryDate >= CAST(GETDATE() AS date)
+                  AND p.ExpiryDate < DATEADD(DAY, @days, CAST(GETDATE() AS date))
+                ORDER BY p.ExpiryDate, p.ProductName;
+
+                SELECT {productColumns} {productFrom}
+                WHERE p.IsActive = 1
+                  AND p.ExpiryDate IS NOT NULL
+                  AND p.ExpiryDate < CAST(GETDATE() AS date)
+                ORDER BY p.ExpiryDate, p.ProductName;
+
+                SELECT TOP (@historyLimit)
+                       it.InventoryTransactionId, it.ProductId, it.UserId,
+                       it.TransactionType, it.QuantityChange, it.SaleId,
+                       it.PurchaseOrderId, it.Notes, it.CreatedAt,
+                       p.ProductName, u.FullName
+                FROM dbo.InventoryTransactions AS it
+                INNER JOIN dbo.Products AS p ON p.ProductId = it.ProductId
+                INNER JOIN dbo.Users AS u ON u.UserId = it.UserId
+                ORDER BY it.CreatedAt DESC, it.InventoryTransactionId DESC;
+                """;
+
+            using SqlConnection connection = DatabaseConnection.GetConnection();
+            using SqlCommand command = new(sql, connection);
+            command.Parameters.Add("@days", SqlDbType.Int).Value = expiringDays;
+            command.Parameters.Add("@historyLimit", SqlDbType.Int).Value =
+                historyLimit;
+
+            StockAlertSnapshot snapshot = new();
+            connection.Open();
+            using SqlDataReader reader = command.ExecuteReader();
+
+            snapshot.LowStock = ReadProductSet(reader);
+
+            if (reader.NextResult())
+            {
+                snapshot.OutOfStock = ReadProductSet(reader);
+            }
+
+            if (reader.NextResult())
+            {
+                snapshot.ExpiringSoon = ReadProductSet(reader);
+            }
+
+            if (reader.NextResult())
+            {
+                snapshot.Expired = ReadProductSet(reader);
+            }
+
+            if (reader.NextResult())
+            {
+                List<InventoryTransaction> history = new();
+                while (reader.Read())
+                {
+                    history.Add(new InventoryTransaction
+                    {
+                        InventoryTransactionId = reader.GetInt32(0),
+                        ProductId = reader.GetInt32(1),
+                        UserId = reader.GetInt32(2),
+                        TransactionType = ParseType(reader.GetString(3)),
+                        QuantityChange = reader.GetInt32(4),
+                        SaleId = reader.IsDBNull(5) ? null : reader.GetInt32(5),
+                        PurchaseOrderId = reader.IsDBNull(6)
+                            ? null
+                            : reader.GetInt32(6),
+                        Notes = reader.IsDBNull(7) ? null : reader.GetString(7),
+                        CreatedAt = reader.GetDateTime(8),
+                        ProductName = reader.GetString(9),
+                        UserName = reader.GetString(10)
+                    });
+                }
+
+                snapshot.RecentHistory = history;
+            }
+
+            return snapshot;
+        }
+
+        private static List<Product> ReadProductSet(SqlDataReader reader)
+        {
+            List<Product> products = new();
+            while (reader.Read())
+            {
+                products.Add(MapProduct(reader));
+            }
+
+            return products;
+        }
+
         public bool AdjustStock(
             int productId,
             int quantityDelta,
@@ -149,6 +273,7 @@ namespace Mart_Management_System.Repositories
             string? notes = null
         )
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("InventoryRepository.AdjustStock");
             if (quantityDelta == 0)
             {
                 throw new ArgumentException(
@@ -224,6 +349,7 @@ namespace Mart_Management_System.Repositories
             string? notes
         )
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("InventoryRepository.InsertTransaction");
             const string sql = """
                 INSERT INTO dbo.InventoryTransactions
                     (ProductId, UserId, TransactionType, QuantityChange,

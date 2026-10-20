@@ -2,6 +2,7 @@ using System.Data;
 using Mart_Management_System.Data;
 using Mart_Management_System.Enums;
 using Mart_Management_System.Models;
+using Mart_Management_System.Diagnostics;
 using Microsoft.Data.SqlClient;
 
 namespace Mart_Management_System.Repositories
@@ -10,6 +11,7 @@ namespace Mart_Management_System.Repositories
     {
         public User? FindByUsername(string username)
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("UserRepository.FindByUsername");
             const string sql = """
                 SELECT UserId, FullName, Username, PasswordHash, Role,
                        IsActive, CreatedAt, UpdatedAt
@@ -31,6 +33,7 @@ namespace Mart_Management_System.Repositories
 
         public User? GetById(int userId)
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("UserRepository.GetById");
             const string sql = """
                 SELECT UserId, FullName, Username, Role, IsActive,
                        CreatedAt, UpdatedAt
@@ -52,6 +55,7 @@ namespace Mart_Management_System.Repositories
 
         public List<User> GetAll()
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("UserRepository.GetAll");
             const string sql = """
                 SELECT UserId, FullName, Username, Role, IsActive,
                        CreatedAt, UpdatedAt
@@ -76,6 +80,7 @@ namespace Mart_Management_System.Repositories
 
         public DataTable Search(string keyword)
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("UserRepository.Search");
             const string sql = """
                 SELECT UserId, FullName, Username, Role, IsActive,
                        CreatedAt, UpdatedAt
@@ -101,6 +106,7 @@ namespace Mart_Management_System.Repositories
 
         public bool Create(User user)
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("UserRepository.Create");
             ArgumentNullException.ThrowIfNull(user);
             ValidateUser(user);
 
@@ -123,6 +129,7 @@ namespace Mart_Management_System.Repositories
 
         public bool Update(User user, string? passwordHash = null)
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("UserRepository.Update");
             ArgumentNullException.ThrowIfNull(user);
             ValidateUser(user);
 
@@ -151,6 +158,7 @@ namespace Mart_Management_System.Repositories
 
         public bool SetActive(int userId, bool isActive)
         {
+            using var __perf = Mart_Management_System.Diagnostics.PerfTimer.Measure("UserRepository.SetActive");
             const string sql = """
                 UPDATE dbo.Users
                 SET IsActive = @isActive,

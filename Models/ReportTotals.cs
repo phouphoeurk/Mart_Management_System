@@ -7,5 +7,7 @@ namespace Mart_Management_System.Models
         public decimal WeeklySales { get; set; }
 
         public decimal MonthlySales { get; set; }
+
+        public decimal AllTimeRevenue { get; set; }
     }
 }

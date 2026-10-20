@@ -8,8 +8,6 @@ namespace Mart_Management_System.Forms
     {
         private readonly User _currentAdministrator;
         private readonly PurchaseOrderRepository _purchaseOrderRepository;
-        private readonly SupplierRepository _supplierRepository;
-        private readonly ProductRepository _productRepository;
         private readonly List<PurchaseLine> _lines = new();
         private int? _draftPurchaseOrderId;
 
@@ -30,8 +28,6 @@ namespace Mart_Management_System.Forms
             ArgumentNullException.ThrowIfNull(currentAdministrator);
             _currentAdministrator = currentAdministrator;
             _purchaseOrderRepository = new PurchaseOrderRepository();
-            _supplierRepository = new SupplierRepository();
-            _productRepository = new ProductRepository();
 
             InitializeComponent();
 
@@ -44,13 +40,28 @@ namespace Mart_Management_System.Forms
 
         private void PurchaseOrderForm_Load(object sender, EventArgs e)
         {
+            PurchasePageData page;
+
+            try
+            {
+                page = _purchaseOrderRepository.GetPurchasePageData();
+            }
+            catch (Exception)
+            {
+                lblPastTitle.Text = "RECENT ORDERS (UNAVAILABLE)";
+                lblStatus.Text = "Unable to load purchase order data.";
+                return;
+            }
+
+            RenderPastOrders(page.RecentOrders);
+
             if (_currentAdministrator.Role != UserRole.Admin)
             {
                 return;
             }
 
-            LoadSuppliers();
-            LoadProducts();
+            RenderSuppliers(page.ActiveSuppliers);
+            RenderProducts(page.ActiveProducts);
             ResetOrder();
 
             if (cbSupplier.Items.Count == 0)
@@ -65,46 +76,50 @@ namespace Mart_Management_System.Forms
             }
         }
 
-        private void LoadSuppliers()
+        private void LoadPastOrders()
         {
             try
             {
-                cbSupplier.Items.Clear();
-                foreach (Supplier supplier in _supplierRepository.GetAll()
-                    .Where(supplier => supplier.IsActive))
-                {
-                    cbSupplier.Items.Add(new SupplierOption(supplier));
-                }
-
-                if (cbSupplier.Items.Count == 0)
-                {
-                    lblStatus.Text = "Add an active supplier before creating a purchase order.";
-                }
+                RenderPastOrders(_purchaseOrderRepository.GetAll());
             }
             catch (Exception)
             {
-                lblStatus.Text = "Unable to load suppliers.";
+                lblPastTitle.Text = "RECENT ORDERS (UNAVAILABLE)";
             }
         }
 
-        private void LoadProducts()
+        private void RenderPastOrders(IEnumerable<PurchaseOrder> orders)
         {
-            try
+            dgvPastOrders.Rows.Clear();
+            foreach (PurchaseOrder order in orders.Take(15))
             {
-                cbProduct.Items.Clear();
-                foreach (Product product in _productRepository.GetAll(activeOnly: true))
-                {
-                    cbProduct.Items.Add(new ProductOption(product));
-                }
-
-                if (cbProduct.Items.Count == 0)
-                {
-                    lblStatus.Text = "Add an active product before receiving stock.";
-                }
+                dgvPastOrders.Rows.Add(
+                    order.PurchaseOrderId,
+                    order.PurchaseDate.ToString("yyyy-MM-dd"),
+                    order.SupplierName,
+                    order.TotalAmount.ToString("C2"),
+                    order.Status.ToString()
+                );
             }
-            catch (Exception)
+
+            lblPastTitle.Text = "RECENT ORDERS";
+        }
+
+        private void RenderSuppliers(IEnumerable<Supplier> suppliers)
+        {
+            cbSupplier.Items.Clear();
+            foreach (Supplier supplier in suppliers.Where(supplier => supplier.IsActive))
             {
-                lblStatus.Text = "Unable to load products.";
+                cbSupplier.Items.Add(new SupplierOption(supplier));
+            }
+        }
+
+        private void RenderProducts(IEnumerable<Product> products)
+        {
+            cbProduct.Items.Clear();
+            foreach (Product product in products)
+            {
+                cbProduct.Items.Add(new ProductOption(product));
             }
         }
 
@@ -202,6 +217,7 @@ namespace Mart_Management_System.Forms
                     MessageBoxIcon.Information
                 );
                 ResetOrder();
+                LoadPastOrders();
             }
             catch (Exception)
             {
@@ -232,6 +248,15 @@ namespace Mart_Management_System.Forms
 
         private void numDiscount_ValueChanged(object sender, EventArgs e)
         {
+            decimal subtotal = _lines.Sum(
+                line => line.Quantity * line.UnitCost
+            );
+            if (numDiscount.Value > subtotal)
+            {
+                numDiscount.Value = subtotal;
+                lblStatus.Text = "Discount was limited to the order subtotal.";
+            }
+
             RefreshLines();
         }
 
@@ -292,6 +317,7 @@ namespace Mart_Management_System.Forms
                 SetEditingEnabled(false);
                 btnNewOrder.Enabled = true;
                 btnReceive.Enabled = true;
+                LoadPastOrders();
 
                 if (showSuccess)
                 {

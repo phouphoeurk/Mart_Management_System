@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Mart_Management_System.Enums;
 using Mart_Management_System.Models;
 using Mart_Management_System.Repositories;
@@ -8,6 +9,7 @@ namespace Mart_Management_System.Forms
     {
         private readonly InventoryRepository _inventoryRepository;
         private readonly User _currentUser;
+        private StockAlertSnapshot? _snapshot;
 
         public StockAlertsForm()
             : this(new User
@@ -52,21 +54,23 @@ namespace Mart_Management_System.Forms
                 "Expired",
                 "Inventory History"
             });
+
+            RefreshAlerts();
             cbAlertType.SelectedIndex = 0;
-            LoadAlerts();
+            RenderAlerts();
         }
 
         private void cbAlertType_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (IsHandleCreated)
             {
-                LoadAlerts();
+                RenderAlerts();
             }
         }
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
-            LoadAlerts();
+            RefreshAlerts();
         }
 
         private void dgvAlerts_CellContentClick(
@@ -87,48 +91,20 @@ namespace Mart_Management_System.Forms
             using StockAdjustmentForm form = new(product, _currentUser);
             if (form.ShowDialog(this) == DialogResult.OK)
             {
-                LoadAlerts();
+                RefreshAlerts();
             }
         }
 
-        private void LoadAlerts()
+        private void RefreshAlerts()
         {
             try
             {
-                string alertType = cbAlertType.SelectedItem?.ToString()
-                    ?? "Low Stock";
-                dgvAlerts.Rows.Clear();
-
-                if (alertType == "Inventory History")
-                {
-                    LoadHistory();
-                    return;
-                }
-
-                List<Product> products = alertType switch
-                {
-                    "Out of Stock" => _inventoryRepository.GetOutOfStockProducts(),
-                    "Expiring Soon" => _inventoryRepository.GetExpiringProducts(),
-                    "Expired" => _inventoryRepository.GetExpiredProducts(),
-                    _ => _inventoryRepository.GetLowStockProducts()
-                };
-
-                foreach (Product product in products)
-                {
-                    int rowIndex = dgvAlerts.Rows.Add(
-                        product.ProductName,
-                        product.CategoryName,
-                        product.StockQuantity,
-                        product.ReorderLevel,
-                        product.ExpiryDate?.ToString("yyyy-MM-dd") ?? "-",
-                        GetStatus(alertType, product),
-                        "Adjust"
-                    );
-                    dgvAlerts.Rows[rowIndex].Tag = product;
-                }
+                _snapshot = _inventoryRepository.GetStockAlertSnapshot();
+                RenderAlerts();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Debug.WriteLine(ex.ToString());
                 MessageBox.Show(
                     "Unable to load stock alerts.",
                     "Stock Alerts",
@@ -138,9 +114,47 @@ namespace Mart_Management_System.Forms
             }
         }
 
-        private void LoadHistory()
+        private void RenderAlerts()
         {
-            foreach (InventoryTransaction transaction in _inventoryRepository.GetRecent())
+            string alertType = cbAlertType.SelectedItem?.ToString()
+                ?? "Low Stock";
+            dgvAlerts.Rows.Clear();
+
+            if (alertType == "Inventory History")
+            {
+                RenderHistory();
+                return;
+            }
+
+            List<Product> products = alertType switch
+            {
+                "Out of Stock" => _snapshot?.OutOfStock ?? new List<Product>(),
+                "Expiring Soon" => _snapshot?.ExpiringSoon ?? new List<Product>(),
+                "Expired" => _snapshot?.Expired ?? new List<Product>(),
+                _ => _snapshot?.LowStock ?? new List<Product>()
+            };
+
+            foreach (Product product in products)
+            {
+                int rowIndex = dgvAlerts.Rows.Add(
+                    product.ProductName,
+                    product.CategoryName,
+                    product.StockQuantity,
+                    product.ReorderLevel,
+                    product.ExpiryDate?.ToString("yyyy-MM-dd") ?? "-",
+                    GetStatus(alertType, product),
+                    "Adjust"
+                );
+                dgvAlerts.Rows[rowIndex].Tag = product;
+            }
+        }
+
+        private void RenderHistory()
+        {
+            foreach (
+                InventoryTransaction transaction in _snapshot?.RecentHistory
+                    ?? new List<InventoryTransaction>()
+            )
             {
                 string reference = transaction.SaleId.HasValue
                     ? $"Sale #{transaction.SaleId.Value}"

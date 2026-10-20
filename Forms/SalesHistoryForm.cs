@@ -1,4 +1,5 @@
-﻿using Mart_Management_System.Enums;
+﻿using System.Diagnostics;
+using Mart_Management_System.Enums;
 using Mart_Management_System.Models;
 using Mart_Management_System.Repositories;
 
@@ -27,7 +28,7 @@ namespace Mart_Management_System.Forms
 
         private void SalesHistoryForm_Load(object sender, EventArgs e)
         {
-            dtpDateFrom.Value = DateTime.Today;
+            dtpDateFrom.Value = DateTime.Today.AddDays(-29);
             dtpDateTo.Value = DateTime.Today;
             LoadCashierFilter();
             LoadSales();
@@ -82,8 +83,9 @@ namespace Mart_Management_System.Forms
                 using SaleDetailsForm form = new(sale);
                 form.ShowDialog(this);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Debug.WriteLine(ex.ToString());
                 MessageBox.Show(
                     "Unable to load the sale details.",
                     "Sales History",
@@ -101,7 +103,10 @@ namespace Mart_Management_System.Forms
                 if (_currentUser?.Role == UserRole.Cashier)
                 {
                     cbCashier.Items.Add(
-                        new CashierOption(_currentUser.UserId, _currentUser.Username)
+                        new CashierOption(
+                            _currentUser.UserId,
+                            DisplayName(_currentUser)
+                        )
                     );
                     cbCashier.SelectedIndex = 0;
                     cbCashier.Enabled = false;
@@ -114,14 +119,15 @@ namespace Mart_Management_System.Forms
                     .OrderBy(user => user.FullName))
                 {
                     cbCashier.Items.Add(
-                        new CashierOption(user.UserId, user.FullName)
+                        new CashierOption(user.UserId, DisplayName(user))
                     );
                 }
 
                 cbCashier.SelectedIndex = 0;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Debug.WriteLine(ex.ToString());
                 MessageBox.Show(
                     "Unable to load the cashier filter.",
                     "Sales History",
@@ -154,8 +160,9 @@ namespace Mart_Management_System.Forms
                     dgvSalesHistory.Rows[rowIndex].Tag = sale;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Debug.WriteLine(ex.ToString());
                 MessageBox.Show(
                     "Unable to load sales history.",
                     "Sales History",
@@ -188,6 +195,13 @@ namespace Mart_Management_System.Forms
                     ? null
                     : txtSearch.Text.Trim()
             };
+        }
+
+        private static string DisplayName(User user)
+        {
+            return string.IsNullOrWhiteSpace(user.FullName)
+                ? user.Username
+                : user.FullName;
         }
 
         private sealed class CashierOption
